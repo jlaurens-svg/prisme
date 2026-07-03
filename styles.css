@@ -1,0 +1,345 @@
+/* ============================================================
+   PRISME — styles
+   Éditorial, sombre, sans genre. Un accent iridescent (prisme).
+   ============================================================ */
+
+:root{
+  --bg:      #0c0c0f;
+  --bg-2:    #141419;
+  --ink:     #f3f0ea;
+  --ink-dim: #9d9a94;
+  --line:    #2a2a31;
+  --line-2:  #3a3a44;
+  --accent:  #c9b8ff;
+  /* spectre du prisme, utilisé avec parcimonie */
+  --spectrum: linear-gradient(90deg,#ff9db0,#ffd39b,#c9f5b0,#9bdcff,#c9b8ff);
+  --maxw: 1180px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Inter",system-ui,sans-serif;
+  font-weight:400;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{ background:var(--accent); color:#12101a; }
+
+/* grain léger */
+.grain{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1,h2,h3,.hero-title,.view-title{ font-family:"Fraunces",Georgia,serif; font-weight:400; letter-spacing:-.01em; }
+em{ font-style:italic; }
+
+.eyebrow{
+  font-family:"Inter Tight",sans-serif;
+  font-size:.72rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--ink-dim);
+}
+
+/* ---------- NAV ---------- */
+.nav{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.1rem clamp(1.2rem,4vw,3rem);
+  background:rgba(12,12,15,.72); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.brand{ display:flex; align-items:center; gap:.6rem; text-decoration:none; color:var(--ink); }
+.brand-name{ font-family:"Inter Tight",sans-serif; font-weight:500; letter-spacing:.28em; font-size:.9rem; }
+.brand-mark{
+  width:16px; height:16px; border-radius:50%;
+  background:var(--spectrum);
+  box-shadow:0 0 14px 1px rgba(201,184,255,.5);
+}
+.brand-mark.small{ width:12px; height:12px; }
+.nav-links{ display:flex; gap:clamp(1rem,2.6vw,2.2rem); }
+.nav-links a{
+  color:var(--ink-dim); text-decoration:none; font-size:.9rem;
+  padding:.2rem 0; position:relative; transition:color .3s var(--ease);
+}
+.nav-links a:hover{ color:var(--ink); }
+.nav-links a.is-current{ color:var(--ink); }
+.nav-links a.is-current::after{
+  content:""; position:absolute; left:0; bottom:-2px; width:100%; height:1px; background:var(--spectrum);
+}
+
+/* ---------- VUES ---------- */
+#app{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:clamp(2rem,6vw,5rem) clamp(1.2rem,4vw,3rem) 6rem; }
+.view{ display:none; animation:fade .6s var(--ease); }
+.view.is-active{ display:block; }
+@keyframes fade{ from{ opacity:0; transform:translateY(12px);} to{ opacity:1; transform:none;} }
+
+/* ---------- HERO ---------- */
+.hero{ max-width:820px; padding:clamp(2rem,7vw,5rem) 0 2rem; }
+.hero .eyebrow{ display:block; margin-bottom:1.4rem; }
+.hero-title{
+  font-size:clamp(2.7rem,8vw,5.6rem); line-height:1.02; letter-spacing:-.03em; margin-bottom:1.6rem;
+}
+.hero-title em{ background:var(--spectrum); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero-sub{ font-size:clamp(1.05rem,2vw,1.3rem); color:var(--ink-dim); max-width:620px; margin-bottom:2.2rem; }
+.hero-cta{ display:flex; flex-wrap:wrap; gap:.9rem; margin-bottom:1.2rem; }
+.hero-note{ font-size:.82rem; color:var(--ink-dim); }
+
+/* ---------- BOUTONS ---------- */
+.btn{
+  font-family:"Inter Tight",sans-serif; font-size:.9rem; font-weight:500;
+  padding:.85rem 1.6rem; border-radius:100px; cursor:pointer;
+  border:1px solid transparent; transition:all .3s var(--ease); letter-spacing:.01em;
+}
+.btn-primary{ background:var(--ink); color:#111; }
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 10px 30px -8px rgba(243,240,234,.35); }
+.btn-ghost{ background:transparent; color:var(--ink); border-color:var(--line-2); }
+.btn-ghost:hover{ border-color:var(--ink); }
+.btn-block{ width:100%; margin-top:.5rem; }
+.btn-sm{ padding:.6rem 1.1rem; font-size:.82rem; }
+
+/* ---------- LENTILLES (accueil) ---------- */
+.lenses{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden; margin:3rem 0; }
+.lens{ background:var(--bg); padding:2rem 1.7rem; transition:background .4s var(--ease); }
+.lens:hover{ background:var(--bg-2); }
+.lens-idx{ font-family:"Inter Tight",sans-serif; font-size:.75rem; color:var(--accent); letter-spacing:.2em; }
+.lens h3{ font-size:1.5rem; margin:.6rem 0 .7rem; }
+.lens p{ color:var(--ink-dim); font-size:.95rem; }
+
+.manifesto{ max-width:760px; margin:4rem auto 1rem; text-align:center; }
+.manifesto p{ font-family:"Fraunces",serif; font-size:clamp(1.4rem,3.4vw,2.1rem); line-height:1.35; }
+.manifesto .em{ font-style:italic; background:var(--spectrum); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+/* ---------- FORMULAIRES ---------- */
+.form-wrap{ max-width:640px; margin:0 auto; }
+.view-title{ font-size:clamp(2rem,5vw,3.2rem); margin:.6rem 0 .8rem; line-height:1.05; }
+.view-lead{ color:var(--ink-dim); margin-bottom:2.4rem; max-width:560px; }
+.form{ display:flex; flex-direction:column; gap:1.5rem; }
+.field{ display:flex; flex-direction:column; gap:.5rem; border:none; }
+.field label,.field legend{ font-family:"Inter Tight",sans-serif; font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-dim); }
+.field input,.field select{
+  background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+  padding:.9rem 1rem; border-radius:10px; font-family:inherit; font-size:1rem; transition:border-color .3s var(--ease);
+}
+.field input:focus,.field select:focus{ outline:none; border-color:var(--accent); }
+.field input::placeholder{ color:#5c5a55; }
+.hint{ font-size:.78rem; color:#6f6c66; }
+.field select{ appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239d9a94' stroke-width='1.4'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 1rem center; }
+::-webkit-calendar-picker-indicator{ filter:invert(.7); cursor:pointer; }
+
+.form-error{ color:#ff9db0; font-size:.9rem; }
+
+/* segmented control */
+.seg{ display:flex; gap:.4rem; background:var(--bg-2); border:1px solid var(--line); border-radius:100px; padding:.3rem; }
+.seg-btn{ flex:1; background:transparent; color:var(--ink-dim); border:none; padding:.6rem; border-radius:100px; cursor:pointer; font-family:"Inter Tight",sans-serif; font-size:.85rem; transition:all .3s var(--ease); }
+.seg-btn.is-active{ background:var(--ink); color:#111; }
+.mbti-choice{ gap:1rem; }
+.mbti-known{ margin-top:.6rem; }
+
+/* quiz */
+.quiz-hint{ font-size:.85rem; color:var(--ink-dim); margin:1rem 0 .4rem; }
+.q{ padding:1.2rem 0; border-bottom:1px solid var(--line); }
+.q-num{ font-family:"Inter Tight",sans-serif; font-size:.72rem; letter-spacing:.15em; color:var(--accent); }
+.q-text{ font-family:"Fraunces",serif; font-size:1.15rem; margin:.3rem 0 .9rem; }
+.q-opts{ display:grid; gap:.6rem; }
+.q-opt{ display:flex; align-items:center; gap:.75rem; cursor:pointer; padding:.75rem 1rem; border:1px solid var(--line); border-radius:10px; transition:all .25s var(--ease); color:var(--ink-dim); }
+.q-opt:hover{ border-color:var(--line-2); color:var(--ink); }
+.q-opt input{ accent-color:var(--accent); width:16px; height:16px; }
+.q-opt.is-picked{ border-color:var(--accent); background:rgba(201,184,255,.07); color:var(--ink); }
+
+/* duo (relation) */
+.duo{ display:grid; grid-template-columns:1fr auto 1fr; gap:1.6rem; }
+.duo-col{ display:flex; flex-direction:column; gap:1.1rem; }
+.duo-sep{ width:1px; background:var(--line); }
+.duo-label{ font-family:"Inter Tight",sans-serif; letter-spacing:.16em; text-transform:uppercase; font-size:.78rem; color:var(--accent); }
+
+/* ---------- RÉSULTAT PROFIL ---------- */
+.result-head{ margin-bottom:2.6rem; }
+.result-name{ font-size:clamp(2.2rem,6vw,4rem); line-height:1.02; margin:.4rem 0 .6rem; }
+.result-badges{ display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1rem; }
+.badge{ font-family:"Inter Tight",sans-serif; font-size:.82rem; border:1px solid var(--line-2); border-radius:100px; padding:.4rem 1rem; color:var(--ink); }
+.badge b{ color:var(--accent); font-weight:500; }
+
+.cards{ display:grid; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+.card{ background:var(--bg); padding:clamp(1.5rem,3vw,2.4rem); }
+.card-tag{ display:flex; align-items:center; gap:.6rem; margin-bottom:1rem; }
+.card-tag .dot{ width:8px; height:8px; border-radius:50%; background:var(--spectrum); }
+.card-tag span{ font-family:"Inter Tight",sans-serif; font-size:.75rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-dim); }
+.card h3{ font-size:1.9rem; margin-bottom:.2rem; }
+.card .sub{ color:var(--accent); font-size:.95rem; margin-bottom:1rem; font-family:"Inter Tight",sans-serif; }
+.card p{ color:#cfccc5; margin-bottom:.9rem; }
+.chips{ display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0 1.1rem; }
+.chip{ font-size:.8rem; color:var(--ink-dim); border:1px solid var(--line); border-radius:100px; padding:.28rem .8rem; }
+.kv{ display:grid; grid-template-columns:auto 1fr; gap:.4rem 1.2rem; font-size:.92rem; margin-top:.6rem; }
+.kv dt{ color:var(--ink-dim); }
+.kv dd{ color:var(--ink); }
+.mini{ margin-top:1rem; padding-top:1rem; border-top:1px solid var(--line); }
+.mini strong{ color:var(--ink); font-weight:500; }
+.mini p{ font-size:.9rem; margin-top:.3rem; }
+
+/* synthèse */
+.synth{ margin-top:2.4rem; padding:clamp(1.8rem,4vw,3rem); border:1px solid var(--line); border-radius:16px; background:linear-gradient(160deg,var(--bg-2),var(--bg)); position:relative; overflow:hidden; }
+.synth::before{ content:""; position:absolute; top:0; left:0; right:0; height:2px; background:var(--spectrum); }
+.synth h3{ font-size:1.7rem; margin-bottom:1rem; }
+.synth p{ color:#d6d3cc; font-size:1.05rem; margin-bottom:1rem; }
+.synth .lead{ font-family:"Fraunces",serif; font-size:1.3rem; color:var(--ink); }
+
+.result-actions{ display:flex; flex-wrap:wrap; gap:.8rem; margin-top:2.4rem; }
+
+/* ---------- RELATION RÉSULTAT ---------- */
+.rel-head{ text-align:center; margin:3rem 0 2rem; }
+.rel-names{ font-family:"Fraunces",serif; font-size:clamp(1.8rem,5vw,3rem); }
+.rel-plus{ background:var(--spectrum); -webkit-background-clip:text; background-clip:text; color:transparent; padding:0 .4rem; }
+.rel-score{ display:flex; align-items:center; justify-content:center; gap:1rem; margin:1.4rem 0; }
+.meter{ width:min(340px,70vw); height:6px; border-radius:100px; background:var(--line); overflow:hidden; }
+.meter-fill{ height:100%; background:var(--spectrum); border-radius:100px; transition:width 1s var(--ease); }
+.meter-val{ font-family:"Inter Tight",sans-serif; font-size:.9rem; color:var(--accent); }
+
+/* ---------- PROSE (méthode) ---------- */
+.prose{ max-width:720px; margin:0 auto; }
+.prose h3{ font-size:1.5rem; margin:2.4rem 0 .8rem; }
+.prose p{ color:#cfccc5; margin-bottom:1rem; }
+.prose strong{ color:var(--ink); font-weight:500; }
+.prose ul{ list-style:none; display:flex; flex-direction:column; gap:.7rem; margin:1rem 0; }
+.prose li{ color:#cfccc5; padding-left:1.4rem; position:relative; }
+.prose li::before{ content:""; position:absolute; left:0; top:.6em; width:7px; height:7px; border-radius:50%; background:var(--spectrum); }
+
+/* ---------- FOOTER ---------- */
+.foot{ position:relative; z-index:1; border-top:1px solid var(--line); padding:2rem clamp(1.2rem,4vw,3rem); display:flex; align-items:center; gap:.8rem; max-width:var(--maxw); margin:0 auto; }
+.foot p{ font-size:.82rem; color:var(--ink-dim); }
+
+/* ---------- HÉRITAGE ---------- */
+.heritage{ margin:5rem 0 1rem; }
+.milkyway-wrap{ position:relative; border:1px solid var(--line); border-radius:18px; overflow:hidden; }
+#milkyway{ display:block; width:100%; height:clamp(240px,38vw,340px); }
+.milkyway-overlay{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center;
+  padding:clamp(1.6rem,5vw,3.4rem); max-width:640px;
+  background:linear-gradient(100deg, rgba(10,10,14,.92) 10%, rgba(10,10,14,.55) 55%, rgba(10,10,14,.05)); }
+.heritage-title{ font-size:clamp(1.8rem,4.4vw,3rem); line-height:1.05; margin:.6rem 0 .8rem; text-wrap:balance; }
+.heritage-intro{ color:#cfccc5; font-size:clamp(.98rem,1.6vw,1.12rem); max-width:520px; }
+.milkyway-cap{ margin-top:1.1rem; font-family:"Inter Tight",sans-serif; font-size:.78rem; letter-spacing:.08em; color:var(--accent); }
+
+.group-label{ font-family:"Inter Tight",sans-serif; font-size:.74rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--ink-dim); margin:2.8rem 0 1.1rem; padding-bottom:.6rem; border-bottom:1px solid var(--line); }
+
+/* constellations */
+.constellations{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; }
+.const-card{ display:flex; flex-direction:column; gap:.9rem; }
+.const-svg{ width:100%; aspect-ratio:1/1; border-radius:14px; border:1px solid var(--line);
+  background:radial-gradient(circle at 50% 42%, #17172180 0%, #0b0b0e 78%); }
+.c-lines polyline{ fill:none; stroke:rgba(201,184,255,.45); stroke-width:.6; stroke-linejoin:round; stroke-linecap:round; }
+.c-stars{ filter:drop-shadow(0 0 1.4px rgba(255,255,255,.75)); }
+.c-stars circle{ fill:#f5f3ee; }
+.const-name{ font-family:"Fraunces",serif; font-size:1.15rem; display:block; }
+.const-cap{ color:var(--ink-dim); font-size:.86rem; display:block; margin-top:.15rem; }
+
+/* nombres */
+.num-triptych{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+.num-card{ background:var(--bg); padding:1.8rem 1.4rem; display:flex; flex-direction:column; gap:.25rem; transition:background .4s var(--ease); }
+.num-card:hover{ background:var(--bg-2); }
+.num-big{ font-family:"Fraunces",serif; font-size:clamp(3.4rem,8vw,5.2rem); line-height:.9;
+  background:var(--spectrum); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.num-title{ font-size:1.05rem; margin-top:.4rem; }
+.num-word{ font-family:"Inter Tight",sans-serif; font-size:.8rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-dim); }
+
+/* figures / médaillons */
+.figures{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.4rem; }
+.fig-card{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:.2rem; }
+.medallion{ width:clamp(96px,22vw,128px); height:auto; margin-bottom:.7rem; }
+.med-bg{ fill:#141420; }
+.med-rim{ fill:none; stroke:var(--accent); stroke-width:1.4; opacity:.55; }
+.med-ring2{ fill:none; stroke:var(--line-2); stroke-width:.7; }
+.med-face{ fill:#dcd7ec; }
+.med-hair{ fill:#8f88ba; }
+.med-dark{ fill:#26243a; }
+.med-acc{ fill:none; stroke:var(--accent); stroke-width:1.3; stroke-linecap:round; }
+.med-emblem{ fill:var(--accent); opacity:.85; }
+.fig-name{ display:block; font-family:"Fraunces",serif; font-size:1.2rem; }
+.fig-dates{ display:block; font-family:"Inter Tight",sans-serif; font-size:.72rem; letter-spacing:.1em; color:var(--accent); margin-top:.25rem; }
+.fig-note{ display:block; color:var(--ink-dim); font-size:.86rem; margin:.5rem auto 0; max-width:24ch; }
+
+/* ---------- APPEL DATE DE NAISSANCE ---------- */
+.birth-cta{ margin:4.5rem 0 1rem; padding:clamp(2rem,5vw,3.4rem); text-align:center;
+  border:1px solid var(--line); border-radius:18px; background:linear-gradient(160deg,var(--bg-2),var(--bg)); position:relative; overflow:hidden; }
+.birth-cta::before{ content:""; position:absolute; top:0; left:0; right:0; height:2px; background:var(--spectrum); }
+.birth-cta-title{ font-size:clamp(1.8rem,4.4vw,2.8rem); margin:.5rem 0 .7rem; text-wrap:balance; }
+.birth-cta-text{ color:var(--ink-dim); max-width:460px; margin:0 auto 1.6rem; }
+.birth-cta-form{ display:flex; gap:.7rem; justify-content:center; flex-wrap:wrap; }
+.birth-cta-form input{ background:var(--bg-2); border:1px solid var(--line); color:var(--ink); padding:.85rem 1rem; border-radius:100px; font-family:inherit; font-size:1rem; }
+.birth-cta-form input:focus{ outline:none; border-color:var(--accent); }
+
+/* ---------- SÉLECTEUR DE LANGUE ---------- */
+.lang-toggle{
+  background:transparent; border:1px solid var(--line-2); color:var(--ink);
+  font-family:"Inter Tight",sans-serif; font-size:.78rem; letter-spacing:.1em;
+  padding:.3rem .7rem; border-radius:100px; cursor:pointer; transition:all .3s var(--ease);
+}
+.lang-toggle:hover{ border-color:var(--accent); color:var(--accent); }
+
+/* ---------- HEURE & LIEU (dépliables) ---------- */
+.birth-details,.manual-coords{ border:1px solid var(--line); border-radius:12px; padding:0 1rem; background:var(--bg-2); }
+.birth-details[open],.manual-coords[open]{ padding-bottom:1rem; }
+.birth-details>summary,.manual-coords>summary{
+  cursor:pointer; list-style:none; padding:1rem 0; font-family:"Inter Tight",sans-serif;
+  font-size:.82rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-dim);
+  display:flex; align-items:center; justify-content:space-between; transition:color .3s var(--ease);
+}
+.birth-details>summary:hover,.manual-coords>summary:hover{ color:var(--ink); }
+.birth-details>summary::-webkit-details-marker,.manual-coords>summary::-webkit-details-marker{ display:none; }
+.opt-tag{ color:var(--accent); font-size:1rem; }
+.birth-details .field{ margin-bottom:1rem; }
+.manual-coords{ margin-top:.4rem; }
+.manual-coords>summary{ font-size:.75rem; letter-spacing:.1em; }
+.triple{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:.8rem; }
+.hint.dst{ margin-top:.4rem; color:#8a877f; font-style:italic; }
+
+/* ---------- DONNÉES CÉLESTES (résultat) ---------- */
+.celestial{ }
+.cel-row{ display:flex; justify-content:space-between; align-items:baseline; padding:.35rem 0; border-bottom:1px dashed var(--line); font-size:.95rem; }
+.cel-lab{ color:var(--ink-dim); font-family:"Inter Tight",sans-serif; letter-spacing:.06em; }
+.cel-explain{ font-size:.9rem; margin-top:.8rem; color:#cfccc5; }
+
+/* ---------- PROFILS ENREGISTRÉS ---------- */
+.saved-picker{ margin-bottom:2rem; padding:1.2rem 1.4rem; border:1px solid var(--line); border-radius:14px; background:var(--bg-2); }
+.saved-title{ font-family:"Inter Tight",sans-serif; font-size:.75rem; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin-bottom:.9rem; }
+.saved-list{ display:flex; flex-direction:column; gap:.6rem; }
+.saved-chip{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.6rem; padding:.6rem .9rem; border:1px solid var(--line); border-radius:10px; }
+.saved-name{ font-size:.92rem; }
+.saved-acts{ display:flex; gap:.4rem; flex-wrap:wrap; }
+.saved-acts button{ background:transparent; border:1px solid var(--line-2); color:var(--ink-dim); font-size:.75rem; padding:.3rem .7rem; border-radius:100px; cursor:pointer; font-family:"Inter Tight",sans-serif; transition:all .25s var(--ease); }
+.saved-acts button:hover{ color:var(--ink); border-color:var(--ink); }
+.saved-acts button.del:hover{ color:#ff9db0; border-color:#ff9db0; }
+
+/* ---------- IMPRESSION / PDF ---------- */
+@media print{
+  :root{ --bg:#fff; --ink:#111; --ink-dim:#555; --line:#ddd; --line-2:#ccc; --bg-2:#fafafa; }
+  body{ background:#fff; color:#111; }
+  .grain,.nav,.foot,.no-print,.hero-cta,.form,.saved-picker{ display:none !important; }
+  .view{ display:none !important; }
+  .view.is-active{ display:block !important; }
+  #app{ padding:0; max-width:100%; }
+  .cards{ break-inside:avoid; }
+  .card,.synth{ break-inside:avoid; }
+  .synth{ background:#fafafa; }
+  .result-name,.hero-title em,.rel-plus,.manifesto .em{ color:#111 !important; -webkit-text-fill-color:#111; }
+  .badge b,.sub,.saved-title{ color:#111 !important; }
+  a[href]::after{ content:""; }
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:820px){
+  .lenses{ grid-template-columns:1fr; }
+  .constellations,.figures{ grid-template-columns:1fr 1fr; }
+  .num-triptych{ grid-template-columns:1fr 1fr 1fr; }
+  .duo{ grid-template-columns:1fr; }
+  .duo-sep{ display:none; }
+  .nav-links{ gap:1rem; font-size:.85rem; }
+  .nav-links a[data-nav="method"]{ display:none; }
+}
+@media (max-width:520px){
+  .nav-links a[data-nav="home"]{ display:none; }
+}

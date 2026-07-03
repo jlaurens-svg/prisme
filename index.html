@@ -1,0 +1,199 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PRISME — Se comprendre à travers trois lentilles</title>
+<meta name="description" content="PRISME lit une personne à travers l’astrologie, la numérologie et le MBTI. Pour soi, pour ses proches, au travail." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@300;400;500;600&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <a class="brand" href="#" data-nav="home">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">PRISME</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#" data-nav="home" data-i18n="nav.home">Accueil</a>
+    <a href="#" data-nav="create" data-i18n="nav.create">Mon profil</a>
+    <a href="#" data-nav="relation" data-i18n="nav.relation">Relation</a>
+    <a href="#" data-nav="method" data-i18n="nav.method">Méthode</a>
+    <button class="lang-toggle" id="lang-toggle" aria-label="Language">EN</button>
+  </nav>
+</header>
+
+<main id="app">
+
+  <!-- ============ ACCUEIL ============ -->
+  <section class="view view-home is-active" data-view="home">
+    <div class="hero">
+      <p class="eyebrow" data-i18n="hero.eyebrow"></p>
+      <h1 class="hero-title"><span id="h-t1"></span><br /><em id="h-t2"></em> <span id="h-t3"></span></h1>
+      <p class="hero-sub" id="h-sub"></p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" data-nav="create" id="h-cta1"></button>
+        <button class="btn btn-ghost" data-nav="relation" id="h-cta2"></button>
+      </div>
+      <p class="hero-note" id="h-note"></p>
+    </div>
+    <div class="lenses" id="lenses"></div>
+    <div class="manifesto"><p><span id="m1"></span><span class="em" id="mem"></span><span id="m2"></span></p></div>
+
+    <!-- ===== HÉRITAGE ===== -->
+    <section class="heritage">
+      <div class="milkyway-wrap">
+        <canvas id="milkyway" aria-hidden="true"></canvas>
+        <div class="milkyway-overlay">
+          <p class="eyebrow" id="her-eyebrow"></p>
+          <h2 class="heritage-title" id="her-title"></h2>
+          <p class="heritage-intro" id="her-intro"></p>
+          <p class="milkyway-cap" id="milkyway-cap"></p>
+        </div>
+      </div>
+
+      <p class="group-label" id="sky-label"></p>
+      <div class="constellations" id="constellations"></div>
+
+      <p class="group-label" id="num-label"></p>
+      <div class="num-triptych" id="num-triptych"></div>
+
+      <p class="group-label" id="fig-label"></p>
+      <div class="figures" id="figures"></div>
+    </section>
+
+    <!-- ===== APPEL : DATE DE NAISSANCE ===== -->
+    <section class="birth-cta">
+      <p class="eyebrow" id="bcta-eyebrow"></p>
+      <h2 class="birth-cta-title" id="bcta-title"></h2>
+      <p class="birth-cta-text" id="bcta-text"></p>
+      <form id="bcta-form" class="birth-cta-form">
+        <input id="bcta-date" type="date" required aria-label="Date" />
+        <button type="submit" class="btn btn-primary" id="bcta-btn"></button>
+      </form>
+    </section>
+  </section>
+
+  <!-- ============ CRÉER PROFIL ============ -->
+  <section class="view view-create" data-view="create">
+    <div class="form-wrap">
+      <p class="eyebrow" data-i18n="createEyebrow"></p>
+      <h2 class="view-title" data-i18n="createTitle"></h2>
+      <p class="view-lead" data-i18n="createLead"></p>
+
+      <form id="profile-form" class="form" autocomplete="off">
+        <div class="field">
+          <label for="f-name" data-i18n="fName"></label>
+          <input id="f-name" type="text" required />
+          <span class="hint" data-i18n="fNameHint"></span>
+        </div>
+
+        <div class="field">
+          <label for="f-date" data-i18n="fDate"></label>
+          <input id="f-date" type="date" required />
+        </div>
+
+        <!-- Heure & lieu (facultatif, dépliable) -->
+        <details class="birth-details">
+          <summary><span data-i18n="fBirthOpt"></span> <span class="opt-tag">＋</span></summary>
+          <p class="hint" data-i18n="fBirthOptHint"></p>
+          <div class="field">
+            <label for="f-time" data-i18n="fTime"></label>
+            <input id="f-time" type="time" />
+          </div>
+          <div class="field">
+            <label for="f-city" data-i18n="fCity"></label>
+            <select id="f-city"></select>
+          </div>
+          <details class="manual-coords">
+            <summary data-i18n="fManual"></summary>
+            <div class="triple">
+              <div class="field"><label for="f-lat" data-i18n="fLat"></label><input id="f-lat" type="number" step="0.0001" placeholder="48.8566" /></div>
+              <div class="field"><label for="f-lon" data-i18n="fLon"></label><input id="f-lon" type="number" step="0.0001" placeholder="2.3522" /></div>
+              <div class="field"><label for="f-tz" data-i18n="fTz"></label><input id="f-tz" type="number" step="0.5" placeholder="1" /></div>
+            </div>
+          </details>
+          <p class="hint dst" data-i18n="dstNote"></p>
+        </details>
+
+        <fieldset class="field mbti-choice">
+          <legend data-i18n="mbtiLegend"></legend>
+          <div class="seg">
+            <button type="button" class="seg-btn is-active" data-mode="quiz" data-i18n="segQuiz"></button>
+            <button type="button" class="seg-btn" data-mode="known" data-i18n="segKnown"></button>
+          </div>
+          <div class="mbti-known" hidden><select id="f-mbti"></select></div>
+          <div class="mbti-quiz">
+            <p class="quiz-hint" data-i18n="quizHint"></p>
+            <div id="quiz-list"></div>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary btn-block" data-i18n="submitProfile"></button>
+        <p class="form-error" id="form-error" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ RÉSULTAT PROFIL ============ -->
+  <section class="view view-profile" data-view="profile">
+    <div id="profile-out"></div>
+  </section>
+
+  <!-- ============ RELATION ============ -->
+  <section class="view view-relation" data-view="relation">
+    <div class="form-wrap">
+      <p class="eyebrow" data-i18n="relEyebrow"></p>
+      <h2 class="view-title" data-i18n="relTitle"></h2>
+      <p class="view-lead" data-i18n="relLead"></p>
+
+      <div id="saved-picker" class="saved-picker" hidden></div>
+
+      <form id="relation-form" class="form">
+        <div class="duo">
+          <div class="duo-col">
+            <p class="duo-label" data-i18n="personA"></p>
+            <div class="field"><label for="ra-name" data-i18n="fName"></label><input id="ra-name" type="text" required /></div>
+            <div class="field"><label for="ra-date" data-i18n="fDate"></label><input id="ra-date" type="date" required /></div>
+            <div class="field"><label for="ra-mbti" data-i18n="typeMbti"></label><select id="ra-mbti"></select></div>
+          </div>
+          <div class="duo-sep" aria-hidden="true"></div>
+          <div class="duo-col">
+            <p class="duo-label" data-i18n="personB"></p>
+            <div class="field"><label for="rb-name" data-i18n="fName"></label><input id="rb-name" type="text" required /></div>
+            <div class="field"><label for="rb-date" data-i18n="fDate"></label><input id="rb-date" type="date" required /></div>
+            <div class="field"><label for="rb-mbti" data-i18n="typeMbti"></label><select id="rb-mbti"></select></div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="r-context" data-i18n="relContext"></label>
+          <select id="r-context"></select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" data-i18n="submitRelation"></button>
+        <p class="form-error" id="relation-error" hidden></p>
+      </form>
+    </div>
+    <div id="relation-out"></div>
+  </section>
+
+  <!-- ============ MÉTHODE ============ -->
+  <section class="view view-method" data-view="method">
+    <div class="prose">
+      <p class="eyebrow" data-i18n="methodEyebrow"></p>
+      <h2 class="view-title" data-i18n="methodTitle"></h2>
+      <div id="method-body"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span class="brand-mark small" aria-hidden="true"></span>
+  <p id="footer-text"></p>
+</footer>
+
+<script src="astro.js"></script>
+<script src="data.js"></script>
+<script src="portraits.js"></script>
+<script src="app.js"></script>
