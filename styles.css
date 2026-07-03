@@ -302,6 +302,7 @@ em{ font-style:italic; }
 .cel-row{ display:flex; justify-content:space-between; align-items:baseline; padding:.35rem 0; border-bottom:1px dashed var(--line); font-size:.95rem; }
 .cel-lab{ color:var(--ink-dim); font-family:"Inter Tight",sans-serif; letter-spacing:.06em; }
 .cel-explain{ font-size:.9rem; margin-top:.8rem; color:#cfccc5; }
+.cel-dst{ font-size:.78rem; margin-top:.5rem; color:var(--accent); font-family:"Inter Tight",sans-serif; letter-spacing:.03em; }
 
 /* ---------- PROFILS ENREGISTRÉS ---------- */
 .saved-picker{ margin-bottom:2rem; padding:1.2rem 1.4rem; border:1px solid var(--line); border-radius:14px; background:var(--bg-2); }

@@ -283,6 +283,7 @@ function renderProfile(p){
       ${p.asc?`<div class="cel-row"><span class="cel-lab">↑ ${t.ascLabel}</span><span>${Lp.signs[p.asc.sign].symbol} ${Lp.signs[p.asc.sign].name} · ${p.asc.deg}°</span></div>`:""}
       ${p.moon?`<div class="cel-row"><span class="cel-lab">☾ ${t.moonLabel}</span><span>${Lp.signs[p.moon.sign].symbol} ${Lp.signs[p.moon.sign].name} · ${p.moon.deg}°</span></div>`:""}
       <p class="cel-explain">${Lp.build.celestial(p, Lp)}</p>
+      ${(p.birth&&p.birth.dst)?`<p class="cel-dst">☀ ${t.dstApplied}</p>`:""}
     </div>` : "";
 
   const saved = isSaved(p);
@@ -390,7 +391,10 @@ document.getElementById("profile-form").addEventListener("submit", e=>{
     if(!Number.isNaN(latM)&&!Number.isNaN(lonM)&&!Number.isNaN(tzM)){
       birth={ time, lat:latM, lon:lonM, tz:tzM, place:"—" };
     } else if(cityIdx!==""){
-      const c=CITIES[+cityIdx]; birth={ time, lat:c.lat, lon:c.lon, tz:c.tz, place:c.n };
+      const c=CITIES[+cityIdx];
+      let tz=c.tz, dstOn=false;
+      if(c.d && c.d!=="none"){ const [Y,M,D]=date.split("-").map(Number); if(isDST(c.d,Y,M,D)){ tz+=1; dstOn=true; } }
+      birth={ time, lat:c.lat, lon:c.lon, tz, place:c.n, dst:dstOn };
     } else {
       return showErr(err,U().errBirth);
     }

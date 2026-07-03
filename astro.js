@@ -93,6 +93,46 @@ function degreeInSign(lon){
   return Math.floor(rev(lon) % 30);
 }
 
+/* ---------- Heure d'été (DST) ----------
+   Règles modernes par région. Approximation volontaire : on décide au jour près
+   (la fenêtre de bascule de ±1 h à l'aube n'est pas gérée). Pour l'exactitude
+   absolue d'un ascendant, mieux vaut vérifier l'offset réel de la naissance. */
+function nthSunday(y, m, n){            // jour-du-mois du n-ième dimanche
+  const first = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();   // 0 = dimanche
+  return 1 + ((7 - first) % 7) + (n - 1) * 7;
+}
+function lastSunday(y, m){              // jour-du-mois du dernier dimanche
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const wd = new Date(Date.UTC(y, m - 1, last)).getUTCDay();
+  return last - wd;
+}
+function inNorth(m, d, sM, sD, eM, eD){ // fenêtre nord : entre début et fin (même année)
+  const after = m > sM || (m === sM && d >= sD);
+  const before = m < eM || (m === eM && d < eD);
+  return after && before;
+}
+function inSouth(m, d, sM, sD, eM, eD){ // fenêtre sud : à cheval sur le nouvel an
+  const after = m > sM || (m === sM && d >= sD);
+  const before = m < eM || (m === eM && d < eD);
+  return after || before;
+}
+function isDST(region, y, m, d){
+  switch(region){
+    case "eu":  // UE/UK/CH : dernier dim. mars → dernier dim. octobre
+      return inNorth(m, d, 3, lastSunday(y,3), 10, lastSunday(y,10));
+    case "us":  // États-Unis / Canada
+      if(y >= 2007) return inNorth(m, d, 3, nthSunday(y,3,2), 11, nthSunday(y,11,1));
+      if(y >= 1987) return inNorth(m, d, 4, nthSunday(y,4,1), 10, lastSunday(y,10));
+      if(y >= 1967) return inNorth(m, d, 4, lastSunday(y,4), 10, lastSunday(y,10));
+      return false;
+    case "au":  // Australie (SE) : 1er dim. oct → 1er dim. avril
+      return inSouth(m, d, 10, nthSunday(y,10,1), 4, nthSunday(y,4,1));
+    case "nz":  // Nouvelle-Zélande : dernier dim. sept → 1er dim. avril
+      return inSouth(m, d, 9, lastSunday(y,9), 4, nthSunday(y,4,1));
+    default: return false;   // "none" : pas d'heure d'été
+  }
+}
+
 /* Calcule lune + ascendant à partir d'une naissance locale.
    time = "HH:MM" ; utcOffset en heures (ex. +2) ; lat/lon en degrés (est +). */
 function computeCelestial(dateStr, time, utcOffset, lat, lon){
@@ -111,64 +151,65 @@ function computeCelestial(dateStr, time, utcOffset, lat, lon){
   };
 }
 
-/* Villes : nom, latitude, longitude (est +), décalage UTC standard (hors heure d'été) */
+/* Villes : nom, latitude, longitude (est +), décalage UTC standard (hors heure d'été),
+   d = région d'heure d'été (eu / us / au / nz / none) pour l'ajustement automatique */
 const CITIES = [
-  { n:"Paris",            lat:48.8566, lon:2.3522,   tz:1 },
-  { n:"Marseille",        lat:43.2965, lon:5.3698,   tz:1 },
-  { n:"Lyon",             lat:45.7640, lon:4.8357,   tz:1 },
-  { n:"Toulouse",         lat:43.6047, lon:1.4442,   tz:1 },
-  { n:"Nice",             lat:43.7102, lon:7.2620,   tz:1 },
-  { n:"Nantes",           lat:47.2184, lon:-1.5536,  tz:1 },
-  { n:"Strasbourg",       lat:48.5734, lon:7.7521,   tz:1 },
-  { n:"Bordeaux",         lat:44.8378, lon:-0.5792,  tz:1 },
-  { n:"Lille",            lat:50.6292, lon:3.0573,   tz:1 },
-  { n:"Rennes",           lat:48.1173, lon:-1.6778,  tz:1 },
-  { n:"Bruxelles",        lat:50.8503, lon:4.3517,   tz:1 },
-  { n:"Genève",           lat:46.2044, lon:6.1432,   tz:1 },
-  { n:"Luxembourg",       lat:49.6116, lon:6.1319,   tz:1 },
-  { n:"Madrid",           lat:40.4168, lon:-3.7038,  tz:1 },
-  { n:"Barcelone",        lat:41.3874, lon:2.1686,   tz:1 },
-  { n:"Lisbonne",         lat:38.7223, lon:-9.1393,  tz:0 },
-  { n:"Londres",          lat:51.5074, lon:-0.1278,  tz:0 },
-  { n:"Dublin",           lat:53.3498, lon:-6.2603,  tz:0 },
-  { n:"Rome",             lat:41.9028, lon:12.4964,  tz:1 },
-  { n:"Milan",            lat:45.4642, lon:9.1900,   tz:1 },
-  { n:"Berlin",           lat:52.5200, lon:13.4050,  tz:1 },
-  { n:"Amsterdam",        lat:52.3676, lon:4.9041,   tz:1 },
-  { n:"Vienne",           lat:48.2082, lon:16.3738,  tz:1 },
-  { n:"Zurich",           lat:47.3769, lon:8.5417,   tz:1 },
-  { n:"Copenhague",       lat:55.6761, lon:12.5683,  tz:1 },
-  { n:"Stockholm",        lat:59.3293, lon:18.0686,  tz:1 },
-  { n:"Oslo",             lat:59.9139, lon:10.7522,  tz:1 },
-  { n:"Athènes",          lat:37.9838, lon:23.7275,  tz:2 },
-  { n:"Istanbul",         lat:41.0082, lon:28.9784,  tz:3 },
-  { n:"Moscou",           lat:55.7558, lon:37.6173,  tz:3 },
-  { n:"Le Caire",         lat:30.0444, lon:31.2357,  tz:2 },
-  { n:"Casablanca",       lat:33.5731, lon:-7.5898,  tz:1 },
-  { n:"Alger",            lat:36.7538, lon:3.0588,   tz:1 },
-  { n:"Tunis",            lat:36.8065, lon:10.1815,  tz:1 },
-  { n:"Dakar",            lat:14.7167, lon:-17.4677, tz:0 },
-  { n:"Abidjan",          lat:5.3600,  lon:-4.0083,  tz:0 },
-  { n:"Dubaï",            lat:25.2048, lon:55.2708,  tz:4 },
-  { n:"Beyrouth",         lat:33.8938, lon:35.5018,  tz:2 },
-  { n:"New York",         lat:40.7128, lon:-74.0060, tz:-5 },
-  { n:"Los Angeles",      lat:34.0522, lon:-118.2437,tz:-8 },
-  { n:"Chicago",          lat:41.8781, lon:-87.6298, tz:-6 },
-  { n:"Montréal",         lat:45.5017, lon:-73.5673, tz:-5 },
-  { n:"Mexico",           lat:19.4326, lon:-99.1332, tz:-6 },
-  { n:"São Paulo",        lat:-23.5505,lon:-46.6333, tz:-3 },
-  { n:"Buenos Aires",     lat:-34.6037,lon:-58.3816, tz:-3 },
-  { n:"Tokyo",            lat:35.6762, lon:139.6503, tz:9 },
-  { n:"Séoul",            lat:37.5665, lon:126.9780, tz:9 },
-  { n:"Pékin",            lat:39.9042, lon:116.4074, tz:8 },
-  { n:"Shanghai",         lat:31.2304, lon:121.4737, tz:8 },
-  { n:"Hong Kong",        lat:22.3193, lon:114.1694, tz:8 },
-  { n:"Singapour",        lat:1.3521,  lon:103.8198, tz:8 },
-  { n:"Bangkok",          lat:13.7563, lon:100.5018, tz:7 },
-  { n:"Mumbai",           lat:19.0760, lon:72.8777,  tz:5.5 },
-  { n:"New Delhi",        lat:28.6139, lon:77.2090,  tz:5.5 },
-  { n:"Sydney",           lat:-33.8688,lon:151.2093, tz:10 },
-  { n:"Melbourne",        lat:-37.8136,lon:144.9631, tz:10 },
-  { n:"Auckland",         lat:-36.8485,lon:174.7633, tz:12 },
-  { n:"Johannesburg",     lat:-26.2041,lon:28.0473,  tz:2 }
+  { n:"Paris",            lat:48.8566, lon:2.3522,   tz:1,  d:"eu" },
+  { n:"Marseille",        lat:43.2965, lon:5.3698,   tz:1,  d:"eu" },
+  { n:"Lyon",             lat:45.7640, lon:4.8357,   tz:1,  d:"eu" },
+  { n:"Toulouse",         lat:43.6047, lon:1.4442,   tz:1,  d:"eu" },
+  { n:"Nice",             lat:43.7102, lon:7.2620,   tz:1,  d:"eu" },
+  { n:"Nantes",           lat:47.2184, lon:-1.5536,  tz:1,  d:"eu" },
+  { n:"Strasbourg",       lat:48.5734, lon:7.7521,   tz:1,  d:"eu" },
+  { n:"Bordeaux",         lat:44.8378, lon:-0.5792,  tz:1,  d:"eu" },
+  { n:"Lille",            lat:50.6292, lon:3.0573,   tz:1,  d:"eu" },
+  { n:"Rennes",           lat:48.1173, lon:-1.6778,  tz:1,  d:"eu" },
+  { n:"Bruxelles",        lat:50.8503, lon:4.3517,   tz:1,  d:"eu" },
+  { n:"Genève",           lat:46.2044, lon:6.1432,   tz:1,  d:"eu" },
+  { n:"Luxembourg",       lat:49.6116, lon:6.1319,   tz:1,  d:"eu" },
+  { n:"Madrid",           lat:40.4168, lon:-3.7038,  tz:1,  d:"eu" },
+  { n:"Barcelone",        lat:41.3874, lon:2.1686,   tz:1,  d:"eu" },
+  { n:"Lisbonne",         lat:38.7223, lon:-9.1393,  tz:0,  d:"eu" },
+  { n:"Londres",          lat:51.5074, lon:-0.1278,  tz:0,  d:"eu" },
+  { n:"Dublin",           lat:53.3498, lon:-6.2603,  tz:0,  d:"eu" },
+  { n:"Rome",             lat:41.9028, lon:12.4964,  tz:1,  d:"eu" },
+  { n:"Milan",            lat:45.4642, lon:9.1900,   tz:1,  d:"eu" },
+  { n:"Berlin",           lat:52.5200, lon:13.4050,  tz:1,  d:"eu" },
+  { n:"Amsterdam",        lat:52.3676, lon:4.9041,   tz:1,  d:"eu" },
+  { n:"Vienne",           lat:48.2082, lon:16.3738,  tz:1,  d:"eu" },
+  { n:"Zurich",           lat:47.3769, lon:8.5417,   tz:1,  d:"eu" },
+  { n:"Copenhague",       lat:55.6761, lon:12.5683,  tz:1,  d:"eu" },
+  { n:"Stockholm",        lat:59.3293, lon:18.0686,  tz:1,  d:"eu" },
+  { n:"Oslo",             lat:59.9139, lon:10.7522,  tz:1,  d:"eu" },
+  { n:"Athènes",          lat:37.9838, lon:23.7275,  tz:2,  d:"eu" },
+  { n:"Istanbul",         lat:41.0082, lon:28.9784,  tz:3,  d:"none" },
+  { n:"Moscou",           lat:55.7558, lon:37.6173,  tz:3,  d:"none" },
+  { n:"Le Caire",         lat:30.0444, lon:31.2357,  tz:2,  d:"none" },
+  { n:"Casablanca",       lat:33.5731, lon:-7.5898,  tz:1,  d:"none" },
+  { n:"Alger",            lat:36.7538, lon:3.0588,   tz:1,  d:"none" },
+  { n:"Tunis",            lat:36.8065, lon:10.1815,  tz:1,  d:"none" },
+  { n:"Dakar",            lat:14.7167, lon:-17.4677, tz:0,  d:"none" },
+  { n:"Abidjan",          lat:5.3600,  lon:-4.0083,  tz:0,  d:"none" },
+  { n:"Dubaï",            lat:25.2048, lon:55.2708,  tz:4,  d:"none" },
+  { n:"Beyrouth",         lat:33.8938, lon:35.5018,  tz:2,  d:"none" },
+  { n:"New York",         lat:40.7128, lon:-74.0060, tz:-5, d:"us" },
+  { n:"Los Angeles",      lat:34.0522, lon:-118.2437,tz:-8, d:"us" },
+  { n:"Chicago",          lat:41.8781, lon:-87.6298, tz:-6, d:"us" },
+  { n:"Montréal",         lat:45.5017, lon:-73.5673, tz:-5, d:"us" },
+  { n:"Mexico",           lat:19.4326, lon:-99.1332, tz:-6, d:"none" },
+  { n:"São Paulo",        lat:-23.5505,lon:-46.6333, tz:-3, d:"none" },
+  { n:"Buenos Aires",     lat:-34.6037,lon:-58.3816, tz:-3, d:"none" },
+  { n:"Tokyo",            lat:35.6762, lon:139.6503, tz:9,  d:"none" },
+  { n:"Séoul",            lat:37.5665, lon:126.9780, tz:9,  d:"none" },
+  { n:"Pékin",            lat:39.9042, lon:116.4074, tz:8,  d:"none" },
+  { n:"Shanghai",         lat:31.2304, lon:121.4737, tz:8,  d:"none" },
+  { n:"Hong Kong",        lat:22.3193, lon:114.1694, tz:8,  d:"none" },
+  { n:"Singapour",        lat:1.3521,  lon:103.8198, tz:8,  d:"none" },
+  { n:"Bangkok",          lat:13.7563, lon:100.5018, tz:7,  d:"none" },
+  { n:"Mumbai",           lat:19.0760, lon:72.8777,  tz:5.5,d:"none" },
+  { n:"New Delhi",        lat:28.6139, lon:77.2090,  tz:5.5,d:"none" },
+  { n:"Sydney",           lat:-33.8688,lon:151.2093, tz:10, d:"au" },
+  { n:"Melbourne",        lat:-37.8136,lon:144.9631, tz:10, d:"au" },
+  { n:"Auckland",         lat:-36.8485,lon:174.7633, tz:12, d:"nz" },
+  { n:"Johannesburg",     lat:-26.2041,lon:28.0473,  tz:2,  d:"none" }
 ];
