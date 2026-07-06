@@ -81,6 +81,34 @@ function renderConsult(){
   const feats=document.getElementById("consult-feats"); if(feats) feats.innerHTML=c.feats.map(f=>`<li>${f}</li>`).join("");
   const btn=document.getElementById("consult-btn"); if(btn) btn.textContent=c.button;
   const note=document.getElementById("consult-note"); if(note) note.textContent=c.note;
+  const pr=document.getElementById("consult-price"); if(pr) pr.textContent=c.price||"";
+  const pu=document.getElementById("consult-price-unit"); if(pu) pu.textContent=c.priceUnit||"";
+}
+function navTo(to){
+  if(to==="relation-famille"){ relCtx="famille"; renderContextCards(); go("relation"); return; }
+  if(to==="consult"){ const el=document.getElementById("consult"); go("home"); if(el) el.scrollIntoView({behavior:"smooth"}); return; }
+  go(to);
+}
+function renderFamille(){
+  const f=U().famille; const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set("fam-eyebrow",f.eyebrow); set("fam-title",f.title); set("fam-text",f.text);
+  const g=document.getElementById("fam-grid"); if(g) g.innerHTML=f.items.map(it=>`<div class="fam-item"><h4>${it.h}</h4><p>${it.p}</p></div>`).join("");
+  const b=document.getElementById("fam-cta"); if(b){ b.textContent=f.cta; b.onclick=()=>navTo(f.to); }
+}
+function renderTarifs(){
+  const t=U().tarifs; const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set("tarifs-eyebrow",t.eyebrow); set("tarifs-title",t.title); set("tarifs-note",t.note);
+  const badge = LANG==="fr" ? "Le plus complet" : "Most complete";
+  const g=document.getElementById("tarifs-grid"); if(!g) return;
+  g.innerHTML=t.cards.map(c=>`
+    <div class="tarif-card${c.featured?" featured":""}">
+      ${c.featured?`<span class="tarif-badge">${badge}</span>`:""}
+      <span class="tarif-name">${c.name}</span>
+      <p class="tarif-desc">${c.desc}</p>
+      <p class="tarif-price"><b>${c.price}</b><small>${c.unit}</small></p>
+      <button class="btn ${c.featured?"btn-accent":"btn-accent-outline"}" data-to="${c.to}">${c.cta}</button>
+    </div>`).join("");
+  g.querySelectorAll("button[data-to]").forEach(b=>b.onclick=()=>navTo(b.dataset.to));
 }
 function renderJung(){
   const t=U();
@@ -256,7 +284,9 @@ function applyI18n(){
   fillCities(); renderContextCards(); buildQuiz();
   renderHeritage();
   renderJung();
+  renderFamille();
   renderConsult();
+  renderTarifs();
   renderSavedPicker();
 }
 

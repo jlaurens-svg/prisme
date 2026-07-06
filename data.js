@@ -26,7 +26,7 @@ fr: {
       { i:"01", h:"Astrologie", p:"Non pas un horoscope, mais une grammaire des tempéraments : éléments, modalités, énergies.", cta:"Calculer mon thème astral", to:"create" },
       { i:"02", h:"Numérologie", p:"Votre date et votre nom réduits à des nombres porteurs de sens : le fil de fond d’une vie.", cta:"Calculer mon chemin de vie", to:"create" },
       { i:"03", h:"MBTI", p:"Une cartographie cognitive éprouvée : comment vous prenez l’énergie, percevez, décidez, vous organisez.", cta:"Découvrir mon profil", to:"create" },
-      { i:"04", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un·e analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
+      { i:"04", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
     ],
     lensesCta:{ text:"Et surtout, les quatre réunies : ce que dit l’ensemble de votre profil.", button:"Voir l’ensemble de mon profil" },
     manifesto1:"Ni dogme, ni ésotérisme. ", manifestoEm:"Des savoirs anciens,", manifesto2:" que l’humanité affine depuis des millénaires et que toutes les cultures du monde ont fait vivre — comme sociétés et comme individus — pour mieux se comprendre et mieux habiter ce qui les entoure.",
@@ -45,7 +45,13 @@ fr: {
     },
     birthCta:{ eyebrow:"Passez à la pratique", title:"Tout commence par une date", text:"Votre date de naissance ouvre les trois lectures. Une minute suffit.", button:"Créer mon portrait" },
     jung:{ eyebrow:"Le fil rouge", quote:"Le privilège d’une vie, c’est de devenir qui l’on est vraiment.", who:"Carl Gustav Jung", link:"Psychiatre suisse (1875–1961). Sa théorie des types psychologiques est la source directe du MBTI — et cette idée, devenir soi, est le cœur même de PRISME." },
-    consult:{ eyebrow:"Aller plus loin", title:"Parler avec un·e psychanalyste", text:"Les algorithmes ouvrent la porte ; un regard humain va plus loin. Nos praticien·nes reprennent vos lectures en entretien — et y ajoutent une analyse graphologique de votre écriture.", feats:["Entretien personnalisé","Analyse graphologique de votre écriture","Synthèse écrite à emporter"], button:"Prendre rendez-vous", note:"La réservation en ligne arrive bientôt. Donnez-nous votre lien (Calendly, e-mail…) et nous l’activons ici." },
+    consult:{ eyebrow:"Aller plus loin", title:"Parler avec un psychanalyste", text:"Les algorithmes ouvrent la porte ; un regard humain va plus loin. Nos psychanalystes, formés à la pratique jungienne, reprennent vos lectures en entretien — et y ajoutent une analyse graphologique de votre écriture.", feats:["Praticiens formés à la pratique jungienne","Analyse graphologique de votre écriture","Synthèse écrite à emporter"], price:"80 €", priceUnit:"la séance · 60 min", button:"Prendre rendez-vous", note:"La réservation en ligne arrive bientôt. Donnez-nous votre lien (Calendly, e-mail…) et nous l’activons ici." },
+    famille:{ eyebrow:"Au-delà de soi", title:"La constellation familiale", text:"On n’existe pas seul. PRISME lit aussi votre famille comme un système : à travers la numérologie, l’astrologie et le MBTI, explorez les rôles, les transmissions et les loyautés qui vous relient.", items:[{h:"Numérologie",p:"Les nombres qui se répètent d’une génération à l’autre."},{h:"Astrologie",p:"Les éléments et tempéraments qui se répondent dans une fratrie."},{h:"MBTI",p:"Les façons de fonctionner qui s’attirent ou se heurtent au quotidien."}], cta:"Explorer une relation familiale", to:"relation-famille" },
+    tarifs:{ eyebrow:"Les formules", title:"Aller au bout de votre profil", note:"Le paiement en ligne s’active dès que vous fournissez votre lien (Stripe, etc.). Pour l’instant, les boutons ouvrent l’outil.", cards:[
+      { name:"Portrait complet", desc:"Vos quatre prismes réunis — astrologie, numérologie, MBTI et graphologie — en une synthèse approfondie.", price:"15 €", unit:"l’analyse", cta:"Créer mon portrait", to:"create" },
+      { name:"Analyse relationnelle", desc:"Deux personnes mises en regard : ce qui rapproche, ce qui frotte, et comment faire avec.", price:"25 €", unit:"l’analyse", cta:"Comparer deux personnes", to:"relation" },
+      { name:"Consultation", desc:"60 min avec un psychanalyste formé à la pratique jungienne, analyse graphologique incluse.", price:"80 €", unit:"la séance", cta:"Prendre rendez-vous", to:"consult", featured:true }
+    ] },
 
     createEyebrow:"Étape par étape", createTitle:"Votre portrait",
     createLead:"Quelques informations suffisent. Prenez le questionnaire ou indiquez directement votre type si vous le connaissez.",
@@ -86,7 +92,7 @@ fr: {
     personA:"Personne A", personB:"Personne B", youOften:"Vous, souvent", theOther:"L’autre",
     typeMbti:"Type MBTI", relContext:"Contexte de la relation",
     ctx:{ couple:"Amoureuse", amitie:"Amicale", famille:"Familiale", travail:"Professionnelle" },
-    ctxSub:{ couple:"partenaire, couple", amitie:"ami·e proche", famille:"parent, fratrie, enfant", travail:"collègue, associé·e" },
+    ctxSub:{ couple:"partenaire, couple", amitie:"ami proche", famille:"parent, fratrie, enfant", travail:"collègue, associé" },
     relDimLabel:"Quelle relation lisez-vous ?",
     fromSaved:"Depuis mes profils enregistrés",
     submitRelation:"Lire la relation",
@@ -299,7 +305,13 @@ en: {
     },
     birthCta:{ eyebrow:"Try it", title:"It all starts with a date", text:"Your date of birth opens all three readings. A minute is enough.", button:"Create my portrait" },
     jung:{ eyebrow:"The through-line", quote:"The privilege of a lifetime is to become who you truly are.", who:"Carl Gustav Jung", link:"Swiss psychiatrist (1875–1961). His theory of psychological types is the direct source of the MBTI — and that idea, becoming yourself, is the very heart of PRISME." },
-    consult:{ eyebrow:"Go further", title:"Talk with a psychoanalyst", text:"Algorithms open the door; a human gaze goes further. Our practitioners revisit your readings in a one-to-one — and add a graphological analysis of your handwriting.", feats:["One-to-one session","Graphological analysis of your handwriting","A written synthesis to keep"], button:"Book a session", note:"Online booking is coming soon. Send us your link (Calendly, email…) and we’ll wire it up here." },
+    consult:{ eyebrow:"Go further", title:"Talk with a psychoanalyst", text:"Algorithms open the door; a human gaze goes further. Our psychoanalysts, trained in the Jungian tradition, revisit your readings in a one-to-one — and add a graphological analysis of your handwriting.", feats:["Practitioners trained in the Jungian tradition","Graphological analysis of your handwriting","A written synthesis to keep"], price:"€80", priceUnit:"per session · 60 min", button:"Book a session", note:"Online booking is coming soon. Send us your link (Calendly, email…) and we’ll wire it up here." },
+    famille:{ eyebrow:"Beyond the self", title:"Family constellation", text:"No one exists alone. PRISME reads your family as a system too: through numerology, astrology and MBTI, explore the roles, inheritances and loyalties that connect you.", items:[{h:"Numerology",p:"The numbers that repeat from one generation to the next."},{h:"Astrology",p:"The elements and temperaments that echo across siblings."},{h:"MBTI",p:"The ways of functioning that attract or clash day to day."}], cta:"Explore a family relationship", to:"relation-famille" },
+    tarifs:{ eyebrow:"Plans", title:"Go all the way with your profile", note:"Online payment activates as soon as you provide your link (Stripe, etc.). For now, the buttons open the tool.", cards:[
+      { name:"Full portrait", desc:"Your four prisms combined — astrology, numerology, MBTI and graphology — in one in-depth synthesis.", price:"€15", unit:"per analysis", cta:"Create my portrait", to:"create" },
+      { name:"Relationship analysis", desc:"Two people side by side: what draws you together, what rubs, and how to work with it.", price:"€25", unit:"per analysis", cta:"Compare two people", to:"relation" },
+      { name:"Consultation", desc:"60 min with a psychoanalyst trained in the Jungian tradition, graphological analysis included.", price:"€80", unit:"per session", cta:"Book a session", to:"consult", featured:true }
+    ] },
 
     createEyebrow:"Step by step", createTitle:"Your portrait",
     createLead:"A few details are enough. Take the questionnaire, or enter your type directly if you know it.",
