@@ -235,6 +235,9 @@ function applyI18n(){
     if(b.dataset.scroll){ const el=document.getElementById(b.dataset.scroll); if(el) el.scrollIntoView({behavior:"smooth"}); }
     else go(b.dataset.nav);
   }));
+  // CTA de synthèse sous les lentilles
+  const lct=document.getElementById("lenses-cta-text"); if(lct) lct.textContent=U().lensesCta.text;
+  const lcb=document.getElementById("lenses-cta-btn"); if(lcb) lcb.textContent=U().lensesCta.button;
   // manifeste
   document.getElementById("m1").textContent=U().manifesto1;
   document.getElementById("mem").textContent=U().manifestoEm;

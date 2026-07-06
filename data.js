@@ -28,6 +28,7 @@ fr: {
       { i:"03", h:"MBTI", p:"Une cartographie cognitive éprouvée : comment vous prenez l’énergie, percevez, décidez, vous organisez.", cta:"Découvrir mon profil", to:"create" },
       { i:"04", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un·e analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
     ],
+    lensesCta:{ text:"Et surtout, les quatre réunies : ce que dit l’ensemble de votre profil.", button:"Voir l’ensemble de mon profil" },
     manifesto1:"Ni dogme, ni ésotérisme. ", manifestoEm:"Des savoirs anciens,", manifesto2:" que l’humanité affine depuis des millénaires et que toutes les cultures du monde ont fait vivre — comme sociétés et comme individus — pour mieux se comprendre et mieux habiter ce qui les entoure.",
     heritage:{
       eyebrow:"Un héritage vivant",
@@ -281,6 +282,7 @@ en: {
       { i:"03", h:"MBTI", p:"A proven cognitive map: how you draw energy, perceive, decide, organize.", cta:"Discover my profile", to:"create" },
       { i:"04", h:"Graphology", p:"Your handwriting as a fingerprint: the stroke, the rhythm, the spacing. A close reading, by an analyst.", cta:"Book a session", to:"consult", tag:"by appointment" }
     ],
+    lensesCta:{ text:"And above all, the four together: what your whole profile reveals.", button:"See my full profile" },
     manifesto1:"No dogma, no mysticism. ", manifestoEm:"Age-old bodies of knowledge,", manifesto2:" refined by humanity over millennia and kept alive by cultures the world over — as societies and as individuals — to better understand ourselves and better inhabit what surrounds us.",
     heritage:{
       eyebrow:"A living lineage",
