@@ -61,11 +61,27 @@ function fillCities(){
   CITIES.forEach((c,i)=>{ const o=document.createElement("option"); o.value=i; o.textContent=c.n; sel.appendChild(o); });
   sel.value=cur;
 }
-function fillContext(){
-  const sel=document.getElementById("r-context"); const cur=sel.value;
-  sel.innerHTML="";
-  Object.keys(U().ctx).forEach(k=>{ const o=document.createElement("option"); o.value=k; o.textContent=U().ctx[k]; sel.appendChild(o); });
-  if(cur) sel.value=cur;
+let relCtx = "couple";
+function renderContextCards(){
+  const box=document.getElementById("r-context-cards"); if(!box) return;
+  const t=U();
+  box.innerHTML = Object.keys(t.ctx).map(k=>
+    `<button type="button" class="ctx-card${k===relCtx?" is-active":""}" data-ctx="${k}" role="radio" aria-checked="${k===relCtx}">
+       <b>${t.ctx[k]}</b><small>${t.ctxSub[k]}</small></button>`).join("");
+  box.querySelectorAll(".ctx-card").forEach(btn=>btn.addEventListener("click",()=>{
+    relCtx=btn.dataset.ctx;
+    box.querySelectorAll(".ctx-card").forEach(b=>{ const on=b===btn; b.classList.toggle("is-active",on); b.setAttribute("aria-checked",on?"true":"false"); });
+  }));
+}
+function renderJung(){
+  const t=U();
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set("jung-eyebrow",t.jung.eyebrow);
+  set("jung-quote", LANG==="fr" ? "« "+t.jung.quote+" »" : "“"+t.jung.quote+"”");
+  set("jung-who",t.jung.who);
+  set("jung-link",t.jung.link);
+  const p=document.getElementById("jung-portrait");
+  if(p) p.innerHTML = (typeof PORTRAITS!=="undefined"&&PORTRAITS.jung) ? medallionPhoto("jung",PORTRAITS.jung) : "";
 }
 function buildQuiz(){
   const list=document.getElementById("quiz-list"); list.innerHTML="";
@@ -214,8 +230,9 @@ function applyI18n(){
   fillSelectMbti(document.getElementById("f-mbti"));
   fillSelectMbti(document.getElementById("ra-mbti"));
   fillSelectMbti(document.getElementById("rb-mbti"));
-  fillCities(); fillContext(); buildQuiz();
+  fillCities(); renderContextCards(); buildQuiz();
   renderHeritage();
+  renderJung();
   renderSavedPicker();
 }
 
@@ -465,7 +482,7 @@ document.getElementById("relation-form").addEventListener("submit", e=>{
   const err=document.getElementById("relation-error"); err.hidden=true;
   const na=document.getElementById("ra-name").value.trim(), da=document.getElementById("ra-date").value, ma=document.getElementById("ra-mbti").value;
   const nb=document.getElementById("rb-name").value.trim(), db=document.getElementById("rb-date").value, mb=document.getElementById("rb-mbti").value;
-  const ctx=document.getElementById("r-context").value;
+  const ctx=relCtx;
   if(!na||!da||!ma||!nb||!db||!mb) return showErr(err,U().errRelation);
   renderRelation(computeProfile(na,da,ma,null), computeProfile(nb,db,mb,null), ctx);
 });

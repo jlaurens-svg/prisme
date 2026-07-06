@@ -42,6 +42,7 @@ fr: {
       ]
     },
     birthCta:{ eyebrow:"Passez à la pratique", title:"Tout commence par une date", text:"Votre date de naissance ouvre les trois lectures. Une minute suffit.", button:"Créer mon portrait" },
+    jung:{ eyebrow:"Le fil rouge", quote:"Le privilège d’une vie, c’est de devenir qui l’on est vraiment.", who:"Carl Gustav Jung", link:"Psychiatre suisse (1875–1961). Sa théorie des types psychologiques est la source directe du MBTI — et cette idée, devenir soi, est le cœur même de PRISME." },
 
     createEyebrow:"Étape par étape", createTitle:"Votre portrait",
     createLead:"Quelques informations suffisent. Prenez le questionnaire ou indiquez directement votre type si vous le connaissez.",
@@ -81,7 +82,9 @@ fr: {
     relLead:"Amour, amitié, famille, collègue. PRISME met en regard deux portraits et éclaire ce qui rapproche, ce qui frotte, et comment faire avec.",
     personA:"Personne A", personB:"Personne B", youOften:"Vous, souvent", theOther:"L’autre",
     typeMbti:"Type MBTI", relContext:"Contexte de la relation",
-    ctx:{ couple:"Couple / amour", amitie:"Amitié", famille:"Famille", travail:"Travail" },
+    ctx:{ couple:"Amoureuse", amitie:"Amicale", famille:"Familiale", travail:"Professionnelle" },
+    ctxSub:{ couple:"partenaire, couple", amitie:"ami·e proche", famille:"parent, fratrie, enfant", travail:"collègue, associé·e" },
+    relDimLabel:"Quelle relation lisez-vous ?",
     fromSaved:"Depuis mes profils enregistrés",
     submitRelation:"Lire la relation",
     errRelation:"Complétez les deux profils (nom, date et type MBTI) pour lancer la lecture.",
@@ -290,6 +293,7 @@ en: {
       ]
     },
     birthCta:{ eyebrow:"Try it", title:"It all starts with a date", text:"Your date of birth opens all three readings. A minute is enough.", button:"Create my portrait" },
+    jung:{ eyebrow:"The through-line", quote:"The privilege of a lifetime is to become who you truly are.", who:"Carl Gustav Jung", link:"Swiss psychiatrist (1875–1961). His theory of psychological types is the direct source of the MBTI — and that idea, becoming yourself, is the very heart of PRISME." },
 
     createEyebrow:"Step by step", createTitle:"Your portrait",
     createLead:"A few details are enough. Take the questionnaire, or enter your type directly if you know it.",
@@ -329,7 +333,9 @@ en: {
     relLead:"Love, friendship, family, colleague. PRISME sets two portraits side by side and shows what draws you together, what rubs, and how to work with it.",
     personA:"Person A", personB:"Person B", youOften:"Often you", theOther:"The other",
     typeMbti:"MBTI type", relContext:"Relationship context",
-    ctx:{ couple:"Couple / love", amitie:"Friendship", famille:"Family", travail:"Work" },
+    ctx:{ couple:"Romantic", amitie:"Friendship", famille:"Family", travail:"Professional" },
+    ctxSub:{ couple:"partner, couple", amitie:"close friend", famille:"parent, sibling, child", travail:"colleague, partner" },
+    relDimLabel:"Which relationship are you reading?",
     fromSaved:"From my saved profiles",
     submitRelation:"Read the relationship",
     errRelation:"Complete both profiles (name, date and MBTI type) to run the reading.",

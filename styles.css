@@ -89,6 +89,40 @@ em{ font-style:italic; }
 .hero-cta{ display:flex; flex-wrap:wrap; gap:.9rem; margin-bottom:1.2rem; }
 .hero-note{ font-size:.82rem; color:var(--ink-dim); }
 
+/* hero centré + masthead PRISME */
+.hero-centered{ max-width:880px; margin:0 auto; text-align:center; }
+.hero-centered .hero-sub{ margin-left:auto; margin-right:auto; }
+.hero-centered .hero-cta{ justify-content:center; }
+.hero-centered .hero-title{ font-size:clamp(1.9rem,5vw,3.4rem); letter-spacing:-.02em; margin-top:.5rem; }
+.masthead{ display:flex; align-items:center; justify-content:center; gap:.34em; margin-bottom:1.4rem; }
+.masthead-mark{ width:.58em; height:.58em; border-radius:50%; background:var(--spectrum); box-shadow:0 0 28px 3px rgba(201,184,255,.55); }
+.masthead-name{ font-family:"Inter Tight",sans-serif; font-weight:700; letter-spacing:.16em; font-size:clamp(3rem,11vw,6.5rem); line-height:.95; }
+
+/* boutons colorés (accent spectre) */
+.btn-accent{ background:var(--spectrum); color:#141019; font-weight:600; }
+.btn-accent:hover{ transform:translateY(-2px); box-shadow:0 12px 34px -8px rgba(201,184,255,.5); }
+.btn-accent-outline{ background:transparent; color:var(--accent); border-color:var(--accent); }
+.btn-accent-outline:hover{ background:rgba(201,184,255,.1); transform:translateY(-2px); }
+
+/* cartes de dimension relationnelle */
+.ctx-cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:.6rem; }
+.ctx-card{ display:flex; flex-direction:column; gap:.18rem; align-items:flex-start; text-align:left;
+  padding:.85rem 1rem; border:1px solid var(--line); border-radius:12px; background:var(--bg-2);
+  color:var(--ink-dim); cursor:pointer; font-family:inherit; transition:all .25s var(--ease); }
+.ctx-card:hover{ border-color:var(--line-2); color:var(--ink); }
+.ctx-card.is-active{ border-color:var(--accent); background:rgba(201,184,255,.08); color:var(--ink); }
+.ctx-card b{ font-family:"Inter Tight",sans-serif; font-weight:600; font-size:.95rem; }
+.ctx-card small{ font-size:.74rem; color:var(--ink-dim); }
+
+/* citation Carl Jung */
+.jung{ margin:5.5rem auto 1rem; max-width:780px; text-align:center; }
+.jung-portrait{ width:clamp(96px,20vw,122px); margin:0 auto 1.4rem; }
+.jung-portrait .medallion{ width:100%; }
+.jung-quote{ font-family:"Fraunces",serif; font-style:italic; font-size:clamp(1.5rem,4vw,2.5rem);
+  line-height:1.24; letter-spacing:-.01em; margin:.5rem 0 1.2rem; text-wrap:balance; }
+.jung-who{ font-family:"Inter Tight",sans-serif; letter-spacing:.14em; text-transform:uppercase; font-size:.82rem; color:var(--accent); }
+.jung-link{ color:var(--ink-dim); font-size:.9rem; max-width:540px; margin:.7rem auto 0; }
+
 /* ---------- BOUTONS ---------- */
 .btn{
   font-family:"Inter Tight",sans-serif; font-size:.9rem; font-weight:500;
@@ -336,6 +370,7 @@ em{ font-style:italic; }
   .lenses{ grid-template-columns:1fr; }
   .constellations,.figures{ grid-template-columns:1fr 1fr; }
   .num-triptych{ grid-template-columns:1fr 1fr 1fr; }
+  .ctx-cards{ grid-template-columns:1fr 1fr; }
   .duo{ grid-template-columns:1fr; }
   .duo-sep{ display:none; }
   .nav-links{ gap:1rem; font-size:.85rem; }

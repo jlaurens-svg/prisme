@@ -28,13 +28,17 @@
 
   <!-- ============ ACCUEIL ============ -->
   <section class="view view-home is-active" data-view="home">
-    <div class="hero">
+    <div class="hero hero-centered">
+      <div class="masthead">
+        <span class="masthead-mark" aria-hidden="true"></span>
+        <span class="masthead-name">PRISME</span>
+      </div>
       <p class="eyebrow" data-i18n="hero.eyebrow"></p>
-      <h1 class="hero-title"><span id="h-t1"></span><br /><em id="h-t2"></em> <span id="h-t3"></span></h1>
+      <h1 class="hero-title"><span id="h-t1"></span> <em id="h-t2"></em> <span id="h-t3"></span></h1>
       <p class="hero-sub" id="h-sub"></p>
       <div class="hero-cta">
-        <button class="btn btn-primary" data-nav="create" id="h-cta1"></button>
-        <button class="btn btn-ghost" data-nav="relation" id="h-cta2"></button>
+        <button class="btn btn-accent" data-nav="create" id="h-cta1"></button>
+        <button class="btn btn-accent-outline" data-nav="relation" id="h-cta2"></button>
       </div>
       <p class="hero-note" id="h-note"></p>
     </div>
@@ -61,6 +65,15 @@
 
       <p class="group-label" id="fig-label"></p>
       <div class="figures" id="figures"></div>
+    </section>
+
+    <!-- ===== CITATION JUNG ===== -->
+    <section class="jung">
+      <div id="jung-portrait" class="jung-portrait"></div>
+      <p class="eyebrow" id="jung-eyebrow"></p>
+      <blockquote class="jung-quote" id="jung-quote"></blockquote>
+      <p class="jung-who" id="jung-who"></p>
+      <p class="jung-link" id="jung-link"></p>
     </section>
 
     <!-- ===== APPEL : DATE DE NAISSANCE ===== -->
@@ -167,8 +180,8 @@
           </div>
         </div>
         <div class="field">
-          <label for="r-context" data-i18n="relContext"></label>
-          <select id="r-context"></select>
+          <label data-i18n="relDimLabel"></label>
+          <div class="ctx-cards" id="r-context-cards" role="radiogroup"></div>
         </div>
         <button type="submit" class="btn btn-primary btn-block" data-i18n="submitRelation"></button>
         <p class="form-error" id="relation-error" hidden></p>
