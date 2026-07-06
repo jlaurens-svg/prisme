@@ -16,16 +16,17 @@ fr: {
     nav: { home:"Accueil", create:"Mon profil", relation:"Relation", method:"Méthode" },
     brandTag: "Astrologie · Numérologie · MBTI",
     hero: {
-      eyebrow:"Astrologie · Numérologie · MBTI",
+      eyebrow:"Astrologie · Numérologie · MBTI · Graphologie",
       t1:"Vous êtes", t2:"plus d’une", t3:"lecture.",
-      sub:"PRISME décompose ce que vous êtes à travers trois lentilles anciennes et modernes — puis les recompose en un portrait lisible. Pour vous comprendre, comprendre vos proches, et travailler mieux ensemble.",
+      sub:"PRISME décompose ce que vous êtes à travers plusieurs lentilles anciennes et modernes — puis les recompose en un portrait lisible. Pour vous comprendre, comprendre vos proches, et travailler mieux ensemble.",
       cta1:"Créer mon profil", cta2:"Comparer deux personnes",
       note:"Aucune inscription. Rien n’est envoyé : tout est calculé sur votre appareil."
     },
     lenses: [
-      { i:"01", h:"Astrologie", p:"Non pas un horoscope, mais une grammaire des tempéraments : éléments, modalités, énergies. Ce vers quoi vous penchez, et ce que vous avez à travailler." },
-      { i:"02", h:"Numérologie", p:"Votre date et votre nom, réduits à des nombres porteurs de sens. Le fil de fond d’une vie, la façon d’agir, ce qui vous meut intimement." },
-      { i:"03", h:"MBTI", p:"Une cartographie cognitive éprouvée : comment vous prenez l’énergie, percevez, décidez, vous organisez. Seize façons d’habiter le monde." }
+      { i:"01", h:"Astrologie", p:"Non pas un horoscope, mais une grammaire des tempéraments : éléments, modalités, énergies.", cta:"Calculer mon thème astral", to:"create" },
+      { i:"02", h:"Numérologie", p:"Votre date et votre nom réduits à des nombres porteurs de sens : le fil de fond d’une vie.", cta:"Calculer mon chemin de vie", to:"create" },
+      { i:"03", h:"MBTI", p:"Une cartographie cognitive éprouvée : comment vous prenez l’énergie, percevez, décidez, vous organisez.", cta:"Découvrir mon profil", to:"create" },
+      { i:"04", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un·e analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
     ],
     manifesto1:"Ni dogme, ni ésotérisme. ", manifestoEm:"Des savoirs anciens,", manifesto2:" que l’humanité affine depuis des millénaires et que toutes les cultures du monde ont fait vivre — comme sociétés et comme individus — pour mieux se comprendre et mieux habiter ce qui les entoure.",
     heritage:{
@@ -43,6 +44,7 @@ fr: {
     },
     birthCta:{ eyebrow:"Passez à la pratique", title:"Tout commence par une date", text:"Votre date de naissance ouvre les trois lectures. Une minute suffit.", button:"Créer mon portrait" },
     jung:{ eyebrow:"Le fil rouge", quote:"Le privilège d’une vie, c’est de devenir qui l’on est vraiment.", who:"Carl Gustav Jung", link:"Psychiatre suisse (1875–1961). Sa théorie des types psychologiques est la source directe du MBTI — et cette idée, devenir soi, est le cœur même de PRISME." },
+    consult:{ eyebrow:"Aller plus loin", title:"Parler avec un·e psychanalyste", text:"Les algorithmes ouvrent la porte ; un regard humain va plus loin. Nos praticien·nes reprennent vos lectures en entretien — et y ajoutent une analyse graphologique de votre écriture.", feats:["Entretien personnalisé","Analyse graphologique de votre écriture","Synthèse écrite à emporter"], button:"Prendre rendez-vous", note:"La réservation en ligne arrive bientôt. Donnez-nous votre lien (Calendly, e-mail…) et nous l’activons ici." },
 
     createEyebrow:"Étape par étape", createTitle:"Votre portrait",
     createLead:"Quelques informations suffisent. Prenez le questionnaire ou indiquez directement votre type si vous le connaissez.",
@@ -267,16 +269,17 @@ en: {
     nav: { home:"Home", create:"My profile", relation:"Relationship", method:"Method" },
     brandTag: "Astrology · Numerology · MBTI",
     hero: {
-      eyebrow:"Astrology · Numerology · MBTI",
+      eyebrow:"Astrology · Numerology · MBTI · Graphology",
       t1:"You are", t2:"more than one", t3:"reading.",
-      sub:"PRISME breaks down who you are through three lenses — ancient and modern — then recomposes them into a legible portrait. To understand yourself, understand those close to you, and work better together.",
+      sub:"PRISME breaks down who you are through several lenses — ancient and modern — then recomposes them into a legible portrait. To understand yourself, understand those close to you, and work better together.",
       cta1:"Create my profile", cta2:"Compare two people",
       note:"No sign-up. Nothing is sent: everything is computed on your device."
     },
     lenses: [
-      { i:"01", h:"Astrology", p:"Not a horoscope, but a grammar of temperaments: elements, modalities, energies. What you lean toward, and what you have to work on." },
-      { i:"02", h:"Numerology", p:"Your date and name, reduced to numbers that carry meaning. The underlying thread of a life, the way you act, what moves you within." },
-      { i:"03", h:"MBTI", p:"A well-worn cognitive map: how you draw energy, perceive, decide, organize. Sixteen ways of inhabiting the world." }
+      { i:"01", h:"Astrology", p:"Not a horoscope, but a grammar of temperaments: elements, modalities, energies.", cta:"Calculate my birth chart", to:"create" },
+      { i:"02", h:"Numerology", p:"Your date and name reduced to numbers that carry meaning: the underlying thread of a life.", cta:"Calculate my life path", to:"create" },
+      { i:"03", h:"MBTI", p:"A proven cognitive map: how you draw energy, perceive, decide, organize.", cta:"Discover my profile", to:"create" },
+      { i:"04", h:"Graphology", p:"Your handwriting as a fingerprint: the stroke, the rhythm, the spacing. A close reading, by an analyst.", cta:"Book a session", to:"consult", tag:"by appointment" }
     ],
     manifesto1:"No dogma, no mysticism. ", manifestoEm:"Age-old bodies of knowledge,", manifesto2:" refined by humanity over millennia and kept alive by cultures the world over — as societies and as individuals — to better understand ourselves and better inhabit what surrounds us.",
     heritage:{
@@ -294,6 +297,7 @@ en: {
     },
     birthCta:{ eyebrow:"Try it", title:"It all starts with a date", text:"Your date of birth opens all three readings. A minute is enough.", button:"Create my portrait" },
     jung:{ eyebrow:"The through-line", quote:"The privilege of a lifetime is to become who you truly are.", who:"Carl Gustav Jung", link:"Swiss psychiatrist (1875–1961). His theory of psychological types is the direct source of the MBTI — and that idea, becoming yourself, is the very heart of PRISME." },
+    consult:{ eyebrow:"Go further", title:"Talk with a psychoanalyst", text:"Algorithms open the door; a human gaze goes further. Our practitioners revisit your readings in a one-to-one — and add a graphological analysis of your handwriting.", feats:["One-to-one session","Graphological analysis of your handwriting","A written synthesis to keep"], button:"Book a session", note:"Online booking is coming soon. Send us your link (Calendly, email…) and we’ll wire it up here." },
 
     createEyebrow:"Step by step", createTitle:"Your portrait",
     createLead:"A few details are enough. Take the questionnaire, or enter your type directly if you know it.",

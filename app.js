@@ -73,6 +73,15 @@ function renderContextCards(){
     box.querySelectorAll(".ctx-card").forEach(b=>{ const on=b===btn; b.classList.toggle("is-active",on); b.setAttribute("aria-checked",on?"true":"false"); });
   }));
 }
+const CONSULT_LINK = ""; // ← mettre ici un lien Calendly / une URL de réservation pour activer le bouton
+function renderConsult(){
+  const c=U().consult;
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set("consult-eyebrow",c.eyebrow); set("consult-title",c.title); set("consult-text",c.text);
+  const feats=document.getElementById("consult-feats"); if(feats) feats.innerHTML=c.feats.map(f=>`<li>${f}</li>`).join("");
+  const btn=document.getElementById("consult-btn"); if(btn) btn.textContent=c.button;
+  const note=document.getElementById("consult-note"); if(note) note.textContent=c.note;
+}
 function renderJung(){
   const t=U();
   const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
@@ -212,9 +221,20 @@ function applyI18n(){
   document.getElementById("h-cta1").textContent=h.cta1;
   document.getElementById("h-cta2").textContent=h.cta2;
   document.getElementById("h-note").textContent=h.note;
-  // lentilles
-  document.getElementById("lenses").innerHTML = U().lenses.map(x=>
-    `<article class="lens"><span class="lens-idx">${x.i}</span><h3>${x.h}</h3><p>${x.p}</p></article>`).join("");
+  // lentilles (avec CTA)
+  const lensBox=document.getElementById("lenses");
+  lensBox.innerHTML = U().lenses.map(x=>
+    `<article class="lens">
+       <span class="lens-idx">${x.i}</span>
+       <h3>${x.h}</h3>
+       <p>${x.p}</p>
+       ${x.tag?`<span class="lens-tag">${x.tag}</span>`:""}
+       <button class="lens-cta" ${x.to==="consult"?`data-scroll="consult"`:`data-nav="${x.to}"`}>${x.cta} <span aria-hidden="true">→</span></button>
+     </article>`).join("");
+  lensBox.querySelectorAll(".lens-cta").forEach(b=>b.addEventListener("click",()=>{
+    if(b.dataset.scroll){ const el=document.getElementById(b.dataset.scroll); if(el) el.scrollIntoView({behavior:"smooth"}); }
+    else go(b.dataset.nav);
+  }));
   // manifeste
   document.getElementById("m1").textContent=U().manifesto1;
   document.getElementById("mem").textContent=U().manifestoEm;
@@ -233,6 +253,7 @@ function applyI18n(){
   fillCities(); renderContextCards(); buildQuiz();
   renderHeritage();
   renderJung();
+  renderConsult();
   renderSavedPicker();
 }
 
@@ -536,6 +557,15 @@ document.getElementById("bcta-form").addEventListener("submit", e=>{
   go("create");
   const nameEl=document.getElementById("f-name"); if(nameEl) nameEl.focus();
 });
+
+/* ---------------- Prise de rendez-vous ---------------- */
+(function(){
+  const btn=document.getElementById("consult-btn"); if(!btn) return;
+  btn.addEventListener("click", ()=>{
+    if(CONSULT_LINK){ window.open(CONSULT_LINK, "_blank", "noopener"); return; }
+    const note=document.getElementById("consult-note"); if(note) note.hidden=false;
+  });
+})();
 
 /* ---------------- Init ---------------- */
 applyI18n();
