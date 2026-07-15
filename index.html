@@ -19,6 +19,7 @@
     <a href="#" data-nav="home" data-i18n="nav.home">Accueil</a>
     <a href="#" data-nav="create" data-i18n="nav.create">Mon profil</a>
     <a href="#" data-nav="relation" data-i18n="nav.relation">Relation</a>
+    <a href="#" data-nav="mirror" data-i18n="nav.mirror">Miroir</a>
     <a href="#" data-nav="method" data-i18n="nav.method">Méthode</a>
     <button class="lang-toggle" id="lang-toggle" aria-label="Language">EN</button>
   </nav>
@@ -220,6 +221,44 @@
       </form>
     </div>
     <div id="relation-out"></div>
+  </section>
+
+  <!-- ============ MIROIR ============ -->
+  <section class="view view-mirror" data-view="mirror">
+    <div class="form-wrap form-wrap-wide">
+      <p class="eyebrow" data-i18n="mirror.eyebrow"></p>
+      <h2 class="view-title" data-i18n="mirror.title"></h2>
+      <p class="view-lead" data-i18n="mirror.lead"></p>
+
+      <form id="mirror-form" class="form">
+        <div class="field">
+          <label for="mir-ctx" data-i18n="mirror.ctxLabel"></label>
+          <select id="mir-ctx"></select>
+        </div>
+        <div class="duo">
+          <div class="duo-col">
+            <p class="duo-label" data-i18n="mirror.aName"></p>
+            <div class="field"><input id="ma-name" type="text" required data-i18n-ph="mirror.aName" /></div>
+            <div class="field"><label data-i18n="mirror.fRecit"></label><textarea id="ma-recit" rows="3" data-i18n-ph="mirror.phRecit"></textarea></div>
+            <div class="field"><label data-i18n="mirror.fRessenti"></label><textarea id="ma-ressenti" rows="2" data-i18n-ph="mirror.phRessenti"></textarea></div>
+            <div class="field"><label data-i18n="mirror.fBesoin"></label><textarea id="ma-besoin" rows="2" data-i18n-ph="mirror.phBesoin"></textarea></div>
+            <div class="field"><label data-i18n="mirror.fAutre"></label><textarea id="ma-autre" rows="2" data-i18n-ph="mirror.phAutre"></textarea></div>
+          </div>
+          <div class="duo-sep" aria-hidden="true"></div>
+          <div class="duo-col">
+            <p class="duo-label" data-i18n="mirror.bName"></p>
+            <div class="field"><input id="mb-name" type="text" required data-i18n-ph="mirror.bName" /></div>
+            <div class="field"><label data-i18n="mirror.fRecit"></label><textarea id="mb-recit" rows="3" data-i18n-ph="mirror.phRecit"></textarea></div>
+            <div class="field"><label data-i18n="mirror.fRessenti"></label><textarea id="mb-ressenti" rows="2" data-i18n-ph="mirror.phRessenti"></textarea></div>
+            <div class="field"><label data-i18n="mirror.fBesoin"></label><textarea id="mb-besoin" rows="2" data-i18n-ph="mirror.phBesoin"></textarea></div>
+            <div class="field"><label data-i18n="mirror.fAutre"></label><textarea id="mb-autre" rows="2" data-i18n-ph="mirror.phAutre"></textarea></div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-accent btn-block" data-i18n="mirror.submit"></button>
+        <p class="form-error" id="mirror-error" hidden></p>
+      </form>
+    </div>
+    <div id="mirror-out"></div>
   </section>
 
   <!-- ============ MÉTHODE ============ -->

@@ -13,7 +13,7 @@ const I18N = {
 fr: {
   code: "fr", label: "FR",
   ui: {
-    nav: { home:"Accueil", create:"Mon profil", relation:"Relation", method:"Méthode" },
+    nav: { home:"Accueil", create:"Mon profil", relation:"Relation", mirror:"Miroir", method:"Méthode" },
     brandTag: "Astrologie · Numérologie · MBTI",
     hero: {
       eyebrow:"Astrologie · Numérologie · MBTI · Graphologie",
@@ -52,6 +52,21 @@ fr: {
       { name:"Analyse relationnelle", desc:"Deux personnes mises en regard : ce qui rapproche, ce qui frotte, et comment faire avec.", price:"25 €", unit:"l’analyse", cta:"Comparer deux personnes", to:"relation" },
       { name:"Consultation", desc:"60 min avec un psychanalyste formé à la pratique jungienne, analyse graphologique incluse.", price:"80 €", unit:"la séance", cta:"Prendre rendez-vous", to:"consult", featured:true }
     ] },
+    mirror:{
+      eyebrow:"Le miroir", title:"Comprendre un conflit, à deux voix",
+      lead:"Une dispute ? Chacun a sa version — et elles divergent, c’est normal. Écrivez la vôtre, puis mettez-la en regard de celle de l’autre : le miroir révèle l’écart entre ce que l’on imagine et ce que l’autre a vraiment vécu.",
+      ctxLabel:"Type de relation", aName:"Prénom (vous)", bName:"Prénom (l’autre)",
+      fRecit:"Ce qui s’est passé, de mon point de vue", fRessenti:"Ce que j’ai ressenti", fBesoin:"Ce dont j’avais besoin", fAutre:"Ce que je crois que l’autre a ressenti",
+      phRecit:"Racontez la situation telle que vous l’avez vécue…", phRessenti:"En colère, blessé, ignoré, inquiet…", phBesoin:"Être écouté, respecté, rassuré…", phAutre:"À votre avis, qu’a ressenti l’autre ?",
+      submit:"Ouvrir le miroir", err:"Complétez au moins le récit et le ressenti des deux personnes.",
+      rTitle:"Le miroir", rIntro:"Deux vérités qui coexistent — voici l’écart entre ce que chacun imaginait et ce que l’autre a vraiment vécu.",
+      accountsTitle:"Les deux récits", recitLabel:"Récit", ressentiLabel:"Ressenti", besoinLabel:"Besoin",
+      gapTitle:"L’écart de perception", imagined:"imaginait que l’autre ressentait", reallyFelt:"a réellement exprimé", theirNeed:"avait besoin de",
+      promptsTitle:"Trois questions pour avancer",
+      prompts:["Qu’est-ce qui, dans le récit de l’autre, vous surprend le plus ?","Sur quel besoin non dit pourriez-vous vous rejoindre ?","Quelle petite chose apaiserait la prochaine conversation ?"],
+      closing:"Aucune version n’est « la vraie ». Comprendre celle de l’autre, ce n’est pas lui donner raison — c’est cesser de se parler à travers un mur.",
+      restart:"Recommencer"
+    },
 
     createEyebrow:"Étape par étape", createTitle:"Votre portrait",
     createLead:"Quelques informations suffisent. Prenez le questionnaire ou indiquez directement votre type si vous le connaissez.",
@@ -273,7 +288,7 @@ fr: {
 en: {
   code: "en", label: "EN",
   ui: {
-    nav: { home:"Home", create:"My profile", relation:"Relationship", method:"Method" },
+    nav: { home:"Home", create:"My profile", relation:"Relationship", mirror:"Mirror", method:"Method" },
     brandTag: "Astrology · Numerology · MBTI",
     hero: {
       eyebrow:"Astrology · Numerology · MBTI · Graphology",
@@ -312,6 +327,21 @@ en: {
       { name:"Relationship analysis", desc:"Two people side by side: what draws you together, what rubs, and how to work with it.", price:"€25", unit:"per analysis", cta:"Compare two people", to:"relation" },
       { name:"Consultation", desc:"60 min with a psychoanalyst trained in the Jungian tradition, graphological analysis included.", price:"€80", unit:"per session", cta:"Book a session", to:"consult", featured:true }
     ] },
+    mirror:{
+      eyebrow:"The mirror", title:"Understand a conflict, in two voices",
+      lead:"An argument? Each side has its version — and they diverge, that’s normal. Write yours, then set it beside the other’s: the mirror reveals the gap between what you imagine and what the other truly felt.",
+      ctxLabel:"Relationship type", aName:"First name (you)", bName:"First name (the other)",
+      fRecit:"What happened, from my point of view", fRessenti:"What I felt", fBesoin:"What I needed", fAutre:"What I think the other felt",
+      phRecit:"Tell the situation as you experienced it…", phRessenti:"Angry, hurt, ignored, worried…", phBesoin:"To be heard, respected, reassured…", phAutre:"In your view, what did the other feel?",
+      submit:"Open the mirror", err:"Fill at least the account and the feeling for both people.",
+      rTitle:"The mirror", rIntro:"Two truths that coexist — here is the gap between what each imagined and what the other truly felt.",
+      accountsTitle:"The two accounts", recitLabel:"Account", ressentiLabel:"Feeling", besoinLabel:"Need",
+      gapTitle:"The perception gap", imagined:"imagined the other felt", reallyFelt:"actually expressed", theirNeed:"needed",
+      promptsTitle:"Three questions to move forward",
+      prompts:["What in the other’s account surprises you most?","On which unspoken need could you meet?","What small thing would ease the next conversation?"],
+      closing:"No version is “the true one.” Understanding the other’s isn’t agreeing with them — it’s no longer talking through a wall.",
+      restart:"Start over"
+    },
 
     createEyebrow:"Step by step", createTitle:"Your portrait",
     createLead:"A few details are enough. Take the questionnaire, or enter your type directly if you know it.",

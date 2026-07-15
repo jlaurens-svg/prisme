@@ -277,6 +277,10 @@ function applyI18n(){
   document.getElementById("f-name").placeholder=U().fNamePh;
   document.getElementById("ra-name").placeholder=U().youOften;
   document.getElementById("rb-name").placeholder=U().theOther;
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{ const v=resolve(U(), el.dataset.i18nPh); if(v!=null) el.placeholder=v; });
+  // contexte du miroir
+  const mc=document.getElementById("mir-ctx");
+  if(mc){ const cur=mc.value; mc.innerHTML=Object.keys(U().ctx).map(k=>`<option value="${k}">${U().ctx[k]}</option>`).join(""); if(cur) mc.value=cur; }
   // selects
   fillSelectMbti(document.getElementById("f-mbti"));
   fillSelectMbti(document.getElementById("ra-mbti"));
@@ -297,6 +301,7 @@ document.getElementById("lang-toggle").addEventListener("click", ()=>{
   // re-rendu des résultats affichés
   if(lastProfile) renderProfile(lastProfile);
   if(lastRelation) renderRelation(lastRelation.a, lastRelation.b, lastRelation.ctx);
+  if(lastMirror) renderMirrorResult(lastMirror.a, lastMirror.b, lastMirror.ctx);
 });
 
 /* ---------------- Segmented control quiz/known ---------------- */
@@ -539,6 +544,65 @@ document.getElementById("relation-form").addEventListener("submit", e=>{
   const ctx=relCtx;
   if(!na||!da||!ma||!nb||!db||!mb) return showErr(err,U().errRelation);
   renderRelation(computeProfile(na,da,ma,null), computeProfile(nb,db,mb,null), ctx);
+});
+
+/* ---------------- Miroir (médiation de conflit) ---------------- */
+let lastMirror=null;
+function renderMirrorResult(a, b, ctx){
+  lastMirror={ a, b, ctx };
+  const m=U().mirror, t=U();
+  const q=s=> s ? `<q>${escapeHtml(s)}</q>` : "<q>—</q>";
+  const recap=(p)=>`
+    <dl class="mirror-recap">
+      <dt>${m.recitLabel}</dt><dd>${escapeHtml(p.recit)||"—"}</dd>
+      <dt>${m.ressentiLabel}</dt><dd>${escapeHtml(p.ressenti)||"—"}</dd>
+      ${p.besoin?`<dt>${m.besoinLabel}</dt><dd>${escapeHtml(p.besoin)}</dd>`:""}
+    </dl>`;
+  const gapRow=(x, y)=>`
+    <div class="gap-row">
+      <p><span class="who">${escapeHtml(firstName(x.name))}</span> ${m.imagined} ${q(x.autre)}.</p>
+      <p><span class="who">${escapeHtml(firstName(y.name))}</span> ${m.reallyFelt} ${q(y.ressenti)}${y.besoin?` — ${m.theirNeed} ${q(y.besoin)}`:""}.</p>
+    </div>`;
+
+  document.getElementById("mirror-out").innerHTML=`
+    <div class="rel-head">
+      <p class="eyebrow">${m.rTitle} · ${t.ctx[ctx].toLowerCase()}</p>
+      <div class="rel-names">${escapeHtml(firstName(a.name))} <span class="rel-plus">⇄</span> ${escapeHtml(firstName(b.name))}</div>
+      <p class="hero-note">${m.rIntro}</p>
+    </div>
+    <div class="cards">
+      <article class="card"><div class="card-tag"><span class="dot"></span><span>${escapeHtml(firstName(a.name))}</span></div>${recap(a)}</article>
+      <article class="card"><div class="card-tag"><span class="dot"></span><span>${escapeHtml(firstName(b.name))}</span></div>${recap(b)}</article>
+    </div>
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${m.gapTitle}</span></div>
+      <h3>${m.gapTitle}</h3>
+      <div class="mirror-gap">${gapRow(a,b)}${gapRow(b,a)}</div>
+    </section>
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${m.promptsTitle}</span></div>
+      <h3>${m.promptsTitle}</h3>
+      <ul class="prose-list">${m.prompts.map(p=>`<li>${p}</li>`).join("")}</ul>
+      <p class="lead">${m.closing}</p>
+    </section>
+    <div class="result-actions no-print">
+      <button class="btn btn-ghost" id="mir-restart">${m.restart}</button>
+      <button class="btn btn-ghost" id="mir-print">${t.actPrint}</button>
+    </div>`;
+  document.getElementById("mir-restart").addEventListener("click", ()=>{ document.getElementById("mirror-form").reset(); document.getElementById("mirror-out").innerHTML=""; lastMirror=null; window.scrollTo({top:0,behavior:"smooth"}); });
+  document.getElementById("mir-print").addEventListener("click", ()=>window.print());
+  document.getElementById("mirror-out").scrollIntoView({behavior:"smooth"});
+}
+
+document.getElementById("mirror-form").addEventListener("submit", e=>{
+  e.preventDefault();
+  const err=document.getElementById("mirror-error"); err.hidden=true;
+  const g=id=>document.getElementById(id).value.trim();
+  const a={ name:g("ma-name")||"A", recit:g("ma-recit"), ressenti:g("ma-ressenti"), besoin:g("ma-besoin"), autre:g("ma-autre") };
+  const b={ name:g("mb-name")||"B", recit:g("mb-recit"), ressenti:g("mb-ressenti"), besoin:g("mb-besoin"), autre:g("mb-autre") };
+  const ctx=document.getElementById("mir-ctx").value||"couple";
+  if(!a.recit||!a.ressenti||!b.recit||!b.ressenti) return showErr(err, U().mirror.err);
+  renderMirrorResult(a, b, ctx);
 });
 
 /* ---------------- Sauvegarde (localStorage) ---------------- */
