@@ -115,6 +115,7 @@ fr: {
     relReadFor:"Lecture relationnelle", resonance:"résonance",
     relDisclaimer:"Une résonance, pas un verdict : les liens les plus vivants naissent souvent des écarts bien tenus.",
     relHowTitle:"Comment cultiver ce lien",
+    relMirror:{ text:"Une dispute avec cette personne ? Et si vous regardiez la scène depuis sa position, pas seulement la vôtre ?", button:"Ouvrir le miroir" },
 
     savedTitle:"Profils enregistrés", savedEmpty:"Aucun profil enregistré pour l’instant.",
     savedLoad:"Voir", savedA:"→ A", savedB:"→ B", savedDelete:"Supprimer",
@@ -390,6 +391,7 @@ en: {
     relReadFor:"Relationship reading", resonance:"resonance",
     relDisclaimer:"A resonance, not a verdict: the most alive bonds often grow from well-held differences.",
     relHowTitle:"How to nurture this bond",
+    relMirror:{ text:"An argument with this person? What if you looked at the scene from their side, not only yours?", button:"Open the mirror" },
 
     savedTitle:"Saved profiles", savedEmpty:"No saved profile yet.",
     savedLoad:"View", savedA:"→ A", savedB:"→ B", savedDelete:"Delete",

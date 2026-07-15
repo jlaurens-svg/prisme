@@ -198,6 +198,12 @@ em{ font-style:italic; }
 .form-wrap{ max-width:640px; margin:0 auto; }
 .form-wrap-wide{ max-width:860px; }
 
+/* encart : passer de la relation au miroir */
+.rel-mirror-cta{ margin-top:2rem; padding:1.6rem 1.8rem; border:1px dashed var(--line-2); border-radius:14px;
+  display:flex; align-items:center; justify-content:space-between; gap:1.2rem; flex-wrap:wrap; }
+.rel-mirror-cta p{ font-family:"Fraunces",serif; font-size:1.15rem; color:var(--ink); max-width:60ch; margin:0; }
+.rel-mirror-cta .btn{ flex:none; }
+
 /* miroir : écart de perception */
 .mirror-gap{ display:flex; flex-direction:column; gap:1rem; }
 .mirror-gap .gap-row{ padding:1.1rem 1.3rem; border:1px solid var(--line); border-radius:12px; background:var(--bg-2); }

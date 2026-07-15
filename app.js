@@ -527,11 +527,23 @@ function renderRelation(pa, pb, ctx){
       <p>${Lp.build.relClosing(firstName(pa.name), Lp.mbti[pa.mbti].relation, firstName(pb.name), Lp.mbti[pb.mbti].relation)}</p>
     </section>
 
+    <div class="rel-mirror-cta">
+      <p>${t.relMirror.text}</p>
+      <button class="btn btn-accent-outline" id="rel-to-mirror">${t.relMirror.button}</button>
+    </div>
+
     <div class="result-actions no-print">
       <button class="btn btn-ghost" id="rel-print">${t.actPrint}</button>
     </div>
   `;
   document.getElementById("rel-print").addEventListener("click", ()=>window.print());
+  document.getElementById("rel-to-mirror").addEventListener("click", ()=>{
+    const mc=document.getElementById("mir-ctx"); if(mc) mc.value=ctx;
+    const ma=document.getElementById("ma-name"), mb=document.getElementById("mb-name");
+    if(ma) ma.value=firstName(pa.name);
+    if(mb) mb.value=firstName(pb.name);
+    go("mirror");
+  });
   document.getElementById("relation-out").scrollIntoView({behavior:"smooth"});
   setTimeout(()=>{ const f=document.querySelector("#relation-out .meter-fill"); if(f) f.style.width=global+"%"; },120);
 }
