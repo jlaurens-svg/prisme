@@ -315,8 +315,9 @@ const CONST_DATA = {
     l:[[0,1,3,4,5,6,7,8,0]] },
   balance:{ s:[[30,28,1.7],[56,22,1.4],[71,43,1.6],[48,51,1.1],[25,59,1.3],[80,68,1.3]],
     l:[[0,1,2,3,0],[3,4],[2,5]] },
-  gemeaux:{ s:[[32,15,1.9],[57,19,1.9],[30,38,1.2],[28,60,1.1],[34,82,1.3],[59,42,1.2],[62,64,1.1],[67,85,1.3],[20,88,1.0],[74,90,1.0]],
-    l:[[0,2,3,4,8],[1,5,6,7,9],[0,1]] }
+  /* Hamal, Sheratan, Mesarthim et 41 Arietis : la corne coudée du Bélier. */
+  belier:{ s:[[72,30,1.9],[46,48,1.5],[36,57,1.1],[82,55,1.2]],
+    l:[[2,1,0],[0,3]] }
 };
 function buildConstellationSVG(key){
   const d=CONST_DATA[key];
@@ -443,13 +444,13 @@ function renderHeritage(){
   set("sky-label",h.skyLabel); set("num-label",h.numLabel); set("fig-label",h.figLabel);
 
   document.getElementById("constellations").innerHTML =
-    ["capricorne","balance","gemeaux"].map(k=>{ const s=Lp.signs[k];
+    ["capricorne","balance","belier"].map(k=>{ const s=Lp.signs[k];
       return `<figure class="const-card">${buildConstellationSVG(k)}
         <figcaption><span class="const-name">${s.symbol} ${s.name}</span><span class="const-cap">${h.constellations[k]}</span></figcaption></figure>`;
     }).join("");
 
   document.getElementById("num-triptych").innerHTML =
-    [11,9,2].map(n=>{ const num=Lp.numbers[n];
+    [11,9,3].map(n=>{ const num=Lp.numbers[n];
       return `<div class="num-card"><span class="num-big">${n}</span><span class="num-title">${num.titre}</span><span class="num-word">${num.mots[0]}</span></div>`;
     }).join("");
 
@@ -583,6 +584,7 @@ document.querySelectorAll(".seg-btn").forEach(btn=>{
     btn.classList.add("is-active"); mbtiMode=btn.dataset.mode;
     document.querySelector(".mbti-quiz").hidden = mbtiMode!=="quiz";
     document.querySelector(".mbti-known").hidden = mbtiMode!=="known";
+    document.querySelector(".mbti-unknown").hidden = mbtiMode!=="unknown";
   });
 });
 function scoreQuiz(){
@@ -626,7 +628,8 @@ function renderProfile(p){
   if(p.birth){ const c=computeCelestial(p.date, p.birth.time, p.birth.tz, p.birth.lat, p.birth.lon); p.moon=c.moon; p.asc=c.asc; }
   p.el = L().signs[p.sign].element;
   const t=U(), Lp=L();
-  const sign=Lp.signs[p.sign], lp=Lp.numbers[p.life], expr=Lp.numbers[p.expr], intime=Lp.numbers[p.intime], type=Lp.mbti[p.mbti];
+  const sign=Lp.signs[p.sign], lp=Lp.numbers[p.life], expr=Lp.numbers[p.expr], intime=Lp.numbers[p.intime];
+  const type=Lp.mbti[p.mbti] || null;   // absent tant que le type n'a pas de sens (un enfant)
   const synth=Lp.build.synthesis(p, Lp);
 
   const ascBadge = p.asc ? `<span class="badge">${t.bAsc} <b>${Lp.signs[p.asc.sign].symbol} ${Lp.signs[p.asc.sign].name}</b></span>` : "";
@@ -651,7 +654,7 @@ function renderProfile(p){
         <span class="badge">${sign.symbol} <b>${sign.name}</b> · ${Lp.elements[p.el].name}</span>
         ${ascBadge}${moonBadge}
         <span class="badge">${t.bLife} <b>${numLabel(p.life)}</b> · ${lp.titre}</span>
-        <span class="badge">${t.bMbti} <b>${p.mbti}</b> · ${type.nom}</span>
+        ${type ? `<span class="badge">${t.bMbti} <b>${p.mbti}</b> · ${type.nom}</span>` : ""}
       </div>
     </div>
 
@@ -683,10 +686,14 @@ function renderProfile(p){
 
       <article class="card">
         <div class="card-tag"><span class="dot"></span><span>${t.lens03}</span></div>
-        <h3>${p.mbti}</h3>
-        <p class="sub">${type.nom} · ${type.groupe}</p>
-        <p>${type.desc}</p>
-        <div class="mini"><strong>${t.force}</strong><p>${type.force}</p></div>
+        ${type ? `
+          <h3>${p.mbti}</h3>
+          <p class="sub">${type.nom} · ${type.groupe}</p>
+          <p>${type.desc}</p>
+          <div class="mini"><strong>${t.force}</strong><p>${type.force}</p></div>`
+        : `
+          <h3>${t.mbtiNone}</h3>
+          <p>${t.mbtiNoneCard}</p>`}
       </article>
 
       ${histCard(t)}
@@ -754,7 +761,9 @@ document.getElementById("profile-form").addEventListener("submit", e=>{
   if(normalize(name).length<2) return showErr(err,U().errName);
 
   let mbti;
-  if(mbtiMode==="quiz"){ mbti=scoreQuiz(); if(!mbti) return showErr(err,U().errQuiz); }
+  /* Le type peut rester vide : pour un enfant, il ne veut rien dire encore. */
+  if(mbtiMode==="unknown"){ mbti=""; }
+  else if(mbtiMode==="quiz"){ mbti=scoreQuiz(); if(!mbti) return showErr(err,U().errQuiz); }
   else { mbti=document.getElementById("f-mbti").value; if(!mbti) return showErr(err,U().errMbti); }
 
   // heure & lieu
@@ -795,9 +804,13 @@ function renderRelation(pa, pb, ctx){
   lastRelation={ a:pa, b:pb, ctx };
   const t=U(), Lp=L();
   pa.el=Lp.signs[pa.sign].element; pb.el=Lp.signs[pb.sign].element;
-  const elS=elementScore(pa.el,pb.el), liS=lifeScore(pa.life,pb.life), mbS=mbtiScore(pa.mbti,pb.mbti);
-  const global=Math.round((elS+liS+mbS)/3);
-  const sh=mbtiShared(pa.mbti,pb.mbti), comp=pa.mbti[1]===pb.mbti[1];
+  /* Sans type des deux côtés, la résonance se calcule sur les deux autres
+     prismes plutôt que d'inventer un score. */
+  const duo = !!(pa.mbti && pb.mbti);
+  const elS=elementScore(pa.el,pb.el), liS=lifeScore(pa.life,pb.life);
+  const mbS=duo ? mbtiScore(pa.mbti,pb.mbti) : null;
+  const global=Math.round(duo ? (elS+liS+mbS)/3 : (elS+liS)/2);
+  const sh=duo ? mbtiShared(pa.mbti,pb.mbti) : 0, comp=duo && pa.mbti[1]===pb.mbti[1];
   const sa=Lp.signs[pa.sign], sb=Lp.signs[pb.sign];
 
   document.getElementById("relation-out").innerHTML=`
@@ -823,9 +836,13 @@ function renderRelation(pa, pb, ctx){
         <p>${Lp.build.relLife(pa.life,pb.life,liS,numRoot(pa.life),numRoot(pb.life))}</p>
       </article>
       <article class="card">
-        <div class="card-tag"><span class="dot"></span><span>MBTI · ${pa.mbti} & ${pb.mbti}</span></div>
-        <h3>${Lp.mbti[pa.mbti].nom} &amp; ${Lp.mbti[pb.mbti].nom}</h3>
-        <p>${Lp.build.relMbti(pa.mbti,pb.mbti,sh,comp)}</p>
+        <div class="card-tag"><span class="dot"></span><span>MBTI${duo ? ` · ${pa.mbti} & ${pb.mbti}` : ""}</span></div>
+        ${duo ? `
+          <h3>${Lp.mbti[pa.mbti].nom} &amp; ${Lp.mbti[pb.mbti].nom}</h3>
+          <p>${Lp.build.relMbti(pa.mbti,pb.mbti,sh,comp)}</p>`
+        : `
+          <h3>${t.mbtiNone}</h3>
+          <p>${t.relNoMbti}</p>`}
       </article>
     </div>
 
@@ -834,7 +851,7 @@ function renderRelation(pa, pb, ctx){
       <h3>${t.relHowTitle}</h3>
       <p class="lead">${Lp.build.relLead}</p>
       <p>${Lp.build.relContext(ctx)}</p>
-      <p>${Lp.build.relClosing(firstName(pa.name), Lp.mbti[pa.mbti].relation, firstName(pb.name), Lp.mbti[pb.mbti].relation)}</p>
+      ${duo ? `<p>${Lp.build.relClosing(firstName(pa.name), Lp.mbti[pa.mbti].relation, firstName(pb.name), Lp.mbti[pb.mbti].relation)}</p>` : ""}
     </section>
 
     <div class="rel-mirror-cta">
@@ -864,7 +881,7 @@ document.getElementById("relation-form").addEventListener("submit", e=>{
   const na=document.getElementById("ra-name").value.trim(), da=document.getElementById("ra-date").value, ma=document.getElementById("ra-mbti").value;
   const nb=document.getElementById("rb-name").value.trim(), db=document.getElementById("rb-date").value, mb=document.getElementById("rb-mbti").value;
   const ctx=relCtx;
-  if(!na||!da||!ma||!nb||!db||!mb) return showErr(err,U().errRelation);
+  if(!na||!da||!nb||!db) return showErr(err,U().errRelation);
   renderRelation(computeProfile(na,da,ma,null), computeProfile(nb,db,mb,null), ctx);
 });
 
@@ -2003,7 +2020,8 @@ function compteResume(p){
   const [y, m, d] = p.date.split("-").map(Number);
   const signe = Lp.signs[sunSign(m, d)].name;
   const vie = numLabel(lifePath(p.date));
-  return `${signe} · ${t.bLife} ${vie} · ${p.mbti} · ${p.birth ? U().compte.withBirth : U().compte.noBirth}`;
+  return [signe, `${t.bLife} ${vie}`, p.mbti || t.mbtiNone,
+          p.birth ? U().compte.withBirth : U().compte.noBirth].join(" · ");
 }
 
 function compteRow(c, p){

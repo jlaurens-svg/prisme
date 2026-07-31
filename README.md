@@ -57,6 +57,16 @@ Le décalage UTC appliqué est celui qui valait **à la date de naissance**, lu
 dans la base tzdata du navigateur — les règles historiques d'heure d'été sont
 donc respectées.
 
+### Le type MBTI est facultatif
+
+Un troisième choix, « je ne le connais pas », permet de créer un profil sans
+type. C'est le cas d'un enfant : le MBTI décrit des préférences qui ne se
+stabilisent pas avant la fin de l'adolescence, alors que l'astrologie et la
+numérologie se calculent dès la naissance. Le portrait se lit alors sur deux
+prismes — la synthèse dit « deux facettes », la carte MBTI dit pourquoi elle est
+vide, et la comparaison de deux personnes retombe sur les deux autres prismes
+plutôt que d'inventer un score.
+
 ### Mon compte
 
 Un compte **local**, ouvert avec un prénom : il rassemble votre profil et ceux de

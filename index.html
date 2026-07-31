@@ -54,6 +54,15 @@
     </div>
     <div class="manifesto"><p><span id="m1"></span><span class="em" id="mem"></span><span id="m2"></span></p></div>
 
+    <!-- ===== CITATION JUNG ===== -->
+    <section class="jung">
+      <div id="jung-portrait" class="jung-portrait"></div>
+      <p class="eyebrow" id="jung-eyebrow"></p>
+      <blockquote class="jung-quote" id="jung-quote"></blockquote>
+      <p class="jung-who" id="jung-who"></p>
+      <p class="jung-link" id="jung-link"></p>
+    </section>
+
     <!-- ===== CIEL DU MOMENT ===== -->
     <section class="sky-now" id="sky-now"></section>
 
@@ -77,15 +86,6 @@
 
       <p class="group-label" id="fig-label"></p>
       <div class="figures" id="figures"></div>
-    </section>
-
-    <!-- ===== CITATION JUNG ===== -->
-    <section class="jung">
-      <div id="jung-portrait" class="jung-portrait"></div>
-      <p class="eyebrow" id="jung-eyebrow"></p>
-      <blockquote class="jung-quote" id="jung-quote"></blockquote>
-      <p class="jung-who" id="jung-who"></p>
-      <p class="jung-link" id="jung-link"></p>
     </section>
 
     <!-- ===== CONSTELLATION FAMILIALE ===== -->
@@ -183,8 +183,10 @@
           <div class="seg">
             <button type="button" class="seg-btn is-active" data-mode="quiz" data-i18n="segQuiz"></button>
             <button type="button" class="seg-btn" data-mode="known" data-i18n="segKnown"></button>
+            <button type="button" class="seg-btn" data-mode="unknown" data-i18n="segUnknown"></button>
           </div>
           <div class="mbti-known" hidden><select id="f-mbti"></select></div>
+          <p class="hint mbti-unknown" data-i18n="mbtiUnknownHint" hidden></p>
           <div class="mbti-quiz">
             <p class="quiz-hint" data-i18n="quizHint"></p>
             <div id="quiz-list"></div>

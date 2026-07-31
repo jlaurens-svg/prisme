@@ -38,7 +38,7 @@ fr: {
       intro:"Le ciel, les nombres, les tempéraments : partout et de tout temps, on s’en est servi pour se situer. Trois constellations, trois nombres, trois figures qui les ont fait vivre.",
       milkyway:"La Voie lactée — le même ciel, d’une civilisation à l’autre.",
       skyLabel:"Le ciel", numLabel:"Les nombres", figLabel:"Celles et ceux qui les ont portés",
-      constellations:{ capricorne:"La chèvre-poisson : patience et hauteur.", balance:"Le seul signe-objet : équilibre et justice.", gemeaux:"Les jumeaux : le double et l’échange." },
+      constellations:{ capricorne:"La chèvre-poisson : patience et hauteur.", balance:"Le seul signe-objet : équilibre et justice.", belier:"Le bélier : l’élan, le premier feu de l’année." },
       figures:[
         {key:"pythagore",name:"Pythagore",dates:"vers 570 av. J.-C.",note:"Le mathématicien grec dont la méthode fonde encore la numérologie occidentale."},
         {key:"cleopatre",name:"Cléopâtre",dates:"69 – 30 av. J.-C.",note:"L’Égypte des temples, où le ciel se lisait gravé dans la pierre."},
@@ -489,7 +489,11 @@ fr: {
     cityChosen:(zone)=>`Fuseau : ${zone}`,
     cityClear:"Effacer",
     mbtiLegend:"Votre type de personnalité (MBTI)",
-    segQuiz:"Je passe le test (2 min)", segKnown:"Je connais mon type",
+    segQuiz:"Je passe le test (2 min)", segKnown:"Je connais mon type", segUnknown:"Je ne le connais pas",
+    mbtiUnknownHint:"Pour un enfant, c’est la bonne réponse. Le MBTI décrit des préférences qui ne se stabilisent pas avant la fin de l’adolescence : un type posé sur un enfant de six ans dit surtout ce que les adultes projettent sur lui. L’astrologie et la numérologie, elles, se calculent dès la naissance — le profil sera complet de ce côté-là, et le type pourra s’ajouter plus tard.",
+    mbtiNone:"Type non renseigné",
+    mbtiNoneCard:"Le type MBTI n’a pas été renseigné. Les deux autres prismes se lisent sans lui ; celui-ci s’ajoutera le jour où il aura du sens.",
+    relNoMbti:"Le type MBTI manque d’un côté au moins : la résonance est calculée sur les deux autres prismes.",
     mbtiPick:"Choisir…", quizHint:"Répondez spontanément — la première réaction est la bonne.",
     submitProfile:"Révéler mon portrait",
     errFields:"Un prénom, un nom et une date de naissance, s’il vous plaît.",
@@ -649,13 +653,18 @@ fr: {
 
   build: {
     synthesis(p, L){
-      const sign=L.signs[p.sign], lp=L.numbers[p.life], type=L.mbti[p.mbti], el=p.el, elName=L.elements[el].name;
-      const lead=`Sous une même lumière, trois facettes : le tempérament ${elName.toLowerCase()} du ${sign.name}, le fil du ${lp.titre.toLowerCase()} (${p.life}) et le regard ${type.nom.toLowerCase()}.`;
+      const sign=L.signs[p.sign], lp=L.numbers[p.life], el=p.el, elName=L.elements[el].name;
+      /* Sans type MBTI — un enfant, par exemple — deux prismes se lisent quand
+         même, et la synthèse ne fait pas semblant d'en avoir trois. */
+      const type=L.mbti[p.mbti] || null;
+      const lead=type
+        ? `Sous une même lumière, trois facettes : le tempérament ${elName.toLowerCase()} du ${sign.name}, le fil du ${lp.titre.toLowerCase()} (${p.life}) et le regard ${type.nom.toLowerCase()}.`
+        : `Sous une même lumière, deux facettes : le tempérament ${elName.toLowerCase()} du ${sign.name} et le fil du ${lp.titre.toLowerCase()} (${p.life}).`;
       const p1=`Votre astrologie vous oriente vers ${L.elements[el].desc}. C’est votre pente naturelle, la façon dont vous réagissez avant de réfléchir. Là où le ${sign.name} brille — ${sign.force.toLowerCase()} — vous êtes déjà chez vous.`;
       const p2=`Votre chemin de vie ${p.life}, celui du ${lp.titre.toLowerCase()}, ajoute une direction de fond : ${lp.desc.toLowerCase()} C’est moins une humeur qu’une trajectoire — la leçon qui revient, sous des formes différentes, tout au long d’une vie.`;
-      const p3=`Votre type ${p.mbti} décrit comment tout cela s’organise concrètement : ${type.desc.toLowerCase()} En relation, ${type.relation}`;
-      let converge="Là où les trois prismes se rejoignent : ";
-      const m=p.mbti, notes=[], isF=m.includes("F"), isN=m.includes("N"), isJ=m.includes("J");
+      const p3=type ? `Votre type ${p.mbti} décrit comment tout cela s’organise concrètement : ${type.desc.toLowerCase()} En relation, ${type.relation}` : "";
+      let converge=`Là où les ${type?"trois":"deux"} prismes se rejoignent : `;
+      const m=type?p.mbti:"", notes=[], isF=m.includes("F"), isN=m.includes("N"), isJ=m.includes("J");
       if((el==="feu"||el==="air")&&m.includes("E")) notes.push("une énergie tournée vers l’extérieur, qui a besoin d’agir et d’échanger pour exister");
       if((el==="eau"||el==="terre")&&m.includes("I")) notes.push("un monde intérieur riche, qui se nourrit de calme avant de se donner");
       if(isF&&el==="eau") notes.push("une sensibilité forte, à la fois ressource et zone de vigilance");
@@ -664,7 +673,7 @@ fr: {
       if(isJ&&[1,4,8,22].includes(p.life)) notes.push("une vraie capacité à structurer et à mener les choses à terme");
       if(notes.length===0) notes.push("un équilibre entre des forces contrastées — c’est souvent là que se trouve votre singularité");
       converge+=notes.slice(0,2).join(" ; ")+". "+`Le chantier commun, lui, se lit dans ce que le ${sign.name} a à travailler — ${sign.travail.toLowerCase()}`;
-      return { lead, paras:[p1,p2,p3], converge };
+      return { lead, paras:[p1,p2,p3].filter(Boolean), converge };
     },
     celestial(p, L){
       const asc=L.signs[p.asc.sign], moon=L.signs[p.moon.sign];
@@ -735,7 +744,7 @@ en: {
       intro:"The sky, numbers, temperaments: everywhere and in every age, people have used them to find their bearings. Three constellations, three numbers, three figures who kept them alive.",
       milkyway:"The Milky Way — the same sky, from one civilization to the next.",
       skyLabel:"The sky", numLabel:"The numbers", figLabel:"Those who carried them",
-      constellations:{ capricorne:"The sea-goat: patience and heights.", balance:"The only inanimate sign: balance and justice.", gemeaux:"The twins: the double, the exchange." },
+      constellations:{ capricorne:"The sea-goat: patience and heights.", balance:"The only inanimate sign: balance and justice.", belier:"The ram: the first push, the opening fire of the year." },
       figures:[
         {key:"pythagore",name:"Pythagoras",dates:"c. 570 BCE",note:"The Greek mathematician whose method still underlies Western numerology."},
         {key:"cleopatre",name:"Cleopatra",dates:"69 – 30 BCE",note:"The Egypt of temples, where the sky was read carved in stone."},
@@ -1182,7 +1191,11 @@ en: {
     cityChosen:(zone)=>`Time zone: ${zone}`,
     cityClear:"Clear",
     mbtiLegend:"Your personality type (MBTI)",
-    segQuiz:"Take the test (2 min)", segKnown:"I know my type",
+    segQuiz:"Take the test (2 min)", segKnown:"I know my type", segUnknown:"I don't know it",
+    mbtiUnknownHint:"For a child, this is the right answer. MBTI describes preferences that don't settle until late adolescence: a type pinned on a six-year-old mostly says what the adults project onto them. Astrology and numerology, on the other hand, can be computed from birth — that side of the profile will be complete, and the type can be added later.",
+    mbtiNone:"Type not filled in",
+    mbtiNoneCard:"The MBTI type hasn't been filled in. The other two lenses read without it; this one can be added the day it means something.",
+    relNoMbti:"The MBTI type is missing on at least one side: resonance is computed from the other two lenses.",
     mbtiPick:"Choose…", quizHint:"Answer spontaneously — your first reaction is the right one.",
     submitProfile:"Reveal my portrait",
     errFields:"A first name, last name and date of birth, please.",
@@ -1342,13 +1355,18 @@ en: {
 
   build: {
     synthesis(p, L){
-      const sign=L.signs[p.sign], lp=L.numbers[p.life], type=L.mbti[p.mbti], el=p.el, elName=L.elements[el].name;
-      const lead=`Under one light, three facets: the ${elName.toLowerCase()} temperament of ${sign.name}, the thread of ${lp.titre.toLowerCase()} (${p.life}), and the ${type.nom.toLowerCase()}’s gaze.`;
+      const sign=L.signs[p.sign], lp=L.numbers[p.life], el=p.el, elName=L.elements[el].name;
+      /* No MBTI type — a child, for instance — two lenses still read, and the
+         synthesis doesn't pretend to have three. */
+      const type=L.mbti[p.mbti] || null;
+      const lead=type
+        ? `Under one light, three facets: the ${elName.toLowerCase()} temperament of ${sign.name}, the thread of ${lp.titre.toLowerCase()} (${p.life}), and the ${type.nom.toLowerCase()}’s gaze.`
+        : `Under one light, two facets: the ${elName.toLowerCase()} temperament of ${sign.name} and the thread of ${lp.titre.toLowerCase()} (${p.life}).`;
       const p1=`Your astrology orients you toward ${L.elements[el].desc}. That’s your natural lean, the way you react before you think. Where ${sign.name} shines — ${sign.force.toLowerCase()} — you’re already at home.`;
       const p2=`Your life path ${p.life}, that of ${lp.titre.toLowerCase()}, adds an underlying direction: ${lp.desc.toLowerCase()} Less a mood than a trajectory — the lesson that keeps returning, in different forms, across a life.`;
-      const p3=`Your ${p.mbti} type describes how all of this organizes concretely: ${type.desc.toLowerCase()} In relationships, it’s ${type.relation}`;
-      let converge="Where the three lenses meet: ";
-      const m=p.mbti, notes=[], isF=m.includes("F"), isN=m.includes("N"), isJ=m.includes("J");
+      const p3=type ? `Your ${p.mbti} type describes how all of this organizes concretely: ${type.desc.toLowerCase()} In relationships, it’s ${type.relation}` : "";
+      let converge=`Where the ${type?"three":"two"} lenses meet: `;
+      const m=type?p.mbti:"", notes=[], isF=m.includes("F"), isN=m.includes("N"), isJ=m.includes("J");
       if((el==="feu"||el==="air")&&m.includes("E")) notes.push("an energy turned outward, that needs to act and exchange to exist");
       if((el==="eau"||el==="terre")&&m.includes("I")) notes.push("a rich inner world, fed by calm before it gives itself");
       if(isF&&el==="eau") notes.push("a strong sensitivity, both a resource and a watch-point");
@@ -1357,7 +1375,7 @@ en: {
       if(isJ&&[1,4,8,22].includes(p.life)) notes.push("a real ability to structure and carry things through");
       if(notes.length===0) notes.push("a balance between contrasting forces — often exactly where your singularity lives");
       converge+=notes.slice(0,2).join("; ")+". "+`The shared growth edge shows in what ${sign.name} has to work on — ${sign.travail.toLowerCase()}`;
-      return { lead, paras:[p1,p2,p3], converge };
+      return { lead, paras:[p1,p2,p3].filter(Boolean), converge };
     },
     celestial(p, L){
       const asc=L.signs[p.asc.sign], moon=L.signs[p.moon.sign];
