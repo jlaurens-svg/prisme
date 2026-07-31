@@ -13,7 +13,7 @@ const I18N = {
 fr: {
   code: "fr", label: "FR",
   ui: {
-    nav: { home:"Accueil", create:"Mon profil", relation:"Relation", mirror:"Miroir", method:"Méthode" },
+    nav: { home:"Accueil", create:"Moi", relation:"Mes proches", mirror:"Mon miroir", method:"Les prismes" },
     brandTag: "Astrologie · Numérologie · MBTI",
     hero: {
       eyebrow:"Astrologie · Numérologie · MBTI · Graphologie",
@@ -347,7 +347,7 @@ fr: {
     savedTitle:"Profils enregistrés", savedEmpty:"Aucun profil enregistré pour l’instant.",
     savedLoad:"Voir", savedA:"→ A", savedB:"→ B", savedDelete:"Supprimer",
 
-    methodEyebrow:"Ce que PRISME fait, et ne fait pas", methodTitle:"La méthode",
+    methodEyebrow:"Ce que PRISME fait, et ne fait pas", methodTitle:"Les prismes",
 
     footer:"PRISME — un langage pour se comprendre. Outil symbolique et réflexif, sans valeur prédictive."
   },
@@ -437,9 +437,11 @@ fr: {
   ],
 
   method: `
-    <h3>Trois systèmes, trois statuts</h3>
+    <h3>Cinq prismes, des statuts différents</h3>
     <p>L’<strong>astrologie</strong> et la <strong>numérologie</strong> sont des systèmes symboliques : ils ne prédisent pas l’avenir et n’ont pas de validité scientifique. PRISME les utilise comme des <em>langages</em> — des cadres pour mettre des mots sur des tendances, ouvrir la conversation, se raconter autrement.</p>
     <p>Le <strong>MBTI</strong> est un outil de psychologie des préférences, très répandu en développement personnel et en entreprise. Utile pour se situer, il reste une simplification : les nuances comptent plus que les quatre lettres.</p>
+    <p>L’<strong>histoire de vie</strong> ne relève d’aucun système : ce sont vos propres réponses. PRISME n’y devine rien de caché — il rapproche l’âge d’un événement de ce qu’un enfant de cet âge pouvait en faire. Ce n’est pas un diagnostic, et rien de ce qui vous est arrivé ne dit ce que vous valez.</p>
+    <p>La <strong>graphologie</strong> ne se calcule pas : elle demande un regard humain, et se fait sur rendez-vous.</p>
     <h3>Comment nous calculons</h3>
     <ul>
       <li><strong>Signe solaire</strong> — déduit de votre date de naissance selon les dates tropicales usuelles.</li>
@@ -448,6 +450,7 @@ fr: {
       <li><strong>Chemin de vie</strong> — somme des chiffres de votre date de naissance, réduite jusqu’à un seul chiffre. Les <strong>nombres maîtres 11, 22 et 33</strong> sont conservés : la somme n’est pas réduite avant la fin, sinon ils disparaîtraient. Ils s’écrivent avec leur racine — 11/2, 22/4, 33/6.</li>
       <li><strong>Nombre d’expression & nombre intime</strong> — valeur des lettres de votre nom (méthode pythagoricienne), tout le nom puis les voyelles.</li>
       <li><strong>Type MBTI</strong> — issu de votre questionnaire ou de votre saisie directe.</li>
+      <li><strong>Versions de vous</strong> — croisement de l’âge que vous indiquez avec le type de moment : l’âge donne ce qu’on pouvait alors comprendre de l’événement, le type de moment donne ce qu’il installe. Ces réponses ne quittent pas votre appareil.</li>
     </ul>
     <h3>Notre parti pris</h3>
     <p>Un langage <strong>sans genre</strong>, sans injonction, sans fatalité. Chaque portrait nomme une force <em>et</em> un chantier, parce qu’une personne n’est jamais un verdict. Prenez ce qui résonne, laissez le reste.</p>
@@ -519,7 +522,7 @@ fr: {
 en: {
   code: "en", label: "EN",
   ui: {
-    nav: { home:"Home", create:"My profile", relation:"Relationship", mirror:"Mirror", method:"Method" },
+    nav: { home:"Home", create:"Me", relation:"My people", mirror:"My mirror", method:"The prisms" },
     brandTag: "Astrology · Numerology · MBTI",
     hero: {
       eyebrow:"Astrology · Numerology · MBTI · Graphology",
@@ -851,7 +854,7 @@ en: {
     savedTitle:"Saved profiles", savedEmpty:"No saved profile yet.",
     savedLoad:"View", savedA:"→ A", savedB:"→ B", savedDelete:"Delete",
 
-    methodEyebrow:"What PRISME does, and doesn’t", methodTitle:"The method",
+    methodEyebrow:"What PRISME does, and doesn’t", methodTitle:"The prisms",
 
     footer:"PRISME — a language to understand ourselves. A symbolic, reflective tool with no predictive value."
   },
@@ -941,9 +944,11 @@ en: {
   ],
 
   method: `
-    <h3>Three systems, three statuses</h3>
+    <h3>Five prisms, different statuses</h3>
     <p><strong>Astrology</strong> and <strong>numerology</strong> are symbolic systems: they don’t predict the future and have no scientific validity. PRISME uses them as <em>languages</em> — frames to put words on tendencies, open a conversation, tell your story differently.</p>
     <p><strong>MBTI</strong> is a tool from the psychology of preferences, widely used in personal development and business. Useful for locating yourself, it’s still a simplification: nuance matters more than the four letters.</p>
+    <p><strong>Life history</strong> belongs to no system: it is your own answers. PRISME guesses nothing hidden in them — it sets the age of an event against what a child that age could do with it. It is not a diagnosis, and nothing that happened to you says what you are worth.</p>
+    <p><strong>Graphology</strong> cannot be computed: it needs a human eye, and happens by appointment.</p>
     <h3>How we compute</h3>
     <ul>
       <li><strong>Sun sign</strong> — from your date of birth, using the usual tropical dates.</li>
@@ -952,6 +957,7 @@ en: {
       <li><strong>Life path</strong> — the digits of your date of birth summed, then reduced to a single digit. <strong>Master numbers 11, 22 and 33</strong> are kept: the sum is not reduced before the end, or they would vanish. They are written with their root — 11/2, 22/4, 33/6.</li>
       <li><strong>Expression & soul urge numbers</strong> — the value of your name’s letters (Pythagorean method), the whole name then the vowels.</li>
       <li><strong>MBTI type</strong> — from your questionnaire or your direct entry.</li>
+      <li><strong>Versions of you</strong> — the age you give crossed with the kind of moment: the age gives what could be understood of it back then, the kind of moment gives what it settled in. Those answers never leave your device.</li>
     </ul>
     <h3>Our stance</h3>
     <p>A <strong>genderless</strong> language, with no injunction, no fate. Every portrait names a strength <em>and</em> a growth edge, because a person is never a verdict. Take what resonates, leave the rest.</p>
