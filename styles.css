@@ -289,6 +289,51 @@ em{ font-style:italic; }
 .synth p{ color:#d6d3cc; font-size:1.05rem; margin-bottom:1rem; }
 .synth .lead{ font-family:"Fraunces",serif; font-size:1.3rem; color:var(--ink); }
 
+/* ---------- MIROIR : LA LECTURE DU TIERS (IA) ---------- */
+.mir-ai .cards-2{ grid-template-columns:1fr; margin:.6rem 0 0; }
+@media (min-width:860px){ .mir-ai .cards-2{ grid-template-columns:1fr 1fr; } }
+.mir-ai .ai-sub{ font-family:"Fraunces",serif; font-size:1.25rem; margin:1.8rem 0 .2rem; }
+.mir-ai .ai-person .mini:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
+
+/* l'avertissement de sortie du navigateur : visible, pas alarmiste */
+.ai-privacy{ font-size:.88rem !important; color:#c9b8ff !important; border-left:2px solid var(--accent);
+  padding-left:.9rem; margin:1.2rem 0 !important; }
+.ai-consent{ display:flex; align-items:flex-start; gap:.6rem; margin:1.2rem 0; cursor:pointer;
+  font-size:.95rem; color:#d6d3cc; }
+.ai-consent input{ margin-top:.25rem; accent-color:var(--accent); width:1.05rem; height:1.05rem; flex:none; }
+.ai-setup{ font-size:.92rem !important; color:var(--ink-dim) !important; }
+.ai-key{ display:flex; flex-wrap:wrap; gap:.6rem; margin:.8rem 0 0; }
+.ai-key input{ flex:1 1 18rem; background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+  padding:.8rem 1rem; border-radius:10px; font-family:inherit; font-size:.95rem; }
+.ai-key input:focus{ outline:none; border-color:var(--accent); }
+.ai-status{ font-size:.85rem; color:#6f6c66; min-height:1.1em; margin:.9rem 0 0 !important; }
+.ai-status.is-ok{ color:#c9f5b0; }
+.ai-status.is-wait{ color:var(--ink-dim); font-style:italic; }
+.ai-status.is-err{ color:#ff9db0; }
+
+/* le nœud : c'est le cœur de l'analyse, il doit se voir */
+.ai-knot{ margin-top:1.2rem; padding:1.1rem 1.3rem; border:1px solid var(--line-2); border-radius:12px;
+  background:var(--bg-2); }
+.ai-knot strong{ display:block; font-family:"Inter Tight",sans-serif; font-size:.75rem;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin-bottom:.5rem; }
+.ai-knot p{ margin:0 !important; font-family:"Fraunces",serif; font-size:1.2rem; color:var(--ink) !important; }
+
+.ai-say{ margin:.5rem 0 !important; }
+.ai-say .who{ color:var(--accent); font-family:"Inter Tight",sans-serif; }
+.ai-say q{ color:var(--ink); font-style:italic; }
+
+/* alerte de sécurité : passe avant tout le reste */
+.ai-alert{ margin:1.2rem 0; padding:1.2rem 1.4rem; border-radius:12px;
+  border:1px solid #ff9db0; background:rgba(255,157,176,.07); }
+.ai-alert.ai-alert-vigilance{ border-color:#ffd39b; background:rgba(255,211,155,.07); }
+.ai-alert strong{ display:block; font-family:"Inter Tight",sans-serif; font-size:.78rem;
+  letter-spacing:.16em; text-transform:uppercase; color:#ff9db0; margin-bottom:.6rem; }
+.ai-alert.ai-alert-vigilance strong{ color:#ffd39b; }
+.ai-alert p{ margin:0 !important; color:var(--ink) !important; }
+
+.ai-disclaimer{ font-size:.8rem !important; color:#6f6c66 !important; font-style:italic;
+  margin:1.8rem 0 0 !important; padding-top:1rem; border-top:1px solid var(--line); }
+
 .result-actions{ display:flex; flex-wrap:wrap; gap:.8rem; margin-top:2.4rem; }
 
 /* ---------- RELATION RÉSULTAT ---------- */

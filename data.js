@@ -65,7 +65,47 @@ fr: {
       promptsTitle:"Trois questions pour avancer",
       prompts:["Qu’est-ce qui, dans le récit de l’autre, vous surprend le plus ?","Sur quel besoin non dit pourriez-vous vous rejoindre ?","Quelle petite chose apaiserait la prochaine conversation ?"],
       closing:"Aucune version n’est « la vraie ». Comprendre celle de l’autre, ce n’est pas lui donner raison — c’est cesser de se parler à travers un mur.",
-      restart:"Recommencer"
+      restart:"Recommencer",
+      ai:{
+        tag:"Le tiers",
+        title:"Faire lire les deux récits par un tiers",
+        text:"Le miroir met vos deux versions côte à côte. Un tiers peut aller plus loin : lire les deux ensemble, nommer le malentendu réel, et dire à chacun ce qu’il ne peut pas voir depuis sa place. Bienveillant, mais objectif — il ne donne raison à personne.",
+        privacy:"Vos deux récits quittent votre navigateur pour être analysés. C’est la seule fonction du site dans ce cas : tout le reste est calculé chez vous. Ne lancez l’analyse qu’avec l’accord des deux personnes.",
+        consent:"Nous sommes d’accord tous les deux pour envoyer nos récits.",
+        button:"Demander la lecture du tiers",
+        loading:"Lecture des deux récits…",
+        loadingLong:"L’analyse prend une trentaine de secondes.",
+        retry:"Réessayer",
+        rTag:"Lecture du tiers",
+        rTitle:"Ce qu’un tiers voit dans vos deux récits",
+        sResume:"Ce qui s’est passé",
+        sNoeud:"Le nœud",
+        sChacun:"Ce que chacun dit vraiment",
+        lEntend:"Ce qu’iel dit, sous ses mots",
+        lBesoin:"Le besoin dessous",
+        lAngle:"Son angle mort",
+        sAccords:"Ce sur quoi vous êtes déjà d’accord",
+        sPistes:"Par où reprendre",
+        sADire:"Une phrase à se dire",
+        disclaimer:"Lecture produite par une IA à partir de vos seuls récits. Ce n’est ni un avis thérapeutique ni un arbitrage — gardez ce qui résonne, écartez le reste.",
+        alertTitle:"Un point de vigilance avant tout le reste",
+        setup:"L’analyse par un tiers n’est pas encore configurée sur ce site.",
+        setupKey:"Pour l’essayer dès maintenant, saisissez votre clé d’API Anthropic. Elle reste dans ce navigateur et n’est envoyée qu’à Anthropic.",
+        keyPh:"sk-ant-…",
+        keySave:"Enregistrer la clé",
+        keyForget:"Oublier la clé",
+        keyOk:"Clé enregistrée dans ce navigateur.",
+        errs:{
+          config:"Aucune clé ni relais configuré.",
+          cle:"Clé refusée. Vérifiez-la dans la console Anthropic.",
+          quota:"Trop de requêtes ou quota atteint. Réessayez dans un moment.",
+          reseau:"Connexion impossible. Vérifiez votre réseau.",
+          refus:"L’analyse n’a pas pu être produite pour ces récits.",
+          api:"Le service a renvoyé une erreur.",
+          format:"Réponse inattendue du service.",
+          vide:"Réponse vide du service."
+        }
+      }
     },
 
     createEyebrow:"Étape par étape", createTitle:"Votre portrait",
@@ -234,7 +274,8 @@ fr: {
     <h3>Notre parti pris</h3>
     <p>Un langage <strong>sans genre</strong>, sans injonction, sans fatalité. Chaque portrait nomme une force <em>et</em> un chantier, parce qu’une personne n’est jamais un verdict. Prenez ce qui résonne, laissez le reste.</p>
     <h3>Vos données</h3>
-    <p>Tout est calculé localement, dans votre navigateur. Les profils que vous enregistrez restent sur votre appareil (stockage local). Rien n’est envoyé sur un serveur.</p>
+    <p>Les portraits, les relations et les calculs astronomiques sont faits localement, dans votre navigateur. Les profils que vous enregistrez restent sur votre appareil (stockage local).</p>
+    <p><strong>Une seule exception</strong>, et elle est explicite : dans le Miroir, la <em>lecture du tiers</em> envoie vos deux récits à un modèle d’IA pour analyse. Rien n’est envoyé sans que vous cochiez l’accord des deux personnes, et la fonction est facultative — le miroir à deux voix fonctionne sans elle. Nous ne conservons pas ces récits ; ils transitent le temps de l’analyse.</p>
   `,
 
   build: {
@@ -352,7 +393,47 @@ en: {
       promptsTitle:"Three questions to move forward",
       prompts:["What in the other’s account surprises you most?","On which unspoken need could you meet?","What small thing would ease the next conversation?"],
       closing:"No version is “the true one.” Understanding the other’s isn’t agreeing with them — it’s no longer talking through a wall.",
-      restart:"Start over"
+      restart:"Start over",
+      ai:{
+        tag:"The third voice",
+        title:"Have a third party read both accounts",
+        text:"The mirror sets your two versions side by side. A third party can go further: read them together, name the real misunderstanding, and tell each of you what you can't see from where you stand. Kind, but objective — it takes nobody's side.",
+        privacy:"Both accounts leave your browser to be analysed. This is the only feature on the site that does so — everything else is computed on your machine. Only run it with both people's agreement.",
+        consent:"We both agree to send our accounts.",
+        button:"Ask the third party to read",
+        loading:"Reading both accounts…",
+        loadingLong:"The analysis takes about thirty seconds.",
+        retry:"Try again",
+        rTag:"The third reading",
+        rTitle:"What a third party sees in your two accounts",
+        sResume:"What happened",
+        sNoeud:"The knot",
+        sChacun:"What each of you is really saying",
+        lEntend:"What they're saying, under their words",
+        lBesoin:"The need underneath",
+        lAngle:"Their blind spot",
+        sAccords:"What you already agree on",
+        sPistes:"Where to pick it up",
+        sADire:"One sentence to say",
+        disclaimer:"Reading produced by an AI from your accounts alone. It is neither therapeutic advice nor a ruling — keep what resonates, leave the rest.",
+        alertTitle:"Something to weigh before anything else",
+        setup:"Third-party analysis isn't configured on this site yet.",
+        setupKey:"To try it now, enter your Anthropic API key. It stays in this browser and is sent only to Anthropic.",
+        keyPh:"sk-ant-…",
+        keySave:"Save the key",
+        keyForget:"Forget the key",
+        keyOk:"Key saved in this browser.",
+        errs:{
+          config:"No key or relay configured.",
+          cle:"Key refused. Check it in the Anthropic console.",
+          quota:"Too many requests, or quota reached. Try again shortly.",
+          reseau:"Couldn't connect. Check your network.",
+          refus:"The analysis couldn't be produced for these accounts.",
+          api:"The service returned an error.",
+          format:"Unexpected response from the service.",
+          vide:"Empty response from the service."
+        }
+      }
     },
 
     createEyebrow:"Step by step", createTitle:"Your portrait",
@@ -521,7 +602,8 @@ en: {
     <h3>Our stance</h3>
     <p>A <strong>genderless</strong> language, with no injunction, no fate. Every portrait names a strength <em>and</em> a growth edge, because a person is never a verdict. Take what resonates, leave the rest.</p>
     <h3>Your data</h3>
-    <p>Everything is computed locally, in your browser. Profiles you save stay on your device (local storage). Nothing is sent to a server.</p>
+    <p>Portraits, relationships, and astronomical calculations run locally, in your browser. Profiles you save stay on your device (local storage).</p>
+    <p><strong>One exception</strong>, and it is explicit: in the Mirror, the <em>third reading</em> sends both accounts to an AI model for analysis. Nothing is sent until you tick that both people agree, and the feature is optional — the two-voice mirror works without it. We don’t keep those accounts; they pass through for the length of the analysis.</p>
   `,
 
   build: {

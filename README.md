@@ -3,8 +3,10 @@
 Se comprendre — et comprendre ses proches — à travers trois lentilles :
 **astrologie · numérologie · MBTI**. Moderne, sans genre, bilingue (FR/EN).
 
-Tout est calculé **localement** dans le navigateur (aucune donnée envoyée).
-Portraits : domaine public (Wikimedia Commons).
+Tout est calculé **localement** dans le navigateur, à une exception près : la
+*lecture du tiers* du Miroir envoie les deux récits à un modèle d'IA, après
+consentement explicite (voir `worker/`). Portraits : domaine public (Wikimedia
+Commons).
 
 *Understand yourself and those close to you through three lenses:
 astrology, numerology, MBTI. A symbolic, reflective tool with no predictive value.*
@@ -18,6 +20,8 @@ Site statique, sans étape de compilation — il suffit de servir le dossier.
 | `index.html` | structure des vues |
 | `styles.css` | mise en forme |
 | `astro.js` | calculs astronomiques (lune, ascendant) |
+| `mirror-ai.js` | médiation du Miroir par IA (consigne, schéma, appel) |
+| `config.js` | adresse du relais d'API (vide = mode clé personnelle) |
 | `cities.js` | recherche de ville et conversion heure locale → UT |
 | `data.js` | contenus et traductions FR/EN |
 | `portraits.js` | portraits Wikimedia |
@@ -48,3 +52,20 @@ coordonnées à la main.
 Le décalage UTC appliqué est celui qui valait **à la date de naissance**, lu
 dans la base tzdata du navigateur — les règles historiques d'heure d'été sont
 donc respectées.
+
+### Médiation du Miroir
+
+La section Miroir peut faire relire les deux récits par un tiers — une analyse
+produite par Claude, qui nomme le malentendu et l'angle mort de chacun sans
+donner raison à personne. C'est **la seule fonction qui sort du navigateur**, et
+elle demande l'accord des deux personnes avant l'envoi.
+
+Une clé d'API ne peut pas vivre dans une page publique. `worker/` contient un
+relais Cloudflare Worker qui la détient côté serveur — voir `worker/README.md`
+pour le déployer (~5 min) puis renseigner `config.js`. Tant que `config.js` est
+vide, l'interface propose un mode « clé personnelle » pour tester : la clé reste
+dans le navigateur de la machine.
+
+Le relais impose le modèle et `max_tokens`, filtre les origines et borne la
+taille des requêtes — sans quoi une clé derrière un relais ouvert reste
+consommable par n'importe qui. Coût indicatif : 4 à 5 centimes par médiation.

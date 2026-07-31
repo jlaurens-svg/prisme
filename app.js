@@ -761,11 +761,13 @@ function renderMirrorResult(a, b, ctx){
       <ul class="prose-list">${m.prompts.map(p=>`<li>${p}</li>`).join("")}</ul>
       <p class="lead">${m.closing}</p>
     </section>
+    <section class="synth mir-ai" id="mir-ai"></section>
     <div class="result-actions no-print">
       <button class="btn btn-ghost" id="mir-restart">${m.restart}</button>
       <button class="btn btn-ghost" id="mir-print">${t.actPrint}</button>
     </div>`;
-  document.getElementById("mir-restart").addEventListener("click", ()=>{ document.getElementById("mirror-form").reset(); document.getElementById("mirror-out").innerHTML=""; lastMirror=null; window.scrollTo({top:0,behavior:"smooth"}); });
+  renderMirrorAI();
+  document.getElementById("mir-restart").addEventListener("click", ()=>{ document.getElementById("mirror-form").reset(); document.getElementById("mirror-out").innerHTML=""; lastMirror=null; lastMediation=null; window.scrollTo({top:0,behavior:"smooth"}); });
   document.getElementById("mir-print").addEventListener("click", ()=>window.print());
   document.getElementById("mirror-out").scrollIntoView({behavior:"smooth"});
 }
@@ -778,8 +780,123 @@ document.getElementById("mirror-form").addEventListener("submit", e=>{
   const b={ name:g("mb-name")||"B", recit:g("mb-recit"), ressenti:g("mb-ressenti"), besoin:g("mb-besoin"), autre:g("mb-autre") };
   const ctx=document.getElementById("mir-ctx").value||"couple";
   if(!a.recit||!a.ressenti||!b.recit||!b.ressenti) return showErr(err, U().mirror.err);
+  lastMediation=null;
   renderMirrorResult(a, b, ctx);
 });
+
+/* ---------------- Miroir : la lecture du tiers (IA) ----------------
+   Seule fonction du site qui sort du navigateur : les deux récits sont
+   envoyés pour analyse. D'où le consentement explicite avant l'envoi, et le
+   rappel affiché à côté du bouton. Voir mirror-ai.js. */
+let lastMediation = null;
+
+function renderMirrorAI(){
+  const box = document.getElementById("mir-ai");
+  if(!box || !lastMirror) return;
+  if(lastMediation){ paintMediation(lastMediation); return; }
+
+  const m = U().mirror.ai;
+  const pret = MirrorAI.mode() !== "aucun";
+  box.innerHTML = `
+    <div class="card-tag"><span class="dot"></span><span>${m.tag}</span></div>
+    <h3>${m.title}</h3>
+    <p>${m.text}</p>
+    <p class="ai-privacy">⚠ ${m.privacy}</p>
+    ${pret ? `
+      <label class="ai-consent"><input type="checkbox" id="mir-ai-ok" /> <span>${m.consent}</span></label>
+      <button class="btn btn-accent" id="mir-ai-go" disabled>${m.button}</button>
+    ` : `
+      <p class="ai-setup">${m.setup} ${m.setupKey}</p>
+      <div class="ai-key">
+        <input type="password" id="mir-ai-key" autocomplete="off" spellcheck="false" placeholder="${m.keyPh}" />
+        <button class="btn btn-ghost" id="mir-ai-key-save">${m.keySave}</button>
+      </div>
+    `}
+    <p class="ai-status" id="mir-ai-status" role="status" aria-live="polite"></p>`;
+
+  const ok = document.getElementById("mir-ai-ok");
+  const go = document.getElementById("mir-ai-go");
+  if(ok && go){
+    ok.addEventListener("change", ()=>{ go.disabled = !ok.checked; });
+    go.addEventListener("click", runMediation);
+  }
+  const save = document.getElementById("mir-ai-key-save");
+  if(save) save.addEventListener("click", ()=>{
+    const v = document.getElementById("mir-ai-key").value.trim();
+    if(!v) return;
+    MirrorAI.setKey(v);
+    renderMirrorAI();                       // repasse en mode « prêt »
+    setAiStatus(U().mirror.ai.keyOk, "ok");
+  });
+}
+
+function setAiStatus(msg, kind){
+  const el = document.getElementById("mir-ai-status");
+  if(!el) return;
+  el.textContent = msg || "";
+  el.className = "ai-status" + (kind ? " is-" + kind : "");
+}
+
+async function runMediation(){
+  const m = U().mirror.ai;
+  const go = document.getElementById("mir-ai-go");
+  const ok = document.getElementById("mir-ai-ok");
+  if(go){ go.disabled = true; go.textContent = m.loading; }
+  if(ok) ok.disabled = true;
+  setAiStatus(m.loadingLong, "wait");
+  try {
+    const { a, b, ctx } = lastMirror;
+    lastMediation = await MirrorAI.analyse(a, b, ctx, LANG);
+    paintMediation(lastMediation);
+  } catch(e){
+    const detail = m.errs[e.code] || m.errs.api;
+    setAiStatus(detail, "err");
+    if(go){ go.disabled = false; go.textContent = m.retry; }
+    if(ok) ok.disabled = false;
+    // une clé refusée : on la retire pour laisser ressaisir
+    if(e.code === "cle" && MirrorAI.hasKey()){ MirrorAI.setKey(""); }
+  }
+}
+
+/* Affiche la médiation. En cas d'alerte, elle passe avant tout le reste et le
+   reste est volontairement réduit — une médiation symétrique serait à côté. */
+function paintMediation(d){
+  const box = document.getElementById("mir-ai");
+  if(!box) return;
+  const m = U().mirror.ai;
+  const p = (s)=>`<p>${escapeHtml(s||"")}</p>`;
+  const alerte = (d.alerte && d.alerte !== "aucune" && d.alerteTexte) ? `
+    <div class="ai-alert ai-alert-${escapeHtml(d.alerte)}">
+      <strong>${m.alertTitle}</strong>
+      ${p(d.alerteTexte)}
+    </div>` : "";
+
+  const personne = (x)=>`
+    <article class="card ai-person">
+      <div class="card-tag"><span class="dot"></span><span>${escapeHtml(x.nom||"")}</span></div>
+      <div class="mini"><strong>${m.lEntend}</strong>${p(x.entend)}</div>
+      <div class="mini"><strong>${m.lBesoin}</strong>${p(x.besoin)}</div>
+      <div class="mini"><strong>${m.lAngle}</strong>${p(x.angleMort)}</div>
+    </article>`;
+
+  const liste = (arr)=>`<ul class="prose-list">${(arr||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>`;
+
+  box.innerHTML = `
+    <div class="card-tag"><span class="dot"></span><span>${m.rTag}</span></div>
+    <h3>${m.rTitle}</h3>
+    ${alerte}
+    <div class="mini"><strong>${m.sResume}</strong>${p(d.resume)}</div>
+    <div class="ai-knot"><strong>${m.sNoeud}</strong>${p(d.noeud)}</div>
+    <h4 class="ai-sub">${m.sChacun}</h4>
+    <div class="cards cards-2">${(d.chacun||[]).map(personne).join("")}</div>
+    <div class="mini"><strong>${m.sAccords}</strong>${liste(d.accords)}</div>
+    <div class="mini"><strong>${m.sPistes}</strong>${liste(d.pistes)}</div>
+    <div class="mini"><strong>${m.sADire}</strong>
+      ${(d.aDire||[]).map(x=>`<p class="ai-say"><span class="who">${escapeHtml(x.nom||"")}</span> <q>${escapeHtml(x.phrase||"")}</q></p>`).join("")}
+    </div>
+    <p class="ai-disclaimer">${m.disclaimer}</p>`;
+  box.scrollIntoView({ behavior:"smooth", block:"start" });
+}
 
 /* ---------------- Sauvegarde (localStorage) ---------------- */
 function loadSaved(){ try{ return JSON.parse(localStorage.getItem("prisme-profiles")||"[]"); }catch(_){ return []; } }
