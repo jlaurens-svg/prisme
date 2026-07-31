@@ -18,6 +18,7 @@ Site statique, sans étape de compilation — il suffit de servir le dossier.
 | Fichier | Rôle |
 |---|---|
 | `index.html` | structure des vues |
+| `CNAME` | domaine personnalisé servi par GitHub Pages |
 | `styles.css` | mise en forme |
 | `astro.js` | calculs astronomiques (lune, ascendant) |
 | `transits.js` | positions des planètes, rétrogradations, aspects |
