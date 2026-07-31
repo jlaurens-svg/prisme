@@ -1189,6 +1189,29 @@ const HISTOIRE = journal("prisme-histoire");
 function histLoad(){ return HISTOIRE.load(); }
 function histSave(list){ HISTOIRE.save(list); }
 
+/* Une entrée peut être une épreuve ou une victoire. Les anciennes n'ont pas de
+   nature : ce sont des épreuves. */
+function histNature(e){ return e.nature === "victoire" ? "victoire" : "epreuve"; }
+function histEstVictoire(e){ return histNature(e) === "victoire"; }
+function histType(e){
+  const h = U().histoire;
+  return histEstVictoire(e)
+    ? (h.victoires[e.type] || h.victoires.autreVictoire)
+    : (h.events[e.type] || h.events.autre);
+}
+/* Le poids dit ce que ça pèse aujourd'hui — c'est lui, et non l'âge, qui décide
+   du ton de la lecture et de l'ordre sous tension. Sans poids (entrées
+   anciennes), on se tient au milieu plutôt que de dramatiser ou de minimiser. */
+const HIST_POIDS_RANG = { vif:4, lourd:3, marquant:2, leger:1 };
+function histPoidsRang(e){ return HIST_POIDS_RANG[e.poids] || 2; }
+function histPoids(e){ return U().histoire.poids[e.poids] || null; }
+/* Un moment grave, soit par nature, soit par ce qu'il pèse encore. */
+function histEstGrave(e){
+  if(histEstVictoire(e)) return false;
+  return !!histType(e).grave || e.poids === "vif" || e.poids === "lourd";
+}
+function histAAide(){ return histLoad().some(histEstGrave); }
+
 /* L'étape de développement atteinte à cet âge : elle détermine ce que la
    personne pouvait faire de l'événement, pas sa gravité. */
 function histStage(age){
@@ -1197,13 +1220,28 @@ function histStage(age){
 }
 function histTypes(){ return U().histoire.events; }
 
+function histNatureChoisie(){
+  const btn = document.querySelector(".hist-nature .seg-btn.is-active");
+  return btn ? btn.dataset.nature : "epreuve";
+}
 function fillHistTypes(){
   const sel = document.getElementById("hist-type");
   if(!sel) return;
   const cur = sel.value, h = U().histoire;
+  const liste = histNatureChoisie() === "victoire" ? h.victoires : h.events;
   sel.innerHTML = `<option value="">${h.typePick}</option>` +
-    Object.entries(h.events).map(([k, v]) => `<option value="${k}">${escapeHtml(v.label)}</option>`).join("");
-  if(cur) sel.value = cur;
+    Object.entries(liste).map(([k, v]) => `<option value="${k}">${escapeHtml(v.label)}</option>`).join("");
+  if(cur && liste[cur]) sel.value = cur;
+  // le poids ne concerne que les épreuves
+  const champPoids = document.getElementById("hist-poids-champ");
+  if(champPoids) champPoids.hidden = histNatureChoisie() === "victoire";
+  const sp = document.getElementById("hist-poids");
+  if(sp){
+    const cp = sp.value;
+    sp.innerHTML = `<option value="">${h.poidsPick}</option>` +
+      Object.entries(h.poids).map(([k, v]) => `<option value="${k}">${escapeHtml(v.label)}</option>`).join("");
+    if(cp) sp.value = cp;
+  }
 }
 
 /* Liste des moments enregistrés, du plus jeune au plus récent. */
@@ -1216,10 +1254,11 @@ function renderHistList(){
     <h3 class="hist-sub">${h.timelineTitle}</h3>
     <ol class="hist-line">
       ${list.map((e, i) => `
-        <li class="hist-item">
+        <li class="hist-item${histEstVictoire(e) ? " is-victoire" : ""}${histEstGrave(e) ? " is-grave" : ""}">
           <span class="hist-age">${escapeHtml(h.ageLabel(e.age))}</span>
-          <span class="hist-what">${escapeHtml((h.events[e.type] || h.events.autre).label)}
-            ${e.note ? `<em>— ${escapeHtml(e.note)}</em>` : ""}</span>
+          <span class="hist-what">${escapeHtml(histType(e).label)}
+            ${e.note ? `<em>— ${escapeHtml(e.note)}</em>` : ""}
+            ${histPoids(e) ? `<span class="hist-poids">${escapeHtml(histPoids(e).label)}</span>` : ""}</span>
           <button type="button" class="hist-del" data-i="${i}" aria-label="${h.remove}">×</button>
         </li>`).join("")}
     </ol>
@@ -1236,15 +1275,31 @@ function renderHistList(){
 /* Une carte par version : ce que l'âge pouvait en faire, ce qu'elle en a
    conclu, ce qu'elle garde, ce qui la réveille, ce qui la calme. */
 function histVersionCard(e, avecLecture){
-  const h = U().histoire;
-  const t = h.events[e.type] || h.events.autre;
-  const st = histStage(e.age);
+  const h = U().histoire, t = histType(e), st = histStage(e.age);
+  const dit = e.texte ? `<div class="mini"><strong>${h.lTell}</strong><p class="hist-dit">${escapeHtml(e.texte)}</p></div>` : "";
+  if(histEstVictoire(e)){
+    return `
+      <article class="card hist-version hist-win">
+        <div class="card-tag"><span class="dot"></span><span>${escapeHtml(h.ageLabel(e.age))}</span></div>
+        <h3>${escapeHtml(h.versionTitle(e.age))}</h3>
+        <p class="sub">${escapeHtml(t.label)}${e.note ? ` — ${escapeHtml(e.note)}` : ""}</p>
+        ${dit}
+        <div class="mini"><strong>${h.lProof}</strong><p>${escapeHtml(t.preuve)}</p></div>
+        <div class="mini"><strong>${h.lForce}</strong><p>${escapeHtml(t.force)}</p></div>
+        <div class="mini"><strong>${h.lCall}</strong><p>${escapeHtml(t.appel)}</p></div>
+      </article>`;
+  }
+  const poids = histPoids(e);
   return `
-    <article class="card hist-version">
+    <article class="card hist-version${histEstGrave(e) ? " hist-grave" : ""}">
       <div class="card-tag"><span class="dot"></span><span>${escapeHtml(h.ageLabel(e.age))}</span></div>
       <h3>${escapeHtml(h.versionTitle(e.age))}</h3>
       <p class="sub">${escapeHtml(t.label)}${e.note ? ` — ${escapeHtml(e.note)}` : ""}</p>
+      ${dit}
+      ${t.verite ? `<div class="mini hist-verite"><strong>${h.lTruth}</strong><p>${escapeHtml(t.verite)}</p></div>` : ""}
+      ${poids ? `<div class="mini"><strong>${h.lHold}</strong><p>${escapeHtml(poids.tenue)}</p></div>` : ""}
       ${avecLecture ? `<div class="mini"><strong>${h.lRead}</strong><p>${escapeHtml(st.lecture)}</p></div>` : ""}
+      ${t.grave ? `<p class="hist-gridnote">${h.graveNote}</p>` : ""}
       <div class="mini"><strong>${h.lBelief}</strong><p>${escapeHtml(t.croyance)}</p></div>
       <div class="mini"><strong>${h.lGuard}</strong><p>${escapeHtml(t.garde)}</p></div>
       <div class="mini"><strong>${h.lTrigger}</strong><p>${escapeHtml(t.declencheur)}</p></div>
@@ -1252,10 +1307,19 @@ function histVersionCard(e, avecLecture){
     </article>`;
 }
 
-/* Sous tension, ce sont les versions les plus jeunes qui répondent en premier :
-   elles se sont installées avant les mots, donc avant le recul. */
+/* Sous tension, ce qui pèse le plus parle en premier ; à poids égal, la version
+   la plus jeune passe devant — elle s'est installée avant les mots, donc avant
+   le recul. Les victoires ne sont pas dans cette course : elles ne prennent pas
+   le volant, on les appelle. */
 function histParTension(){
-  return histLoad().slice().sort((a, b) => a.age - b.age);
+  return histLoad().filter(e => !histEstVictoire(e)).slice()
+    .sort((a, b) => histPoidsRang(b) - histPoidsRang(a) || a.age - b.age);
+}
+function histVictoires(){
+  return histLoad().filter(histEstVictoire).slice().sort((a, b) => a.age - b.age);
+}
+function histEpreuves(){
+  return histLoad().filter(e => !histEstVictoire(e)).slice().sort((a, b) => a.age - b.age);
 }
 
 function renderHistOut(){
@@ -1264,7 +1328,9 @@ function renderHistOut(){
   const h = U().histoire, list = histLoad().slice().sort((a, b) => a.age - b.age);
   if(!list.length){ box.innerHTML = ""; return; }
   const tension = histParTension().slice(0, 3);
+  const epreuves = histEpreuves(), victoires = histVictoires();
   box.innerHTML = `
+    ${histBlocAide(h)}
     <div class="hist-block">
       <h4>${h.versionsTitle}</h4>
       <p>${h.versionsLead}</p>
@@ -1273,7 +1339,7 @@ function renderHistOut(){
            répète pas d'une carte à l'autre. La liste est triée par âge, les
            doublons sont donc voisins. */
         let etapePrec = null;
-        return list.map(e => {
+        return epreuves.map(e => {
           const st = histStage(e.age);
           const carte = histVersionCard(e, st !== etapePrec);
           etapePrec = st;
@@ -1286,13 +1352,33 @@ function renderHistOut(){
       <p>${h.conflictLead}</p>
       <ol class="hist-tension">
         ${tension.map(e => {
-          const t = h.events[e.type] || h.events.autre;
-          return `<li><strong>${escapeHtml(h.versionTitle(e.age))}</strong> — ${escapeHtml(t.declencheur)}.
+          const t = histType(e), po = histPoids(e);
+          return `<li><strong>${escapeHtml(h.versionTitle(e.age))}</strong>${po ? ` <span class="hist-poids">${escapeHtml(po.label)}</span>` : ""} — ${escapeHtml(t.declencheur)}.
                   <span class="hist-soothe">${escapeHtml(t.apaise)}.</span></li>`;
         }).join("")}
       </ol>
       <p class="hist-care">${h.care}</p>
       <p class="sky-note">${h.disclaimer}</p>
+    </div>
+    <div class="hist-block">
+      <h4>${h.victoiresTitle}</h4>
+      <p>${victoires.length ? h.victoiresLead : h.victoiresNone}</p>
+      ${victoires.length ? `<div class="cards hist-versions">${victoires.map(e => histVersionCard(e, false)).join("")}</div>` : ""}
+    </div>`;
+}
+
+/* Quand quelque chose de lourd est enregistré, l'aide passe avant la lecture —
+   pas en note de bas de page. Une grille de lecture n'est pas un soin. */
+function histBlocAide(h){
+  if(!histAAide()) return "";
+  return `
+    <div class="hist-block hist-aide">
+      <h4>${h.aideTitle}</h4>
+      <p>${h.aideLead}</p>
+      <ul class="hist-aide-list">
+        ${h.aide.map(a => `<li><b>${escapeHtml(a.num)}</b><span>${escapeHtml(a.quoi)}</span></li>`).join("")}
+      </ul>
+      <p class="hist-aide-out">${h.aideOut}</p>
     </div>`;
 }
 
@@ -1319,9 +1405,12 @@ function histSubmit(e){
   const age = parseInt(document.getElementById("hist-age").value, 10);
   const type = document.getElementById("hist-type").value;
   const note = document.getElementById("hist-note").value.trim();
+  const texte = (document.getElementById("hist-texte").value || "").trim();
+  const nature = histNatureChoisie();
+  const poids = nature === "victoire" ? "" : (document.getElementById("hist-poids").value || "");
   if(!Number.isInteger(age) || age < 0 || age > 120) return showErr(err, h.errAge);
   if(!type) return showErr(err, h.errType);
-  histSave(histLoad().concat([{ age, type, note }]));
+  histSave(histLoad().concat([{ age, type, note, texte, nature, poids }]));
   histRefresh();
   histScroll();
 }
@@ -1331,19 +1420,24 @@ function histSubmit(e){
 function histCard(t){
   const h = U().histoire, list = histLoad();
   const tension = histParTension().slice(0, 2);
+  const vics = histVictoires();
   return `
     <article class="card">
       <div class="card-tag"><span class="dot"></span><span>${t.lens04}</span></div>
       <h3>${h.profileTitle}</h3>
-      <p class="sub">${escapeHtml(list.length ? h.count(list.length) : h.none)}</p>
+      <p class="sub">${escapeHtml(list.length ? h.countMix(histEpreuves().length, vics.length) : h.none)}</p>
       ${list.length ? `
         <p>${h.conflictLead}</p>
-        <div class="mini"><strong>${h.conflictTitle}</strong>
+        ${tension.length ? `<div class="mini"><strong>${h.conflictTitle}</strong>
           <ul class="hist-mini">${tension.map(e => {
-            const ev = h.events[e.type] || h.events.autre;
+            const ev = histType(e);
             return `<li><strong>${escapeHtml(h.versionTitle(e.age))}</strong> — ${escapeHtml(ev.declencheur)}</li>`;
           }).join("")}</ul>
-        </div>`
+        </div>` : ""}
+        ${vics.length ? `<div class="mini"><strong>${h.victoiresTitle}</strong>
+          <ul class="hist-mini">${vics.slice(0, 2).map(e =>
+            `<li><strong>${escapeHtml(histType(e).label)}</strong> — ${escapeHtml(histType(e).force)}</li>`).join("")}</ul>
+        </div>` : ""}`
       : `<p>${h.profileNone}</p>`}
       <button class="btn btn-accent-outline hist-jump" data-hist-jump>${h.profileLink}</button>
     </article>`;
@@ -1363,6 +1457,13 @@ function histPanel(t){
 
       <form id="hist-form" class="form hist-form">
         <h4 class="hist-add-title">${h.addTitle}</h4>
+        <div class="field">
+          <label>${h.natureLabel}</label>
+          <div class="seg hist-nature">
+            <button type="button" class="seg-btn is-active" data-nature="epreuve">${h.natures.epreuve}</button>
+            <button type="button" class="seg-btn" data-nature="victoire">${h.natures.victoire}</button>
+          </div>
+        </div>
         <div class="hist-fields">
           <div class="field hist-age"><label for="hist-age">${h.fAge}</label>
             <input id="hist-age" type="number" min="0" max="120" step="1" inputmode="numeric" /></div>
@@ -1370,8 +1471,12 @@ function histPanel(t){
             <select id="hist-type"></select></div>
         </div>
         <p class="hint hist-age-hint">${h.fAgeHint}</p>
+        <div class="field" id="hist-poids-champ"><label for="hist-poids">${h.fPoids}</label>
+          <select id="hist-poids"></select></div>
         <div class="field"><label for="hist-note">${h.fNote}</label>
           <input id="hist-note" type="text" maxlength="120" placeholder="${escapeHtml(h.phNote)}" /></div>
+        <div class="field"><label for="hist-texte">${h.fTexte}</label>
+          <textarea id="hist-texte" rows="4" maxlength="1500" placeholder="${escapeHtml(h.phTexte)}"></textarea></div>
         <button type="submit" class="btn btn-accent">${h.add}</button>
         <p class="form-error" id="hist-error" hidden></p>
       </form>
@@ -1386,6 +1491,12 @@ function histPanel(t){
 function bindHist(){
   const form = document.getElementById("hist-form");
   if(form) form.addEventListener("submit", histSubmit);
+  document.querySelectorAll(".hist-nature .seg-btn").forEach(btn => btn.addEventListener("click", () => {
+    document.querySelectorAll(".hist-nature .seg-btn").forEach(b => b.classList.remove("is-active"));
+    btn.classList.add("is-active");
+    const sel = document.getElementById("hist-type"); if(sel) sel.value = "";
+    fillHistTypes();
+  }));
   document.querySelectorAll("[data-hist-jump]").forEach(b => b.addEventListener("click", histScroll));
   renderHistoire();
 }
@@ -1396,8 +1507,12 @@ function histPourAnalyse(){
   const list = histLoad().slice().sort((a, b) => a.age - b.age);
   if(!list.length) return "";
   return list.map(e => {
-    const t = h.events[e.type] || h.events.autre;
-    return `- ${h.ageLabel(e.age)} : ${t.label}${e.note ? ` (${e.note})` : ""}`;
+    const t = histType(e), po = histPoids(e);
+    const marque = histEstVictoire(e) ? h.natures.victoire : h.natures.epreuve;
+    return `- ${h.ageLabel(e.age)} — ${marque} : ${t.label}`
+      + (po ? ` [${po.label}]` : "")
+      + (e.note ? ` (${e.note})` : "")
+      + (e.texte ? `\n  « ${e.texte} »` : "");
   }).join("\n");
 }
 

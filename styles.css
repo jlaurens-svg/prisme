@@ -691,3 +691,31 @@ em{ font-style:italic; }
 .compte-reprise{ margin-top:3rem; padding-top:1.8rem; border-top:1px solid var(--line); }
 .compte-reprise p{ color:var(--ink-dim); font-size:.92rem; margin:.6rem 0 1rem; }
 .hist-age-hint{ margin-top:-.4rem; }
+
+/* ---------- HISTOIRE : victoires, poids, gravité ---------- */
+.hist-nature{ margin-top:.4rem; }
+/* .field pose un display:grid, qui l'emporte sur le [hidden] du navigateur. */
+.field[hidden]{ display:none; }
+.hist-item.is-victoire::before{ background:#c9f5b0; }
+.hist-item.is-grave::before{ background:#ff9db0; }
+.hist-poids{ font-size:.78rem; color:var(--ink-dim); border:1px solid var(--line-2);
+  border-radius:100px; padding:.05rem .55rem; margin-left:.4rem; white-space:nowrap; }
+.hist-dit{ font-family:"Fraunces",serif; font-size:1rem !important; color:var(--ink) !important;
+  white-space:pre-wrap; }
+/* La vérité de responsabilité n'est pas une nuance : elle se voit. */
+.hist-verite{ border-top:none; margin-top:1rem; padding:1rem 1.2rem; border-radius:12px;
+  border:1px solid var(--accent); background:rgba(201,184,255,.07); }
+.hist-verite p{ font-size:.95rem !important; color:var(--ink) !important; }
+.hist-gridnote{ font-size:.85rem !important; color:var(--ink-dim) !important; font-style:italic;
+  margin-top:1rem !important; }
+.hist-win{ border-left:2px solid #c9f5b0; }
+.hist-grave{ border-left:2px solid #ff9db0; }
+.hist-aide{ padding:1.4rem 1.6rem; border:1px solid #ff9db0; border-radius:14px;
+  background:rgba(255,157,176,.06); }
+.hist-aide h4{ color:#ff9db0; }
+.hist-aide-list{ list-style:none; padding:0; margin:1.1rem 0 0; display:flex; flex-direction:column; gap:.7rem; }
+.hist-aide-list li{ display:flex; flex-wrap:wrap; gap:.2rem .9rem; align-items:baseline; }
+.hist-aide-list b{ font-family:"Inter Tight",sans-serif; font-size:1.05rem; color:var(--ink);
+  min-width:8rem; letter-spacing:.02em; }
+.hist-aide-list span{ color:#cfccc5; font-size:.92rem; flex:1 1 16rem; }
+.hist-aide-out{ margin-top:1.1rem !important; font-size:.88rem !important; color:var(--ink-dim) !important; }

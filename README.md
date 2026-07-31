@@ -157,7 +157,26 @@ s'afficherait sous le portrait de l'autre dès qu'on en consulte deux sur la mê
 machine. Les moments saisis avant ce découpage rejoignent le premier profil
 ouvert.
 
+Un moment est **une épreuve ou une victoire**. Les victoires ne sont pas un
+contrepoids décoratif : ce sont les seules versions de soi qui savent déjà s'en
+sortir, elles ont leurs propres champs (ce qu'elles ont prouvé, ce qu'elles
+savent faire, comment les rappeler) et elles ne figurent pas dans « qui parle
+quand ça chauffe » — on ne les subit pas, on les appelle.
+
+**La gravité n'est pas plate.** Chaque épreuve porte un poids — c'est passé, ça
+compte encore, ça pèse, c'est encore à vif — qui change le texte affiché et
+l'ordre sous tension (le plus lourd d'abord, la version la plus jeune ensuite).
+Neuf types sont marqués `grave` (violences sexuelles, inceste, violences
+physiques, témoin de violences, maltraitance, emprise, suicide d'un proche,
+addiction et maladie psychique d'un parent) : ils ouvrent un champ
+« ce qui n'est pas négociable » qui nomme la responsabilité sans détour, et ils
+disent eux-mêmes qu'une grille générale ne suffit pas. Un champ de texte libre
+permet enfin de raconter, plutôt que de cocher.
+
+Dès qu'un moment grave ou lourd est enregistré, un bloc d'aide passe **avant**
+la lecture, avec les numéros français (3919, 0 800 05 95 95, 119, 116 006,
+3114) et un renvoi vers les services locaux hors de France.
+
 Ces données sont les plus sensibles du site : elles restent dans le stockage
 local de l'appareil, et ne sont transmises à la médiation du Miroir que si une
-case dédiée est cochée. Cadre non diagnostique, avec orientation explicite vers
-un professionnel quand un événement est encore vif.
+case dédiée est cochée — le texte libre compris. Cadre non diagnostique.
