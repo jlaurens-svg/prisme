@@ -41,6 +41,10 @@ Un relais qui transmet tout est aussi exposé qu'une clé publique. Celui-ci :
 
 Pour changer les domaines autorisés, éditez `wrangler.toml` puis redéployez.
 
+Le domaine du site (`the-prisme.com` et son `www`) y figure déjà. Si vous en
+ajoutez un autre plus tard, pensez à cette liste : sans elle, la médiation
+renvoie `403 origin_not_allowed` depuis le nouveau domaine.
+
 ## Coût
 
 Environ **4 à 5 centimes par médiation** (Claude Opus 5, ~1 500 jetons en

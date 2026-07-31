@@ -5,7 +5,7 @@ compatibility_date = "2026-07-01"
 # Domaines autorisés à appeler le relais. Sans cette liste, n'importe quel site
 # pourrait consommer la clé. Ajoutez votre domaine local pour les tests.
 [vars]
-ALLOWED_ORIGINS = "https://jlaurens-svg.github.io,http://127.0.0.1:8765,http://localhost:8765"
+ALLOWED_ORIGINS = "https://the-prisme.com,https://www.the-prisme.com,https://jlaurens-svg.github.io,http://127.0.0.1:8765,http://localhost:8765"
 
 # La clé d'API n'est PAS dans ce fichier — elle est stockée chiffrée :
 #   npx wrangler secret put ANTHROPIC_API_KEY
