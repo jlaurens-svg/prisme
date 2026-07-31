@@ -133,6 +133,15 @@ pouvait faire de l'événement, ce qu'elle en a conclu, ce qu'elle protège depu
 ce qui la réveille et ce qui la calme. Sous tension, ce sont les versions les
 plus jeunes qui répondent en premier — c'est ce que le prisme rend visible.
 
+Les trois premiers moments proposés précèdent la mémoire : une grossesse ou une
+naissance difficile, la dépression d'un parent après la naissance, des premiers
+mois marqués par une séparation ou un lien difficile. La première année a sa
+propre lecture, appuyée sur **Melanie Klein** : un monde d'abord fait de ce qui
+apaise et de ce qui manque, puis la découverte que c'est la même personne — et
+avec elle le souci de l'avoir abîmée, et l'envie de réparer. Rien de tout cela
+ne se souvient ; tout se dépose. L'âge 0 couvre donc la grossesse, la naissance
+et la première année, et le formulaire le dit.
+
 Une histoire par profil, et non une par appareil : sans quoi l'histoire de l'un
 s'afficherait sous le portrait de l'autre dès qu'on en consulte deux sur la même
 machine. Les moments saisis avant ce découpage rejoignent le premier profil

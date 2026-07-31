@@ -1218,7 +1218,7 @@ function renderHistList(){
 
 /* Une carte par version : ce que l'âge pouvait en faire, ce qu'elle en a
    conclu, ce qu'elle garde, ce qui la réveille, ce qui la calme. */
-function histVersionCard(e){
+function histVersionCard(e, avecLecture){
   const h = U().histoire;
   const t = h.events[e.type] || h.events.autre;
   const st = histStage(e.age);
@@ -1227,7 +1227,7 @@ function histVersionCard(e){
       <div class="card-tag"><span class="dot"></span><span>${escapeHtml(h.ageLabel(e.age))}</span></div>
       <h3>${escapeHtml(h.versionTitle(e.age))}</h3>
       <p class="sub">${escapeHtml(t.label)}${e.note ? ` — ${escapeHtml(e.note)}` : ""}</p>
-      <div class="mini"><strong>${h.lRead}</strong><p>${escapeHtml(st.lecture)}</p></div>
+      ${avecLecture ? `<div class="mini"><strong>${h.lRead}</strong><p>${escapeHtml(st.lecture)}</p></div>` : ""}
       <div class="mini"><strong>${h.lBelief}</strong><p>${escapeHtml(t.croyance)}</p></div>
       <div class="mini"><strong>${h.lGuard}</strong><p>${escapeHtml(t.garde)}</p></div>
       <div class="mini"><strong>${h.lTrigger}</strong><p>${escapeHtml(t.declencheur)}</p></div>
@@ -1251,7 +1251,18 @@ function renderHistOut(){
     <div class="hist-block">
       <h4>${h.versionsTitle}</h4>
       <p>${h.versionsLead}</p>
-      <div class="cards hist-versions">${list.map(histVersionCard).join("")}</div>
+      <div class="cards hist-versions">${(() => {
+        /* Deux moments du même âge partagent la même lecture d'étape : on ne la
+           répète pas d'une carte à l'autre. La liste est triée par âge, les
+           doublons sont donc voisins. */
+        let etapePrec = null;
+        return list.map(e => {
+          const st = histStage(e.age);
+          const carte = histVersionCard(e, st !== etapePrec);
+          etapePrec = st;
+          return carte;
+        }).join("");
+      })()}</div>
     </div>
     <div class="hist-block">
       <h4>${h.conflictTitle}</h4>
@@ -1341,6 +1352,7 @@ function histPanel(t){
           <div class="field hist-type"><label for="hist-type">${h.fType}</label>
             <select id="hist-type"></select></div>
         </div>
+        <p class="hint hist-age-hint">${h.fAgeHint}</p>
         <div class="field"><label for="hist-note">${h.fNote}</label>
           <input id="hist-note" type="text" maxlength="120" placeholder="${escapeHtml(h.phNote)}" /></div>
         <button type="submit" class="btn btn-accent">${h.add}</button>
