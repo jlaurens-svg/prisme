@@ -239,6 +239,15 @@ Safety — absolute priority: if the accounts reveal physical violence, threats,
     required: ["image", "lecture"],
     additionalProperties: false,
   };
+  const ARCHETYPE = {
+    type: "object",
+    properties: {
+      nom:     { type: "string", description: "La figure reconnue dans le rêve, nommée simplement : l'ombre, la mère, le père, l'enfant, le double, le passeur, le vieux sage, la figure aimée, le persécuteur… Pas de jargon obligatoire." },
+      lecture: { type: "string", description: "Ce que cette figure semble porter DANS CE RÊVE-CI, au conditionnel. Deux phrases au plus." },
+    },
+    required: ["nom", "lecture"],
+    additionalProperties: false,
+  };
   const SCHEMA_REVE = {
     type: "object",
     properties: {
@@ -252,11 +261,17 @@ Safety — absolute priority: if the accounts reveal physical violence, threats,
       scene:   { type: "string", description: "Ce que le rêve met en scène : la situation, pas le symbole. C'est le cœur de la lecture." },
       images:  { type: "array", items: IMAGE, minItems: 2, maxItems: 4 },
       tension: { type: "string", description: "Le conflit ou le manque que la scène rejoue. Une ou deux phrases." },
+      archetypes: { type: "array", items: ARCHETYPE, minItems: 1, maxItems: 3,
+        description: "Les figures qui traversent le rêve, au sens de Jung mais dites simplement." },
+      compensation: { type: "string", description: "Ce que le rêve semble compenser de l'attitude consciente : ce que la personne ne se laisse pas voir ou vivre le jour, et que la nuit remet sur la table. C'est le cœur de la lecture jungienne — au conditionnel." },
+      parcours: { type: "string", description: "Ce que ce rêve rejoue du parcours transmis (thème natal, chemin de vie, histoire de vie). Vide si rien n'a été transmis, ou si le lien serait forcé — ne rien inventer." },
+      individuation: { type: "string", description: "Ce que ce rêve semble travailler en ce moment dans le mouvement de devenir soi : ce qui cherche à être intégré, pas ce qu'il faudrait faire." },
       questions: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 3,
         description: "Trois questions à se poser au réveil. Ouvertes, précises, sans réponse suggérée." },
       garde:   { type: "string", description: "Ce qu'il ne faut PAS conclure de ce rêve. Une phrase, ferme." },
     },
-    required: ["alerte", "alerteTexte", "resume", "scene", "images", "tension", "questions", "garde"],
+    required: ["alerte", "alerteTexte", "resume", "scene", "images", "tension",
+               "archetypes", "compensation", "parcours", "individuation", "questions", "garde"],
     additionalProperties: false,
   };
 
@@ -271,6 +286,14 @@ Comment vous travaillez :
 — Aucune prédiction, aucun présage, aucune correspondance fixe entre une image et un sens. Un serpent n'est pas « la trahison » ; dans ce rêve-ci, il fait quelque chose de précis.
 — Pas de diagnostic psychologique, pas d'étiquette, pas de verdict sur la vie de la personne.
 — La scène compte plus que les symboles : cherchez la situation que le rêve rejoue — être poursuivi sans pouvoir crier, arriver trop tard, chercher une pièce qui n'existe pas — avant de commenter les objets.
+
+Le cadre de lecture est celui de Jung, tenu sans jargon :
+— Un rêve compense. Il remet en scène ce que l'attitude consciente laisse de côté : ce qu'on ne se permet pas de voir, de vouloir ou de craindre le jour. Cherchez d'abord ce déséquilibre-là — c'est le champ « compensation », et c'est le cœur du travail.
+— Les figures du rêve valent comme figures, pas comme personnes réelles : l'ombre (ce qu'on refuse de soi et qu'on prête aux autres), la mère, le père, l'enfant, le double, le passeur, le persécuteur, la figure aimée. Nommez-les simplement, et dites ce qu'elles portent DANS CE RÊVE-CI, jamais ce qu'elles signifient en général.
+— L'individuation, c'est le mouvement de devenir soi en intégrant ce qui a été mis de côté. Dites ce que ce rêve semble travailler en ce moment — pas ce qu'il faudrait faire.
+— Amplifier, oui : rapprocher l'image d'un motif humain plus large peut ouvrir. Décoder, non : aucun motif n'a de sens fixe.
+
+Si un parcours est transmis (thème natal, chemin de vie, histoire de vie), servez-vous-en pour situer, jamais pour prédire ni pour tout expliquer : remplissez « parcours » seulement quand un lien est visible dans le récit lui-même. Si rien n'est transmis, ou si le lien serait forcé, laissez ce champ vide — c'est une réponse valable. Une histoire de vie transmise ne sert jamais à excuser un comportement ni à poser un diagnostic ; et si elle contient des violences, ne les rejouez pas dans le détail : nommez sobrement, et allez à ce que le rêve en fait.
 — Vous vouvoyez la personne. Français simple, sans jargon d'analyse.
 — « garde » est obligatoire et sert de garde-fou : dites ce qu'il ne faut surtout pas conclure de ce rêve.
 
@@ -286,6 +309,14 @@ How you work:
 — No prediction, no omen, no fixed correspondence between an image and a meaning. A snake is not "betrayal"; in this dream, it is doing something specific.
 — No psychological diagnosis, no labels, no verdict on the person's life.
 — The scene matters more than the symbols: look for the situation the dream re-enacts — being chased unable to shout, arriving too late, searching for a room that doesn't exist — before commenting on objects.
+
+The reading frame is Jung's, held without jargon:
+— A dream compensates. It stages what the conscious attitude leaves aside: what one doesn't allow oneself to see, want or fear by day. Look for that imbalance first — that is the "compensation" field, and it is the heart of the work.
+— The dream's figures count as figures, not as real people: the shadow (what one refuses in oneself and lends to others), the mother, the father, the child, the double, the ferryman, the persecutor, the beloved. Name them plainly, and say what they carry IN THIS DREAM, never what they mean in general.
+— Individuation is the movement of becoming oneself by integrating what was set aside. Say what this dream seems to be working on right now — not what should be done.
+— Amplify, yes: setting an image next to a wider human motif can open things up. Decode, no: no motif has a fixed meaning.
+
+If a path is provided (birth chart, life path, life history), use it to situate, never to predict or to explain everything: fill "parcours" only when a link is visible in the account itself. If nothing is provided, or the link would be forced, leave the field empty — that is a valid answer. A life history provided is never used to excuse behaviour or to make a diagnosis; and if it contains violence, do not replay it in detail: name it soberly and go to what the dream does with it.
 — Plain, direct English, no analytic jargon.
 — "garde" is required and acts as a guardrail: say what must not be concluded from this dream.
 
@@ -297,13 +328,22 @@ Safety: if the dream re-enacts a traumatic event unchanged, returns intrusively 
   function requeteReve(reve, lang){
     const L = lang === "en"
       ? { intro:"Here is the dream, as it was written down.", quand:"Night of", ressenti:"Felt on waking",
-          tags:"The person marked this dream as", rien:"(not filled in)" }
+          tags:"The person marked this dream as", rien:"(not filled in)",
+          profil:"The person's chart and numbers, provided by them",
+          histoire:"The life history the person recorded (age — what happened). Use it to situate, never to diagnose or excuse.",
+          autres:"Other dreams from the same journal, for context on what recurs" }
       : { intro:"Voici le rêve, tel qu'il a été noté.", quand:"Nuit du", ressenti:"Ressenti au réveil",
-          tags:"La personne a marqué ce rêve comme", rien:"(non renseigné)" };
+          tags:"La personne a marqué ce rêve comme", rien:"(non renseigné)",
+          profil:"Le thème et les nombres de la personne, transmis par elle",
+          histoire:"L'histoire de vie que la personne a renseignée (âge — ce qui est arrivé). Sert à situer, jamais à diagnostiquer ni à excuser.",
+          autres:"Les autres rêves du même journal, pour situer ce qui revient" };
     const bouts = [L.intro, "", reve.texte.trim()];
     if(reve.date)    bouts.push("", `${L.quand} : ${reve.date}`);
     if(reve.emotion) bouts.push(`${L.ressenti} : ${reve.emotion}`);
     if(reve.tags && reve.tags.length) bouts.push(`${L.tags} : ${reve.tags.join(", ")}`);
+    if(reve.profil)   bouts.push("", `## ${L.profil}`, "", reve.profil);
+    if(reve.histoire) bouts.push("", `## ${L.histoire}`, "", reve.histoire);
+    if(reve.autres)   bouts.push("", `## ${L.autres}`, "", reve.autres);
     return {
       model: MODEL,
       max_tokens: 16000,

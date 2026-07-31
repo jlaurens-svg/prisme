@@ -23,6 +23,7 @@ function go(name){
   /* Le compte est un état de rangement, pas un résultat figé : il se recalcule
      à chaque ouverture, sinon un profil créé entre-temps n'y apparaît pas. */
   if(name === "compte") renderCompte();
+  if(name === "reves") renderReves();
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("is-active", v.dataset.view === name));
   document.querySelectorAll(".nav-links a").forEach(a => a.classList.toggle("is-current", a.dataset.nav === name));
   window.scrollTo({ top:0, behavior:"smooth" });
@@ -574,6 +575,7 @@ document.getElementById("lang-toggle").addEventListener("click", ()=>{
   renderAccountBtn();
   renderCreateCible();
   renderCompte();
+  renderReves();
 });
 
 /* ---------------- Segmented control quiz/known ---------------- */
@@ -697,7 +699,6 @@ function renderProfile(p){
       </article>
 
       ${histCard(t)}
-      ${reveCard(t)}
     </div>
 
     <section class="synth">
@@ -710,7 +711,6 @@ function renderProfile(p){
 
     ${transitBlock(p, t)}
     ${histPanel(t)}
-    ${revePanel(t)}
     <div class="result-actions no-print">
       <button class="btn btn-primary" id="act-compare">${t.actCompare}</button>
       <button class="btn btn-ghost" id="act-save">${saved?t.actSaved:t.actSave}</button>
@@ -720,7 +720,6 @@ function renderProfile(p){
   `;
 
   bindHist();
-  bindReves();
 
   document.getElementById("act-compare").addEventListener("click", ()=>{
     document.getElementById("ra-name").value=p.name;
@@ -1144,7 +1143,7 @@ initMilkyWay();
    consulte deux sur la même machine. */
 const JOURNAL_ORPHELIN = " sans-profil";
 
-function journal(cle){
+function journal(cle, quelleCle){
   function tout(){
     let brut = null;
     try { brut = localStorage.getItem(cle); } catch(_){ return {}; }
@@ -1155,8 +1154,9 @@ function journal(cle){
     return (v && typeof v === "object") ? v : {};
   }
   function ecrire(all){ try { localStorage.setItem(cle, JSON.stringify(all)); } catch(_){} }
+  const cleCourante = () => (quelleCle || journalKey)();
   function load(){
-    const k = journalKey();
+    const k = cleCourante();
     if(!k) return [];
     const all = tout();
     if(Array.isArray(all[k])) return all[k];
@@ -1173,7 +1173,7 @@ function journal(cle){
     return [];
   }
   function save(list){
-    const k = journalKey();
+    const k = cleCourante();
     if(!k) return;
     const all = tout();
     if(list.length) all[k] = list; else delete all[k];
@@ -1527,7 +1527,17 @@ function histPourAnalyse(){
    Le répertoire d'images (data.js) est le même pour tout le monde : c'est son
    intérêt et sa limite. Il propose des mises en scène, jamais des sens fixes.
    ============================================================ */
-const REVES = journal("prisme-reves");
+/* Les rêves appartiennent au titulaire du compte, pas au profil qu'on est en
+   train de regarder : la section est à part, on peut y arriver sans avoir
+   ouvert de portrait. Sans compte ni profil, ils attendent dans le tiroir des
+   entrées sans propriétaire, et rejoignent le premier qui se déclare. */
+function reveKey(){
+  const c = compteLoad();
+  if(c && c.moi) return c.moi;
+  if(lastProfile) return profileKey(lastProfile);
+  return JOURNAL_ORPHELIN;
+}
+const REVES = journal("prisme-reves", reveKey);
 function reveLoad(){ return REVES.load(); }
 function reveSave(list){ REVES.save(list); }
 
@@ -1634,7 +1644,7 @@ function renderReveList(){
     <button type="button" class="btn btn-ghost hist-clear" id="reve-clear">${r.clearAll}</button>`;
 
   box.querySelectorAll(".reve-pick").forEach(b => b.addEventListener("click", () => {
-    reveSel = +b.dataset.id; reveStatut = null; renderReves();
+    reveSel = +b.dataset.id; reveStatut = null; renderRevesInterieur();
   }));
   box.querySelectorAll(".reve-del").forEach(b => b.addEventListener("click", () => {
     const id = +b.dataset.id;
@@ -1709,6 +1719,46 @@ function renderReveOut(){
   renderReveAI();
 }
 
+/* Ce que le compte peut joindre à la lecture : le portrait du titulaire, son
+   histoire de vie, ses autres rêves. Rien ne part sans une case cochée. */
+function reveProfilPourAnalyse(){
+  const moi = compteMoi() || lastProfile;
+  if(!moi) return "";
+  const p = moi.mbti !== undefined && moi.sign ? moi : computeProfile(moi.name, moi.date, moi.mbti, moi.birth);
+  const Lp = L(), t = U();
+  const bouts = [
+    `${t.sunLabel} : ${Lp.signs[p.sign].name}`,
+    p.asc ? `${t.ascLabel} : ${Lp.signs[p.asc.sign].name}` : "",
+    p.moon ? `${t.moonLabel} : ${Lp.signs[p.moon.sign].name}` : "",
+    `${t.bLife} ${numLabel(p.life)} — ${Lp.numbers[p.life].titre}`,
+    `${Lp.numFrames.expression.label} ${numLabel(p.expr)} · ${Lp.numFrames.intime.label} ${numLabel(p.intime)}`,
+    p.mbti ? `MBTI : ${p.mbti}` : "",
+  ].filter(Boolean);
+  return bouts.join("\n");
+}
+function reveHistoirePourAnalyse(){
+  const k = reveKey();
+  const h = U().histoire;
+  let all = {};
+  try { all = JSON.parse(localStorage.getItem("prisme-histoire") || "{}"); } catch(_){ return ""; }
+  const list = Array.isArray(all[k]) ? all[k].slice().sort((a, b) => a.age - b.age) : [];
+  if(!list.length) return "";
+  return list.map(e => {
+    const v = e.nature === "victoire";
+    const t = v ? (h.victoires[e.type] || h.victoires.autreVictoire) : (h.events[e.type] || h.events.autre);
+    const po = h.poids[e.poids];
+    return `- ${h.ageLabel(e.age)} — ${v ? h.natures.victoire : h.natures.epreuve} : ${t.label}`
+      + (po ? ` [${po.label}]` : "") + (e.note ? ` (${e.note})` : "")
+      + (e.texte ? `\n  « ${e.texte} »` : "");
+  }).join("\n");
+}
+function reveAutresPourAnalyse(cur){
+  const r = U().reves;
+  const autres = reveTri().filter(x => x.id !== cur.id).slice(0, 8);
+  if(!autres.length) return "";
+  return autres.map(e => `- ${r.dateLabel} ${e.date}${e.emotion ? ` (${r.emotions[e.emotion]})` : ""} : ${e.texte}`).join("\n");
+}
+
 /* ---------------- la lecture du rêve par l'IA ----------------
    Même règle que la médiation du Miroir : rien ne sort du navigateur sans un
    accord coché, et seul le rêve sélectionné est transmis. */
@@ -1723,9 +1773,13 @@ function renderReveAI(){
     <div class="card-tag"><span class="dot"></span><span>${a.tag}</span></div>
     <h4>${a.title}</h4>
     <p>${a.text}</p>
+    <p class="ai-jung">${a.jung}</p>
     <p class="ai-privacy">⚠ ${a.privacy}</p>
     ${pret ? `
       <label class="ai-consent"><input type="checkbox" id="reve-ai-ok" /> <span>${a.consent}</span></label>
+      ${reveProfilPourAnalyse() ? `<label class="ai-consent"><input type="checkbox" id="reve-ai-profil" /> <span>${a.consentProfil}</span></label>` : ""}
+      ${reveHistoirePourAnalyse() ? `<label class="ai-consent"><input type="checkbox" id="reve-ai-hist" /> <span>${a.consentHistoire}</span></label>` : ""}
+      ${reveAutresPourAnalyse(cur) ? `<label class="ai-consent"><input type="checkbox" id="reve-ai-autres" /> <span>${a.consentAutres}</span></label>` : ""}
       <button class="btn btn-accent" id="reve-ai-go" disabled>${lecture ? a.again : a.button}</button>
     ` : `
       <p class="ai-setup">${a.setup} ${a.setupKey}</p>
@@ -1767,15 +1821,23 @@ async function lireReve(){
   if(go) go.disabled = true;
   setReveStatut(a.working, "load");
   try {
+    const coche = (id) => { const el = document.getElementById(id); return !!(el && el.checked); };
     const envoi = {
       texte: cur.texte,
       date: cur.date,
       emotion: cur.emotion ? r.emotions[cur.emotion] : "",
       tags: (cur.tags || []).map(t => r.tags[t]).filter(Boolean),
+      profil:   coche("reve-ai-profil") ? reveProfilPourAnalyse()   : "",
+      histoire: coche("reve-ai-hist")   ? reveHistoirePourAnalyse() : "",
+      autres:   coche("reve-ai-autres") ? reveAutresPourAnalyse(cur): "",
     };
     reveLectures[cur.id] = await PrismeAI.reve(envoi, LANG);
     setReveStatut("");
     peindreReve(reveLectures[cur.id]);
+    /* On peut vouloir relancer avec d'autres pièces jointes : tant que l'accord
+       reste coché, le bouton redevient actif. */
+    const ok = document.getElementById("reve-ai-ok");
+    if(go) go.disabled = !(ok && ok.checked);
     const out = document.getElementById("reve-ai-out");
     if(out) out.scrollIntoView({ behavior:"smooth", block:"nearest" });
   } catch(e){
@@ -1809,19 +1871,25 @@ function peindreReve(d){
         </article>`).join("")}
     </div>
     <div class="mini"><strong>${a.lTension}</strong><p>${escapeHtml(d.tension)}</p></div>
+    <p class="ai-sub">${a.lCompensation}</p>
+    <p class="ai-knot">${escapeHtml(d.compensation || "")}</p>
+    ${(d.archetypes && d.archetypes.length) ? `
+      <p class="ai-sub">${a.lArchetypes}</p>
+      <ul class="reve-archetypes">${d.archetypes.map(x =>
+        `<li><strong>${escapeHtml(x.nom)}</strong> — ${escapeHtml(x.lecture)}</li>`).join("")}</ul>` : ""}
+    ${d.parcours ? `<div class="mini"><strong>${a.lParcours}</strong><p>${escapeHtml(d.parcours)}</p></div>` : ""}
+    ${d.individuation ? `<div class="mini"><strong>${a.lIndividuation}</strong><p>${escapeHtml(d.individuation)}</p></div>` : ""}
     <p class="ai-sub">${a.lQuestions}</p>
     <ol class="hist-tension">${d.questions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ol>
     <p class="hist-care"><strong>${a.lGarde}</strong> ${escapeHtml(d.garde)}</p>`;
 }
 
-function renderReves(){
+function renderRevesInterieur(){
   fillReveChamps();
   renderReveList();
   renderReveOut();
 }
-function reveRefresh(){
-  if(lastProfile) renderProfile(lastProfile); else renderReves();
-}
+function reveRefresh(){ renderReves(); }
 function reveScroll(){
   const el = document.getElementById("reve-panel");
   if(el) el.scrollIntoView({ behavior:"smooth", block:"start" });
@@ -1844,26 +1912,21 @@ function reveSubmit(e){
   reveScroll();
 }
 
-/* Prisme 5 dans la grille du profil. */
-function reveCard(t){
-  const r = U().reves, list = reveTri();
-  const dernier = list[0];
-  const compte = {};
-  list.forEach(e => reveImages(e.texte).forEach(k => { compte[k] = (compte[k] || 0) + 1; }));
-  const top = Object.entries(compte).sort((a, b) => b[1] - a[1]).slice(0, 3);
-  return `
-    <article class="card">
-      <div class="card-tag"><span class="dot"></span><span>${t.lens05}</span></div>
-      <h3>${r.profileTitle}</h3>
-      <p class="sub">${escapeHtml(list.length ? r.count(list.length) : r.none)}</p>
-      ${list.length ? `
-        <p>${escapeHtml(r.dateLabel)} ${escapeHtml(reveJour(dernier.date))} — ${escapeHtml(dernier.texte.slice(0, 130))}${dernier.texte.length > 130 ? "…" : ""}</p>
-        ${top.length ? `<div class="mini"><strong>${r.symbolsTitle}</strong>
-          <ul class="hist-mini">${top.map(([k, n]) =>
-            `<li><strong>${escapeHtml(r.symbols[k].nom)}</strong> — ${escapeHtml(r.seen(n))}</li>`).join("")}</ul></div>` : ""}`
-      : `<p>${r.profileNone}</p>`}
-      <button class="btn btn-accent-outline hist-jump" data-reve-jump>${r.profileLink}</button>
-    </article>`;
+
+/* Les rêves ont leur propre section : ils ne sont pas un chapitre du portrait,
+   et l'analyse va au contraire chercher le portrait pour éclairer le rêve. */
+function renderReves(){
+  const box = document.getElementById("reves-out");
+  if(!box) return;
+  const t = U(), r = t.reves;
+  box.innerHTML = `
+    <div class="form-wrap form-wrap-wide">
+      <p class="eyebrow">${r.eyebrow}</p>
+      <h2 class="view-title">${r.title}</h2>
+      <p class="view-lead">${r.lead}</p>
+    </div>
+    ${revePanel(t)}`;
+  bindReves();
 }
 
 /* Le panneau : on y note un rêve, on relit celui qui est sélectionné. */
@@ -1872,8 +1935,7 @@ function revePanel(t){
   return `
     <section class="synth hist-panel reve-panel" id="reve-panel">
       <div class="card-tag"><span class="dot"></span><span>${t.lens05}</span></div>
-      <h3>${r.title}</h3>
-      <p class="lead">${r.lead}</p>
+      <h3>${r.journalTitle}</h3>
       <p class="hist-privacy">${r.privacy}</p>
 
       <form id="reve-form" class="form hist-form">
@@ -1902,7 +1964,7 @@ function bindReves(){
   const form = document.getElementById("reve-form");
   if(form) form.addEventListener("submit", reveSubmit);
   document.querySelectorAll("[data-reve-jump]").forEach(b => b.addEventListener("click", reveScroll));
-  renderReves();
+  renderRevesInterieur();
 }
 
 /* ============================================================
@@ -2336,3 +2398,4 @@ function bindCompte(){
 renderAccountBtn();
 renderCreateCible();
 renderCompte();
+renderReves();

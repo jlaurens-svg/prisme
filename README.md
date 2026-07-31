@@ -88,8 +88,12 @@ et c'est un choix, pas un détail technique.
 
 ### Les rêves
 
-Prisme 5 du profil, dans « Moi ». Un journal tenu au réveil, puis trois
-lectures qui se complètent :
+**Une section à part**, dans le menu. Ils ne sont pas un chapitre du portrait :
+c'est l'inverse, l'analyse va chercher le portrait pour éclairer le rêve. Le
+journal suit le titulaire du compte, pas le profil qu'on est en train de
+regarder — on peut y arriver sans avoir ouvert de portrait.
+
+Un journal tenu au réveil, puis trois lectures qui se complètent :
 
 - les **images repérées** dans le récit — une vingtaine de motifs très attestés,
   cherchés par mots entiers (« ours » ne doit pas se reconnaître dans
@@ -97,8 +101,19 @@ lectures qui se complètent :
   lit l'interface en anglais ;
 - **ce qui revient** d'une nuit à l'autre : les images vues dans plusieurs rêves,
   l'émotion dominante au réveil, les récurrents et les cauchemars ;
-- la **lecture par IA** d'un rêve choisi — au conditionnel, sans prédiction, avec
-  un champ obligatoire qui dit ce qu'il ne faut *pas* en conclure.
+- la **lecture par IA** d'un rêve choisi, d'inspiration jungienne : ce que le rêve
+  compense de l'attitude consciente (le cœur du travail chez Jung), les figures
+  qui le traversent — l'ombre, la mère, l'enfant, le passeur — dites sans jargon,
+  ce qu'il rejoue du parcours, et ce qu'il travaille dans le mouvement de devenir
+  soi. Au conditionnel, sans prédiction, avec un champ obligatoire qui dit ce
+  qu'il ne faut *pas* en conclure.
+
+Cette lecture peut aller chercher **tout le parcours** : le thème natal et les
+nombres, l'histoire de vie, les autres rêves du journal. Chacun derrière sa
+propre case à cocher, décochée par défaut. La consigne interdit d'expliquer le
+rêve par le parcours, et demande de laisser le champ vide plutôt que de forcer
+un lien ; si l'histoire transmise contient des violences, de ne pas les rejouer
+dans le détail.
 
 Le répertoire d'images propose ce qu'un motif met souvent en scène, jamais un
 sens fixe : c'est l'intérêt et la limite d'un dictionnaire, et la page des

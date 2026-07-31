@@ -719,3 +719,9 @@ em{ font-style:italic; }
   min-width:8rem; letter-spacing:.02em; }
 .hist-aide-list span{ color:#cfccc5; font-size:.92rem; flex:1 1 16rem; }
 .hist-aide-out{ margin-top:1.1rem !important; font-size:.88rem !important; color:var(--ink-dim) !important; }
+.ai-jung{ font-size:.9rem !important; color:var(--ink-dim) !important; border-left:2px solid var(--line-2);
+  padding-left:.9rem; margin:1rem 0 !important; }
+.reve-archetypes{ list-style:none; padding:0; margin:.6rem 0 0; display:flex; flex-direction:column; gap:.7rem; }
+.reve-archetypes li{ color:#cfccc5; font-size:.95rem; padding-left:1.3rem; position:relative; }
+.reve-archetypes li::before{ content:"◆"; position:absolute; left:0; color:var(--accent); font-size:.7rem; top:.35rem; }
+.reve-archetypes strong{ color:var(--ink); font-weight:500; }

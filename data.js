@@ -13,7 +13,7 @@ const I18N = {
 fr: {
   code: "fr", label: "FR",
   ui: {
-    nav: { home:"Accueil", create:"Moi", relation:"Mes proches", mirror:"Mon miroir", method:"Les prismes" },
+    nav: { home:"Accueil", create:"Moi", reves:"Mes rêves", relation:"Mes proches", mirror:"Mon miroir", method:"Les prismes" },
     brandTag: "Astrologie · Numérologie · MBTI",
     hero: {
       eyebrow:"Astrologie · Numérologie · MBTI · Graphologie",
@@ -27,7 +27,7 @@ fr: {
       { i:"02", h:"Numérologie", p:"Votre date et votre nom réduits à des nombres porteurs de sens : le fil de fond d’une vie.", cta:"Calculer mon chemin de vie", to:"create" },
       { i:"03", h:"MBTI", p:"Une cartographie cognitive éprouvée : comment vous prenez l’énergie, percevez, décidez, vous organisez.", cta:"Découvrir mon profil", to:"create" },
       { i:"04", h:"Histoire de vie", p:"Ce qui vous est arrivé, et à quel âge. Chaque moment marquant a laissé une version de vous, qui reprend la parole quand ça chauffe.", cta:"Renseigner mon histoire", to:"create" },
-      { i:"05", h:"Les rêves", p:"Ce que la nuit met en scène : un journal tenu au réveil, les images qui reviennent d’une nuit à l’autre, et une relecture au conditionnel.", cta:"Ouvrir mon journal de rêves", to:"create" },
+      { i:"05", h:"Les rêves", p:"Ce que la nuit met en scène : un journal tenu au réveil, les images qui reviennent d’une nuit à l’autre, et une relecture jungienne qui croise tout votre parcours.", cta:"Ouvrir mon journal de rêves", to:"reves" },
       { i:"06", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
     ],
     lensesCta:{ text:"Et surtout, les six réunies : ce que dit l’ensemble de votre profil.", button:"Voir l’ensemble de mon profil" },
@@ -312,6 +312,10 @@ fr: {
         text:"Les images repérées plus haut sont un répertoire, le même pour tout le monde. Une lecture par l’IA part de votre récit à vous : ce que la scène rejoue, ce qu’elle refuse, et trois questions à vous poser. Au conditionnel, sans prédiction, et en disant ce qu’il ne faut pas en conclure.",
         privacy:"Ce rêve-là sortira de votre navigateur pour être analysé. Aucun autre, et rien de votre profil.",
         consent:"J’accepte que le texte de ce rêve soit envoyé pour analyse.",
+        consentProfil:"Joindre mon thème et mes nombres (la lecture situe le rêve dans votre carte).",
+        consentHistoire:"Joindre mon histoire de vie (plus juste, et beaucoup plus intime).",
+        consentAutres:"Joindre mes autres rêves (pour ce qui revient d’une nuit à l’autre).",
+        jung:"Lecture d’inspiration jungienne : ce que le rêve compense de la vie éveillée, les figures qui le traversent, et ce qu’il travaille en ce moment. Au conditionnel, sans prédiction.",
         button:"Demander la lecture", working:"Lecture en cours…", again:"Relire ce rêve",
         pick:"Choisissez un rêve du journal à faire relire.",
         setup:"Cette lecture demande une configuration.",
@@ -319,6 +323,8 @@ fr: {
         keyPh:"sk-ant-…", keySave:"Enregistrer la clé", keyForget:"Oublier la clé",
         lResume:"Le rêve, reformulé", lScene:"Ce que la scène rejoue", lImages:"Les images de ce rêve",
         lTension:"La tension", lQuestions:"Trois questions au réveil", lGarde:"Ce qu’il ne faut pas en conclure",
+        lCompensation:"Ce que le rêve compense", lArchetypes:"Les figures du rêve",
+        lParcours:"Ce que ça rejoue de votre parcours", lIndividuation:"Ce que ça travaille en ce moment",
         errCle:"La clé a été refusée. Vérifiez-la et recommencez.",
         errQuota:"La limite d’usage est atteinte. Réessayez plus tard.",
         errReseau:"La connexion a échoué. Réessayez.",
@@ -859,7 +865,7 @@ fr: {
 en: {
   code: "en", label: "EN",
   ui: {
-    nav: { home:"Home", create:"Me", relation:"My people", mirror:"My mirror", method:"The prisms" },
+    nav: { home:"Home", create:"Me", reves:"My dreams", relation:"My people", mirror:"My mirror", method:"The prisms" },
     brandTag: "Astrology · Numerology · MBTI",
     hero: {
       eyebrow:"Astrology · Numerology · MBTI · Graphology",
@@ -873,7 +879,7 @@ en: {
       { i:"02", h:"Numerology", p:"Your date and name reduced to numbers that carry meaning: the underlying thread of a life.", cta:"Calculate my life path", to:"create" },
       { i:"03", h:"MBTI", p:"A proven cognitive map: how you draw energy, perceive, decide, organize.", cta:"Discover my profile", to:"create" },
       { i:"04", h:"Life history", p:"What happened to you, and at what age. Every defining moment left a version of you behind — the one that speaks up when things get heated.", cta:"Fill in my history", to:"create" },
-      { i:"05", h:"Dreams", p:"What the night stages: a journal kept on waking, the images that return from one night to the next, and a reading in the conditional.", cta:"Open my dream journal", to:"create" },
+      { i:"05", h:"Dreams", p:"What the night stages: a journal kept on waking, the images that return from one night to the next, and a Jungian reading that draws on your whole path.", cta:"Open my dream journal", to:"reves" },
       { i:"06", h:"Graphology", p:"Your handwriting as a fingerprint: the stroke, the rhythm, the spacing. A close reading, by an analyst.", cta:"Book a session", to:"consult", tag:"by appointment" }
     ],
     lensesCta:{ text:"And above all, the six together: what your whole profile reveals.", button:"See my full profile" },
@@ -1156,6 +1162,10 @@ en: {
         text:"The images spotted above are a repertoire, the same for everyone. An AI reading starts from your own account: what the scene re-enacts, what it refuses, and three questions to ask yourself. In the conditional, with no prediction, and saying what must not be concluded from it.",
         privacy:"This one dream will leave your browser to be analysed. No other, and nothing from your profile.",
         consent:"I agree that the text of this dream be sent for analysis.",
+        consentProfil:"Include my chart and numbers (the reading places the dream in your chart).",
+        consentHistoire:"Include my life history (more accurate, and far more intimate).",
+        consentAutres:"Include my other dreams (for what returns from one night to the next).",
+        jung:"A Jungian-inspired reading: what the dream compensates for in waking life, the figures that run through it, and what it is working on right now. In the conditional, with no prediction.",
         button:"Ask for the reading", working:"Reading…", again:"Read this dream again",
         pick:"Choose a dream from the journal to have read back.",
         setup:"This reading needs configuration.",
@@ -1163,6 +1173,8 @@ en: {
         keyPh:"sk-ant-…", keySave:"Save the key", keyForget:"Forget the key",
         lResume:"The dream, restated", lScene:"What the scene re-enacts", lImages:"The images in this dream",
         lTension:"The tension", lQuestions:"Three questions on waking", lGarde:"What must not be concluded",
+        lCompensation:"What the dream compensates", lArchetypes:"The figures in the dream",
+        lParcours:"What it re-enacts of your path", lIndividuation:"What it is working on right now",
         errCle:"The key was refused. Check it and try again.",
         errQuota:"The usage limit has been reached. Try again later.",
         errReseau:"The connection failed. Try again.",
