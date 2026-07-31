@@ -647,3 +647,46 @@ em{ font-style:italic; }
 .reve-faits{ margin:1.2rem 0 0; padding-left:1.2rem; color:#cfccc5; font-size:.95rem; }
 .reve-faits li{ margin-bottom:.35rem; }
 .reve-panel .ai-privacy{ margin-top:1rem !important; }
+
+/* ---------- MON COMPTE ---------- */
+.account-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--line-2);
+  background:transparent; color:var(--ink-dim); font-family:"Inter Tight",sans-serif; font-size:.9rem;
+  cursor:pointer; display:grid; place-items:center; transition:all .25s var(--ease); }
+.account-btn:hover{ border-color:var(--accent); color:var(--accent); }
+.account-btn.is-set{ border-color:var(--accent); color:var(--bg); background:var(--spectrum); font-weight:600; }
+.compte-head{ margin-bottom:2.4rem; }
+.compte-sub{ color:var(--ink-dim); font-size:.95rem; margin:.4rem 0 1rem; }
+.btn-mini{ font-size:.8rem; padding:.4rem 1rem; }
+.compte-msg{ margin-bottom:1.6rem; padding:.8rem 1.1rem; border-radius:10px; font-size:.92rem;
+  border:1px solid var(--line-2); background:var(--bg-2); }
+.compte-msg.is-ok{ color:var(--accent); border-color:var(--accent); }
+.compte-msg.is-err{ color:#ff9db0; border-color:#ff9db0; }
+.compte-ligne{ color:var(--ink-dim) !important; font-size:.9rem !important; }
+.compte-acts{ display:flex; flex-wrap:wrap; align-items:center; gap:.7rem; margin-top:1.2rem; }
+.compte-list{ list-style:none; padding:0; margin:1.4rem 0 0; display:flex; flex-direction:column; gap:1px;
+  background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+.compte-item{ display:flex; flex-wrap:wrap; align-items:center; gap:.8rem 1.2rem;
+  background:var(--bg); padding:1rem 1.2rem; }
+.compte-qui{ flex:1 1 12rem; display:grid; gap:.15rem; }
+.compte-nom{ font-family:"Inter Tight",sans-serif; font-size:1.05rem; color:var(--ink); }
+.compte-lien{ background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+  border-radius:100px; padding:.35rem .9rem; font-family:inherit; font-size:.85rem; }
+.compte-item .compte-acts{ margin-top:0; gap:.4rem; }
+.compte-item .compte-acts button{ background:none; border:1px solid var(--line-2); border-radius:100px;
+  color:var(--ink-dim); font-family:inherit; font-size:.8rem; padding:.32rem .9rem; cursor:pointer;
+  transition:all .2s var(--ease); }
+.compte-item .compte-acts button:hover{ border-color:var(--accent); color:var(--accent); }
+.compte-del{ color:#ff9db0 !important; }
+.compte-del:hover{ border-color:#ff9db0 !important; color:#ff9db0 !important; }
+.compte-todo{ list-style:none; padding:0; margin:1.2rem 0 0; display:flex; flex-direction:column; gap:.6rem; }
+.compte-todo li{ color:#cfccc5; font-size:.95rem; padding-left:1.4rem; position:relative; }
+.compte-todo li::before{ content:"○"; position:absolute; left:0; color:var(--accent); font-size:.8rem; top:.15rem; }
+.compte-todo strong{ color:var(--ink); font-weight:500; }
+.compte-file{ cursor:pointer; }
+.compte-confirm{ margin-top:1.4rem; padding:1.1rem 1.3rem; border:1px solid var(--accent); border-radius:12px;
+  background:rgba(201,184,255,.06); }
+.compte-warn{ color:#ff9db0 !important; font-size:.9rem !important; }
+.compte-danger{ margin-top:2.4rem; padding-top:1.6rem; border-top:1px solid var(--line); }
+.compte-server p{ font-size:.98rem; }
+.compte-reprise{ margin-top:3rem; padding-top:1.8rem; border-top:1px solid var(--line); }
+.compte-reprise p{ color:var(--ink-dim); font-size:.92rem; margin:.6rem 0 1rem; }

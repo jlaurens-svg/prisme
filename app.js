@@ -20,6 +20,9 @@ function go(name){
     setTimeout(histScroll, 80);
     return;
   }
+  /* Le compte est un état de rangement, pas un résultat figé : il se recalcule
+     à chaque ouverture, sinon un profil créé entre-temps n'y apparaît pas. */
+  if(name === "compte") renderCompte();
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("is-active", v.dataset.view === name));
   document.querySelectorAll(".nav-links a").forEach(a => a.classList.toggle("is-current", a.dataset.nav === name));
   window.scrollTo({ top:0, behavior:"smooth" });
@@ -565,6 +568,11 @@ document.getElementById("lang-toggle").addEventListener("click", ()=>{
   if(lastProfile) renderProfile(lastProfile);
   if(lastRelation) renderRelation(lastRelation.a, lastRelation.b, lastRelation.ctx);
   if(lastMirror) renderMirrorResult(lastMirror.a, lastMirror.b, lastMirror.ctx);
+  /* Le compte est défini plus bas dans le fichier : appelé depuis applyI18n(),
+     qui tourne avant, il tomberait sur des variables pas encore initialisées. */
+  renderAccountBtn();
+  renderCreateCible();
+  renderCompte();
 });
 
 /* ---------------- Segmented control quiz/known ---------------- */
@@ -767,7 +775,17 @@ document.getElementById("profile-form").addEventListener("submit", e=>{
       return showErr(err,U().errBirth);
     }
   }
-  renderProfile(computeProfile(name,date,mbti,birth));
+  const p = computeProfile(name,date,mbti,birth);
+  /* Profil demandé depuis le compte : il y est rangé tout de suite, avec son
+     lien s'il en a un. Sinon on se contente de l'afficher — le bouton
+     « enregistrer » du portrait reste la voie normale. */
+  if(createCible){
+    const lienEl = document.getElementById("f-lien");
+    compteEnregistrer(p, createCible.pour, lienEl ? lienEl.value : "");
+    createCible = null;
+    renderCreateCible();
+  }
+  renderProfile(p);
   go("profile");
 });
 
@@ -1742,3 +1760,434 @@ function bindReves(){
   document.querySelectorAll("[data-reve-jump]").forEach(b => b.addEventListener("click", reveScroll));
   renderReves();
 }
+
+/* ============================================================
+   MON COMPTE — vous, et les vôtres
+
+   Un compte local : il rassemble votre profil et ceux de vos proches, dit ce
+   qu'il reste à renseigner, et sait s'exporter dans un fichier.
+
+   Pas de serveur, pas de mot de passe, pas d'e-mail. Un vrai compte en ligne
+   supposerait de confier à quelqu'un d'autre des traumas, des rêves et des
+   disputes ; tant que ce choix n'est pas fait, l'export est la façon honnête de
+   changer d'appareil — et l'interface le dit.
+   ============================================================ */
+const COMPTE_STORE = "prisme-compte";
+
+function compteLoad(){
+  let v = null;
+  try { v = JSON.parse(localStorage.getItem(COMPTE_STORE) || "null"); } catch(_){ return null; }
+  return (v && typeof v === "object" && v.nom) ? v : null;
+}
+function compteSave(c){
+  try { c ? localStorage.setItem(COMPTE_STORE, JSON.stringify(c))
+          : localStorage.removeItem(COMPTE_STORE); } catch(_){}
+  renderAccountBtn();
+}
+/* Le profil du titulaire, retrouvé par sa clé. Refaire son profil avec un autre
+   type MBTI change la clé : on considère alors qu'il est à recréer plutôt que
+   de désigner quelqu'un d'autre. */
+function compteMoi(){
+  const c = compteLoad();
+  if(!c || !c.moi) return null;
+  return loadSaved().find(p => profileKey(p) === c.moi) || null;
+}
+function compteProches(){
+  const c = compteLoad();
+  const moi = c && c.moi;
+  return loadSaved().filter(p => profileKey(p) !== moi);
+}
+function compteLien(p){ return (p.lien && U().compte.liens[p.lien]) ? p.lien : ""; }
+
+/* Bouton discret dans l'en-tête : l'initiale si le compte existe, sinon un plus. */
+function renderAccountBtn(){
+  const el = document.getElementById("account-ini");
+  const btn = document.getElementById("account-btn");
+  if(!el || !btn) return;
+  const c = compteLoad();
+  el.textContent = c ? c.nom.trim().charAt(0).toUpperCase() : "＋";
+  btn.classList.toggle("is-set", !!c);
+  btn.setAttribute("aria-label", c ? U().compte.hello(c.nom) : U().compte.createTitle);
+  btn.title = btn.getAttribute("aria-label");
+}
+
+/* ---------------- pour qui est le prochain profil ? ----------------
+   Le formulaire « Moi » sert aussi à ajouter un proche : une cible posée avant
+   d'y arriver dit à quel titre le profil sera enregistré. */
+let createCible = null;   // null | { pour:"moi" } | { pour:"proche" }
+
+function renderCreateCible(){
+  const box = document.getElementById("create-cible");
+  if(!box) return;
+  const c = U().compte;
+  if(!createCible){ box.innerHTML = ""; return; }
+  const proche = createCible.pour === "proche";
+  box.innerHTML = `
+    <div class="create-cible">
+      <p class="eyebrow">${proche ? c.addTitle : c.addMine}</p>
+      <p>${proche ? c.addLead : c.addMineLead}</p>
+      ${proche ? `
+        <div class="field">
+          <label for="f-lien">${c.lienLabel}</label>
+          <select id="f-lien">
+            <option value="">${c.lienNone}</option>
+            ${Object.entries(c.liens).map(([k, v]) => `<option value="${k}">${escapeHtml(v)}</option>`).join("")}
+          </select>
+        </div>` : ""}
+    </div>`;
+}
+function viserCreate(pour){
+  createCible = { pour };
+  renderCreateCible();
+  ["f-name", "f-date"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
+  go("create");
+}
+
+/* Enregistrement d'un profil dans le compte, avec son lien s'il y en a un. */
+function compteEnregistrer(p, pour, lien){
+  const list = loadSaved();
+  const k = profileKey(p);
+  const entree = { name:p.name, date:p.date, mbti:p.mbti, birth:p.birth || null };
+  if(lien) entree.lien = lien;
+  const i = list.findIndex(x => profileKey(x) === k);
+  if(i >= 0) list[i] = { ...list[i], ...entree }; else list.push(entree);
+  storeSaved(list);
+  if(pour === "moi"){
+    const c = compteLoad() || { nom: firstName(p.name), cree: reveAujourdhui() };
+    c.moi = k;
+    compteSave(c);
+  }
+  renderSavedPicker();
+}
+
+/* ---------------- la vue ---------------- */
+let compteMsg = null;      // { texte, type } — retour d'action, éphémère
+let compteImport = null;   // sauvegarde en attente de confirmation
+let compteWipe = false;    // effacement en attente de confirmation
+let compteRenommer = false;
+
+function renderCompte(){
+  const box = document.getElementById("compte-out");
+  if(!box) return;
+  const c = U().compte, cpt = compteLoad();
+  box.innerHTML = (cpt && !compteRenommer) ? compteVue(c, cpt) : compteOuverture(c, cpt);
+  bindCompte();
+}
+
+function compteOuverture(c, cpt){
+  return `
+    <div class="form-wrap">
+      <p class="eyebrow">${c.eyebrow}</p>
+      <h2 class="view-title">${c.createTitle}</h2>
+      <p class="view-lead">${c.createLead}</p>
+      <p class="hist-privacy">${c.privacy}</p>
+      <form id="compte-form" class="form">
+        <div class="field">
+          <label for="compte-nom">${c.fNom}</label>
+          <input id="compte-nom" type="text" maxlength="40" placeholder="${escapeHtml(c.phNom)}"
+                 value="${cpt ? escapeHtml(cpt.nom) : ""}" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">${c.create}</button>
+        <p class="form-error" id="compte-error" hidden></p>
+      </form>
+      ${compteMsg ? `<p class="compte-msg is-${compteMsg.type}">${escapeHtml(compteMsg.texte)}</p>` : ""}
+      <!-- Nouvel appareil ou compte effacé : c'est ici qu'on récupère une
+           sauvegarde, avant même d'avoir un compte. -->
+      <div class="compte-reprise">
+        <p class="eyebrow">${c.backupTitle}</p>
+        <p>${c.backupLead}</p>
+        <label class="btn btn-ghost compte-file">${c.importBtn}
+          <input type="file" id="compte-import" accept="application/json,.json" hidden /></label>
+        ${compteConfirmImport(c)}
+      </div>
+    </div>`;
+}
+
+/* Panneau de confirmation d'import, partagé par les deux écrans. */
+function compteConfirmImport(c){
+  if(!compteImport) return "";
+  return `
+    <div class="compte-confirm">
+      <p>${escapeHtml(c.importSummary(compteImport.moi, compteImport.proches))}</p>
+      <p class="compte-warn">${c.importWarn}</p>
+      <div class="compte-acts">
+        <button class="btn btn-accent" id="compte-import-ok">${c.importConfirm}</button>
+        <button class="btn btn-ghost" id="compte-import-no">${c.importCancel}</button>
+      </div>
+    </div>`;
+}
+
+function compteVue(c, cpt){
+  const moi = compteMoi(), proches = compteProches();
+  return `
+    <div class="compte-head">
+      <p class="eyebrow">${c.eyebrow}</p>
+      <h1 class="result-name">${escapeHtml(c.hello(cpt.nom))}</h1>
+      <p class="compte-sub">${escapeHtml(c.summary(!!moi, proches.length))}${cpt.cree ? ` · ${escapeHtml(c.since(reveJour(cpt.cree)))}` : ""}</p>
+      <button class="btn btn-ghost btn-mini" id="compte-rename">${c.rename}</button>
+    </div>
+    ${compteMsg ? `<p class="compte-msg is-${compteMsg.type}">${escapeHtml(compteMsg.texte)}</p>` : ""}
+
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${c.meTitle}</span></div>
+      ${moi ? `
+        <h3>${escapeHtml(moi.name)}</h3>
+        <p class="compte-ligne">${escapeHtml(compteResume(moi))}</p>
+        <div class="compte-acts">
+          <button class="btn btn-accent" data-compte-voir="${escapeHtml(profileKey(moi))}">${c.meSee}</button>
+          <button class="btn btn-ghost" id="compte-refaire">${c.meRedo}</button>
+        </div>`
+      : `
+        <h3>${c.meTitle}</h3>
+        <p>${c.meNone}</p>
+        <button class="btn btn-accent" id="compte-creer-moi">${c.meCreate}</button>`}
+    </section>
+
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${c.tagCarnet}</span></div>
+      <h3>${c.prochesTitle}</h3>
+      <p>${proches.length ? c.prochesLead : c.prochesNone}</p>
+      ${proches.length ? `<ul class="compte-list">${proches.map(p => compteRow(c, p)).join("")}</ul>` : ""}
+      <button class="btn btn-accent-outline" id="compte-ajouter">${c.prochesAdd}</button>
+    </section>
+
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${c.tagTodo}</span></div>
+      <h3>${c.todoTitle}</h3>
+      ${compteTodo(c, moi, proches)}
+    </section>
+
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${c.tagData}</span></div>
+      <h3>${c.backupTitle}</h3>
+      <p>${c.backupLead}</p>
+      <div class="compte-acts">
+        <button class="btn btn-accent-outline" id="compte-export">${c.exportBtn}</button>
+        <label class="btn btn-ghost compte-file">${c.importBtn}
+          <input type="file" id="compte-import" accept="application/json,.json" hidden /></label>
+      </div>
+      ${compteConfirmImport(c)}
+      <div class="compte-danger">
+        ${compteWipe ? `
+          <p class="compte-warn">${c.wipeWarn}</p>
+          <div class="compte-acts">
+            <button class="btn btn-ghost compte-del" id="compte-wipe-ok">${c.wipeConfirm}</button>
+            <button class="btn btn-ghost" id="compte-wipe-no">${c.wipeCancel}</button>
+          </div>`
+        : `<button class="btn btn-ghost compte-del" id="compte-wipe">${c.wipeBtn}</button>`}
+      </div>
+    </section>
+
+    <section class="synth compte-server">
+      <div class="card-tag"><span class="dot"></span><span>${c.serverTitle}</span></div>
+      <p>${c.serverText}</p>
+      <p class="hist-privacy">${c.privacy}</p>
+    </section>`;
+}
+
+/* Une ligne de résumé : signe, chemin de vie, MBTI, heure de naissance ou non. */
+function compteResume(p){
+  const t = U(), Lp = L();
+  const [y, m, d] = p.date.split("-").map(Number);
+  const signe = Lp.signs[sunSign(m, d)].name;
+  const vie = numLabel(lifePath(p.date));
+  return `${signe} · ${t.bLife} ${vie} · ${p.mbti} · ${p.birth ? U().compte.withBirth : U().compte.noBirth}`;
+}
+
+function compteRow(c, p){
+  const k = profileKey(p);
+  return `
+    <li class="compte-item">
+      <div class="compte-qui">
+        <span class="compte-nom">${escapeHtml(p.name)}</span>
+        <span class="compte-ligne">${escapeHtml(compteResume(p))}</span>
+      </div>
+      <select class="compte-lien" data-lien="${escapeHtml(k)}" aria-label="${c.lienLabel}">
+        <option value="">${c.lienNone}</option>
+        ${Object.entries(c.liens).map(([kk, v]) =>
+          `<option value="${kk}"${compteLien(p) === kk ? " selected" : ""}>${escapeHtml(v)}</option>`).join("")}
+      </select>
+      <span class="compte-acts">
+        <button data-compte-voir="${escapeHtml(k)}">${c.actSee}</button>
+        <button data-compte-cmp="${escapeHtml(k)}">${c.actCompare}</button>
+        <button data-compte-del="${escapeHtml(k)}" class="compte-del">${c.actDel}</button>
+      </span>
+    </li>`;
+}
+
+/* Ce qui manque, personne par personne — c'est ce qui fait « alimenter ». */
+function compteTodo(c, moi, proches){
+  const lignes = [];
+  if(!moi){
+    lignes.push({ qui: c.todoMe, quoi: [c.todo.profil] });
+  } else {
+    const quoi = [];
+    if(!moi.birth) quoi.push(c.todo.birth);
+    const k = profileKey(moi);
+    if(!journalEntrees("prisme-histoire", k)) quoi.push(c.todo.histoire);
+    if(!journalEntrees("prisme-reves", k))    quoi.push(c.todo.reves);
+    if(quoi.length) lignes.push({ qui: firstName(moi.name), quoi });
+  }
+  proches.forEach(p => {
+    const quoi = [];
+    if(!compteLien(p)) quoi.push(c.todo.lien);
+    if(!p.birth) quoi.push(c.todo.birth);
+    if(quoi.length) lignes.push({ qui: firstName(p.name), quoi });
+  });
+  if(!lignes.length) return `<p>${c.todoDone}</p>`;
+  return `
+    <p>${c.todoLead}</p>
+    <ul class="compte-todo">
+      ${lignes.map(l => `<li><strong>${escapeHtml(l.qui)}</strong> — ${escapeHtml(l.quoi.join(", "))}</li>`).join("")}
+    </ul>`;
+}
+/* Combien d'entrées ce profil a-t-il dans un journal ? Lecture directe : on
+   interroge les journaux d'un autre profil que celui affiché. */
+function journalEntrees(cle, k){
+  try {
+    const v = JSON.parse(localStorage.getItem(cle) || "{}");
+    return Array.isArray(v[k]) ? v[k].length : 0;
+  } catch(_){ return 0; }
+}
+
+/* ---------------- export / import ---------------- */
+const COMPTE_FORMAT = "prisme-sauvegarde-1";
+function compteExport(){
+  const lire = (k) => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch(_){ return null; } };
+  const data = {
+    format: COMPTE_FORMAT,
+    date: new Date().toISOString(),
+    compte: compteLoad(),
+    profils: loadSaved(),
+    histoire: lire("prisme-histoire"),
+    reves: lire("prisme-reves"),
+  };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type:"application/json" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `prisme-${(compteLoad() || {}).nom || "sauvegarde"}-${reveAujourdhui()}.json`.toLowerCase();
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function compteAppliquer(d){
+  const ecrire = (k, v) => { try { v ? localStorage.setItem(k, JSON.stringify(v)) : localStorage.removeItem(k); } catch(_){} };
+  ecrire("prisme-profiles", d.profils || []);
+  ecrire("prisme-histoire", d.histoire);
+  ecrire("prisme-reves", d.reves);
+  compteSave(d.compte || null);
+  lastProfile = null;
+  renderSavedPicker();
+}
+function compteEffacer(){
+  ["prisme-profiles", "prisme-histoire", "prisme-reves"].forEach(k => {
+    try { localStorage.removeItem(k); } catch(_){}
+  });
+  compteSave(null);
+  lastProfile = null;
+  renderSavedPicker();
+}
+
+/* ---------------- écouteurs ---------------- */
+function bindCompte(){
+  const c = U().compte;
+  const form = document.getElementById("compte-form");
+  if(form) form.addEventListener("submit", e => {
+    e.preventDefault();
+    const err = document.getElementById("compte-error"); err.hidden = true;
+    const nom = document.getElementById("compte-nom").value.trim();
+    if(nom.length < 2) return showErr(err, c.errNom);
+    const ancien = compteLoad();
+    compteSave({ nom, cree: (ancien && ancien.cree) || reveAujourdhui(), moi: ancien ? ancien.moi : null });
+    compteRenommer = false;
+    compteMsg = null;
+    renderCompte();
+  });
+
+  const rename = document.getElementById("compte-rename");
+  if(rename) rename.addEventListener("click", () => { compteRenommer = true; renderCompte(); });
+
+  const creer = document.getElementById("compte-creer-moi");
+  if(creer) creer.addEventListener("click", () => viserCreate("moi"));
+  const refaire = document.getElementById("compte-refaire");
+  if(refaire) refaire.addEventListener("click", () => viserCreate("moi"));
+  const ajouter = document.getElementById("compte-ajouter");
+  if(ajouter) ajouter.addEventListener("click", () => viserCreate("proche"));
+
+  document.querySelectorAll("[data-compte-voir]").forEach(b => b.addEventListener("click", () => {
+    const p = loadSaved().find(x => profileKey(x) === b.dataset.compteVoir);
+    if(!p) return;
+    renderProfile(computeProfile(p.name, p.date, p.mbti, p.birth));
+    go("profile");
+  }));
+  document.querySelectorAll("[data-compte-cmp]").forEach(b => b.addEventListener("click", () => {
+    const p = loadSaved().find(x => profileKey(x) === b.dataset.compteCmp);
+    const moi = compteMoi();
+    if(!p) return;
+    if(moi){
+      document.getElementById("ra-name").value = moi.name;
+      document.getElementById("ra-date").value = moi.date;
+      document.getElementById("ra-mbti").value = moi.mbti;
+    }
+    document.getElementById("rb-name").value = p.name;
+    document.getElementById("rb-date").value = p.date;
+    document.getElementById("rb-mbti").value = p.mbti;
+    go("relation");
+  }));
+  document.querySelectorAll("[data-compte-del]").forEach(b => b.addEventListener("click", () => {
+    storeSaved(loadSaved().filter(x => profileKey(x) !== b.dataset.compteDel));
+    renderSavedPicker();
+    renderCompte();
+  }));
+  document.querySelectorAll("[data-lien]").forEach(sel => sel.addEventListener("change", () => {
+    const list = loadSaved();
+    const i = list.findIndex(x => profileKey(x) === sel.dataset.lien);
+    if(i < 0) return;
+    if(sel.value) list[i].lien = sel.value; else delete list[i].lien;
+    storeSaved(list);
+    renderCompte();
+  }));
+
+  const exp = document.getElementById("compte-export");
+  if(exp) exp.addEventListener("click", compteExport);
+  const imp = document.getElementById("compte-import");
+  if(imp) imp.addEventListener("change", async () => {
+    const f = imp.files && imp.files[0];
+    if(!f) return;
+    let d = null;
+    try { d = JSON.parse(await f.text()); } catch(_){}
+    if(!d || d.format !== COMPTE_FORMAT || !Array.isArray(d.profils)){
+      compteImport = null;
+      compteMsg = { texte: c.importBad, type:"err" };
+      return renderCompte();
+    }
+    const moiK = d.compte && d.compte.moi;
+    compteImport = { data: d, moi: !!moiK, proches: d.profils.filter(p => profileKey(p) !== moiK).length };
+    compteMsg = null;
+    renderCompte();
+  });
+  const impOk = document.getElementById("compte-import-ok");
+  if(impOk) impOk.addEventListener("click", () => {
+    compteAppliquer(compteImport.data);
+    compteImport = null;
+    compteMsg = { texte: c.importDone, type:"ok" };
+    renderCompte();
+  });
+  const impNo = document.getElementById("compte-import-no");
+  if(impNo) impNo.addEventListener("click", () => { compteImport = null; renderCompte(); });
+
+  const wipe = document.getElementById("compte-wipe");
+  if(wipe) wipe.addEventListener("click", () => { compteWipe = true; renderCompte(); });
+  const wipeNo = document.getElementById("compte-wipe-no");
+  if(wipeNo) wipeNo.addEventListener("click", () => { compteWipe = false; renderCompte(); });
+  const wipeOk = document.getElementById("compte-wipe-ok");
+  if(wipeOk) wipeOk.addEventListener("click", () => {
+    compteEffacer();
+    compteWipe = false;
+    compteMsg = { texte: c.wipeDone, type:"ok" };
+    renderCompte();
+  });
+}
+
+renderAccountBtn();
+renderCreateCible();
+renderCompte();

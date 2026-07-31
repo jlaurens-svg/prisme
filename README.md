@@ -57,6 +57,25 @@ Le décalage UTC appliqué est celui qui valait **à la date de naissance**, lu
 dans la base tzdata du navigateur — les règles historiques d'heure d'été sont
 donc respectées.
 
+### Mon compte
+
+Un compte **local**, ouvert avec un prénom : il rassemble votre profil et ceux de
+vos proches, avec le lien qui vous unit à chacun. Accessible par le bouton rond
+de l'en-tête, hors du menu — c'est un espace de rangement, pas une lecture.
+
+Il sert surtout à ne pas resaisir une date de naissance à chaque fois, et à voir
+ce qui manque : la section « ce qu'il reste à alimenter » liste, personne par
+personne, l'heure de naissance absente, le lien non précisé, l'histoire de vie
+ou le journal de rêves encore vides.
+
+Pas de serveur, pas de mot de passe, pas d'adresse e-mail : rien à pirater, mais
+rien à récupérer non plus en changeant d'appareil. L'export produit un fichier
+JSON contenant tout (compte, proches, histoire de vie, rêves) et l'import le
+restitue — y compris avant d'avoir ouvert un compte, ce qui est précisément le
+cas du nouvel appareil. L'interface dit pourquoi il n'y a pas de compte en
+ligne : il faudrait confier des traumas, des rêves et des disputes à un serveur,
+et c'est un choix, pas un détail technique.
+
 ### Les rêves
 
 Lentille 05 du profil, dans « Moi ». Un journal tenu au réveil, puis trois

@@ -22,6 +22,9 @@
     <a href="#" data-nav="relation" data-i18n="nav.relation">Mes proches</a>
     <a href="#" data-nav="mirror" data-i18n="nav.mirror">Mon miroir</a>
     <a href="#" data-nav="method" data-i18n="nav.method">Les prismes</a>
+    <!-- Le compte reste hors du menu : c'est un espace de rangement, pas une
+         lecture. Son initiale suffit à dire qu'il existe. -->
+    <button class="account-btn" id="account-btn" data-nav="compte"><span id="account-ini">＋</span></button>
     <button class="lang-toggle" id="lang-toggle" aria-label="Language">EN</button>
   </nav>
 </header>
@@ -131,6 +134,7 @@
       <p class="eyebrow" data-i18n="createEyebrow"></p>
       <h2 class="view-title" data-i18n="createTitle"></h2>
       <p class="view-lead" data-i18n="createLead"></p>
+      <div id="create-cible"></div>
 
       <form id="profile-form" class="form" autocomplete="off">
         <div class="field">
@@ -274,6 +278,11 @@
 
   <!-- L'histoire de vie n'a pas de vue à elle : c'est la lentille 04 du
        profil, rendue par app.js dans #profile-out. -->
+
+  <!-- ============ MON COMPTE ============ -->
+  <section class="view view-compte" data-view="compte">
+    <div id="compte-out"></div>
+  </section>
 
   <!-- ============ MÉTHODE ============ -->
   <section class="view view-method" data-view="method">
