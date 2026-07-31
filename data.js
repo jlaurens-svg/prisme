@@ -74,10 +74,18 @@ fr: {
     fDate:"Date de naissance",
     fBirthOpt:"Heure et lieu de naissance",
     fBirthOptHint:"Facultatif — mais nécessaires pour calculer votre ascendant et votre signe lunaire.",
-    fTime:"Heure de naissance", fCity:"Ville de naissance", fCityPh:"Choisir une ville…",
+    fTime:"Heure de naissance", fCity:"Ville de naissance", fCityPh:"Tapez les premières lettres…",
     fManual:"Coordonnées manuelles", fLat:"Latitude", fLon:"Longitude (est +)", fTz:"Décalage UTC (h)",
-    dstNote:"L’heure d’été est appliquée automatiquement selon la ville et la date. En coordonnées manuelles, indiquez l’offset réel (heure d’été comprise).",
+    dstNote:"Le fuseau horaire et l’heure d’été sont déduits de la ville et de la date de naissance, règles historiques comprises. En coordonnées manuelles, indiquez l’offset réel (heure d’été comprise).",
     dstApplied:"Heure d’été appliquée automatiquement.",
+    cityLoading:"Chargement de la base des villes…",
+    cityLoadErr:"Base des villes indisponible — utilisez les coordonnées manuelles.",
+    cityHint:"135 000 villes dans le monde. Recherche en français ou dans la langue du pays (Londres, London).",
+    cityNoneYet:"Aucune ville de plus de 15 000 habitants ne correspond — recherche étendue aux petites communes…",
+    cityNone:"Aucune commune trouvée. Choisissez la ville la plus proche (à 10 km près l’ascendant est identique), ou saisissez les coordonnées manuellement.",
+    cityCount:(n)=>`${n} résultat${n>1?"s":""}`,
+    cityChosen:(zone)=>`Fuseau : ${zone}`,
+    cityClear:"Effacer",
     mbtiLegend:"Votre type de personnalité (MBTI)",
     segQuiz:"Je passe le test (2 min)", segKnown:"Je connais mon type",
     mbtiPick:"Choisir…", quizHint:"Répondez spontanément — la première réaction est la bonne.",
@@ -94,6 +102,7 @@ fr: {
     modalite:"", planet:"",
     force:"Force", chantier:"Chantier",
     sunLabel:"Soleil", ascLabel:"Ascendant", moonLabel:"Lune",
+    placeLabel:"Lieu", utcShort:"UTC",
     ascExplain:"Le masque, la première impression, la façon d’aborder le monde.",
     moonExplain:"Le monde émotionnel, les besoins intimes, l’enfant intérieur.",
     otherNumbers:"Vos autres nombres",
@@ -216,8 +225,9 @@ fr: {
     <h3>Comment nous calculons</h3>
     <ul>
       <li><strong>Signe solaire</strong> — déduit de votre date de naissance selon les dates tropicales usuelles.</li>
-      <li><strong>Ascendant & signe lunaire</strong> — calculés à partir de l’heure et du lieu, par des formules astronomiques standard (Lune ~ Schlyter). Précision volontairement modeste ; l’heure exacte et le fuseau (heure d’été comprise) influencent fortement l’ascendant.</li>
-      <li><strong>Chemin de vie</strong> — somme réduite de votre date de naissance (les nombres maîtres 11, 22, 33 sont conservés).</li>
+      <li><strong>Ascendant & signe lunaire</strong> — calculés à partir de l’heure et du lieu, par des formules astronomiques standard (Lune ~ Schlyter). Précision volontairement modeste ; l’heure exacte et le fuseau influencent fortement l’ascendant.</li>
+      <li><strong>Lieu & fuseau horaire</strong> — 135 000 villes dans le monde (base GeoNames). Le décalage UTC est celui qui s’appliquait réellement <em>à votre date de naissance</em> : les règles historiques d’heure d’été sont prises en compte, y compris celles qui ont changé au fil des décennies.</li>
+      <li><strong>Chemin de vie</strong> — somme des chiffres de votre date de naissance, réduite jusqu’à un seul chiffre. Les <strong>nombres maîtres 11, 22 et 33</strong> sont conservés : la somme n’est pas réduite avant la fin, sinon ils disparaîtraient. Ils s’écrivent avec leur racine — 11/2, 22/4, 33/6.</li>
       <li><strong>Nombre d’expression & nombre intime</strong> — valeur des lettres de votre nom (méthode pythagoricienne), tout le nom puis les voyelles.</li>
       <li><strong>Type MBTI</strong> — issu de votre questionnaire ou de votre saisie directe.</li>
     </ul>
@@ -351,10 +361,18 @@ en: {
     fDate:"Date of birth",
     fBirthOpt:"Time and place of birth",
     fBirthOptHint:"Optional — but needed to compute your rising sign and moon sign.",
-    fTime:"Time of birth", fCity:"City of birth", fCityPh:"Choose a city…",
+    fTime:"Time of birth", fCity:"City of birth", fCityPh:"Type the first few letters…",
     fManual:"Manual coordinates", fLat:"Latitude", fLon:"Longitude (east +)", fTz:"UTC offset (h)",
-    dstNote:"Daylight saving time is applied automatically from the city and date. With manual coordinates, enter the real offset (including summer time).",
+    dstNote:"The time zone and summer time are derived from the city and date of birth, historical rules included. With manual coordinates, enter the real offset (including summer time).",
     dstApplied:"Daylight saving time applied automatically.",
+    cityLoading:"Loading the city database…",
+    cityLoadErr:"City database unavailable — please use manual coordinates.",
+    cityHint:"135,000 cities worldwide. Search in English or in the local language (London, Londres).",
+    cityNoneYet:"No city above 15,000 inhabitants matches — extending the search to smaller towns…",
+    cityNone:"No town found. Pick the nearest city (within 10 km the rising sign is identical), or enter coordinates manually.",
+    cityCount:(n)=>`${n} result${n>1?"s":""}`,
+    cityChosen:(zone)=>`Time zone: ${zone}`,
+    cityClear:"Clear",
     mbtiLegend:"Your personality type (MBTI)",
     segQuiz:"Take the test (2 min)", segKnown:"I know my type",
     mbtiPick:"Choose…", quizHint:"Answer spontaneously — your first reaction is the right one.",
@@ -371,6 +389,7 @@ en: {
     modalite:"", planet:"",
     force:"Strength", chantier:"Growth edge",
     sunLabel:"Sun", ascLabel:"Rising", moonLabel:"Moon",
+    placeLabel:"Place", utcShort:"UTC",
     ascExplain:"The mask, the first impression, how you approach the world.",
     moonExplain:"The emotional world, inner needs, the inner child.",
     otherNumbers:"Your other numbers",
@@ -493,8 +512,9 @@ en: {
     <h3>How we compute</h3>
     <ul>
       <li><strong>Sun sign</strong> — from your date of birth, using the usual tropical dates.</li>
-      <li><strong>Rising & moon sign</strong> — from time and place, using standard astronomical formulas (Moon ~ Schlyter). Precision is deliberately modest; exact time and time zone (including daylight saving) strongly affect the rising sign.</li>
-      <li><strong>Life path</strong> — the reduced sum of your date of birth (master numbers 11, 22, 33 are kept).</li>
+      <li><strong>Rising & moon sign</strong> — from time and place, using standard astronomical formulas (Moon ~ Schlyter). Precision is deliberately modest; exact time and time zone strongly affect the rising sign.</li>
+      <li><strong>Place & time zone</strong> — 135,000 cities worldwide (GeoNames database). The UTC offset used is the one actually in force <em>on your date of birth</em>: historical daylight-saving rules are taken into account, including those that changed over the decades.</li>
+      <li><strong>Life path</strong> — the digits of your date of birth summed, then reduced to a single digit. <strong>Master numbers 11, 22 and 33</strong> are kept: the sum is not reduced before the end, or they would vanish. They are written with their root — 11/2, 22/4, 33/6.</li>
       <li><strong>Expression & soul urge numbers</strong> — the value of your name’s letters (Pythagorean method), the whole name then the vowels.</li>
       <li><strong>MBTI type</strong> — from your questionnaire or your direct entry.</li>
     </ul>

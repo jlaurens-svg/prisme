@@ -148,9 +148,16 @@
             <label for="f-time" data-i18n="fTime"></label>
             <input id="f-time" type="time" />
           </div>
-          <div class="field">
+          <div class="field city-field">
             <label for="f-city" data-i18n="fCity"></label>
-            <select id="f-city"></select>
+            <div class="city-combo">
+              <input id="f-city" type="text" autocomplete="off" spellcheck="false"
+                     role="combobox" aria-expanded="false" aria-autocomplete="list"
+                     aria-controls="f-city-list" />
+              <button type="button" id="f-city-clear" class="city-clear" hidden aria-label="Effacer">×</button>
+              <ul id="f-city-list" class="city-list" role="listbox" hidden></ul>
+            </div>
+            <p class="city-status" id="f-city-status" role="status" aria-live="polite"></p>
           </div>
           <details class="manual-coords">
             <summary data-i18n="fManual"></summary>
@@ -278,6 +285,7 @@
 </footer>
 
 <script src="astro.js"></script>
+<script src="cities.js"></script>
 <script src="data.js"></script>
 <script src="portraits.js"></script>
 <script src="app.js"></script>

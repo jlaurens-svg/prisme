@@ -1,0 +1,13 @@
+{
+  "name": "prisme-tools",
+  "private": true,
+  "description": "Génération des bases de villes de PRISME (hors site, non déployé)",
+  "scripts": {
+    "cities": "node gen-cities.js .."
+  },
+  "dependencies": {
+    "all-the-cities": "^3.1.0",
+    "i18n-iso-countries": "^7.14.0",
+    "tz-lookup": "^6.1.25"
+  }
+}

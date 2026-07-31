@@ -66,12 +66,152 @@ function fillSelectMbti(sel){
   const o0=document.createElement("option"); o0.value=""; o0.textContent=U().mbtiPick; sel.appendChild(o0);
   Object.keys(L().mbti).forEach(k=>{ const o=document.createElement("option"); o.value=k; o.textContent=`${k} — ${L().mbti[k].nom}`; sel.appendChild(o); });
 }
+/* ---------------- Champ « ville de naissance » ----------------
+   Recherche dans la base mondiale (voir cities.js). La base est téléchargée à
+   la première interaction avec le champ, pas au chargement de la page ; les
+   petites communes ne sont téléchargées que si la recherche ne donne rien. */
+let chosenCity = null;          // ville retenue, ou null
+let cityHilite = -1;            // index survolé au clavier dans la liste
+let cityResults = [];
+let cityLoadFailed = false;
+
+function cityEls(){
+  return { input: document.getElementById("f-city"),
+           list:  document.getElementById("f-city-list"),
+           status:document.getElementById("f-city-status"),
+           clear: document.getElementById("f-city-clear") };
+}
+function setCityStatus(msg, kind){
+  const { status } = cityEls();
+  if(!status) return;
+  status.textContent = msg || "";
+  status.className = "city-status" + (kind ? " is-" + kind : "");
+}
+function closeCityList(){
+  const { input, list } = cityEls();
+  if(!list) return;
+  list.hidden = true; list.innerHTML = "";
+  input.setAttribute("aria-expanded","false");
+  input.removeAttribute("aria-activedescendant");
+  cityHilite = -1; cityResults = [];
+}
+function renderCityList(results){
+  const { input, list } = cityEls();
+  cityResults = results; cityHilite = -1;
+  if(!results.length){ closeCityList(); return; }
+  const lang = LANG;
+  list.innerHTML = results.map((c,i)=>
+    `<li role="option" id="city-opt-${i}" aria-selected="false" data-i="${i}">${escapeHtml(Geo.label(c,lang))}</li>`
+  ).join("");
+  list.hidden = false;
+  input.setAttribute("aria-expanded","true");
+  setCityStatus(U().cityCount(results.length));
+}
+function moveCityHilite(delta){
+  const { input, list } = cityEls();
+  if(list.hidden || !cityResults.length) return;
+  const items = list.querySelectorAll("li");
+  if(cityHilite >= 0) items[cityHilite].setAttribute("aria-selected","false");
+  cityHilite = (cityHilite + delta + items.length) % items.length;
+  const li = items[cityHilite];
+  li.setAttribute("aria-selected","true");
+  li.scrollIntoView({ block:"nearest" });
+  input.setAttribute("aria-activedescendant", li.id);
+}
+function pickCity(c){
+  const { input, clear } = cityEls();
+  chosenCity = c;
+  input.value = Geo.label(c, LANG);
+  if(clear) clear.hidden = false;
+  closeCityList();
+  setCityStatus(U().cityChosen(Geo.zoneName(c) || "—"), "ok");
+}
+function clearCity(){
+  const { input, clear } = cityEls();
+  chosenCity = null;
+  input.value = "";
+  if(clear) clear.hidden = true;
+  closeCityList();
+  setCityStatus(U().cityHint);
+  input.focus();
+}
+
+/* Recherche : d'abord dans les villes déjà chargées ; si rien ne sort, on
+   télécharge les petites communes et on retente une seule fois. */
+function runCitySearch(q, allowExtra){
+  const results = Geo.search(q, 40);
+  if(results.length){ renderCityList(results); return; }
+  if(allowExtra && !Geo.readyExtra()){
+    closeCityList();
+    setCityStatus(U().cityNoneYet, "wait");
+    Geo.ensureExtra()
+      .then(()=>{ const { input } = cityEls();
+                  if(Geo.normQuery(input.value) === q) runCitySearch(q, false); })
+      .catch(()=> setCityStatus(U().cityLoadErr, "err"));
+    return;
+  }
+  closeCityList();
+  setCityStatus(U().cityNone, "err");
+}
+
+let cityDebounce = null;
+function onCityInput(){
+  const { input, clear } = cityEls();
+  chosenCity = null;
+  if(clear) clear.hidden = !input.value;
+  const q = Geo.normQuery(input.value);
+  clearTimeout(cityDebounce);
+  if(q.length < 2){ closeCityList(); setCityStatus(U().cityHint); return; }
+  cityDebounce = setTimeout(()=>{
+    ensureCityData().then(()=> runCitySearch(q, true)).catch(()=>{});
+  }, 120);
+}
+function ensureCityData(){
+  if(Geo.ready()) return Promise.resolve();
+  if(cityLoadFailed) return Promise.reject();
+  setCityStatus(U().cityLoading, "wait");
+  return Geo.ensure().then(()=> setCityStatus(""))
+    .catch(err=>{ cityLoadFailed = true; setCityStatus(U().cityLoadErr, "err"); throw err; });
+}
+
+function initCityField(){
+  const { input, list, clear } = cityEls();
+  if(!input || input.dataset.bound) return;
+  input.dataset.bound = "1";
+  input.addEventListener("input", onCityInput);
+  // précharge dès que le champ reçoit le focus : la frappe trouve la base prête
+  input.addEventListener("focus", ()=>{ ensureCityData().catch(()=>{}); });
+  input.addEventListener("keydown", (e)=>{
+    if(e.key === "ArrowDown"){ e.preventDefault(); moveCityHilite(1); }
+    else if(e.key === "ArrowUp"){ e.preventDefault(); moveCityHilite(-1); }
+    else if(e.key === "Enter"){
+      if(!list.hidden && cityHilite >= 0){ e.preventDefault(); pickCity(cityResults[cityHilite]); }
+      else if(!list.hidden && cityResults.length === 1){ e.preventDefault(); pickCity(cityResults[0]); }
+    }
+    else if(e.key === "Escape"){ if(!list.hidden){ e.stopPropagation(); closeCityList(); } }
+  });
+  list.addEventListener("mousedown", (e)=>{
+    const li = e.target.closest("li[data-i]");
+    if(li){ e.preventDefault(); pickCity(cityResults[+li.dataset.i]); }
+  });
+  if(clear) clear.addEventListener("click", clearCity);
+  document.addEventListener("click", (e)=>{
+    if(!e.target.closest(".city-combo")) closeCityList();
+  });
+  // la base est volumineuse : on la charge dès l'ouverture du volet naissance
+  const panel = input.closest("details");
+  if(panel) panel.addEventListener("toggle", ()=>{ if(panel.open) ensureCityData().catch(()=>{}); });
+}
+
 function fillCities(){
-  const sel=document.getElementById("f-city"); const cur=sel.value;
-  sel.innerHTML="";
-  const o0=document.createElement("option"); o0.value=""; o0.textContent=U().fCityPh; sel.appendChild(o0);
-  CITIES.forEach((c,i)=>{ const o=document.createElement("option"); o.value=i; o.textContent=c.n; sel.appendChild(o); });
-  sel.value=cur;
+  const { input, clear } = cityEls();
+  if(!input) return;
+  input.placeholder = U().fCityPh;
+  if(clear) clear.setAttribute("aria-label", U().cityClear);
+  // au changement de langue, on réécrit le libellé de la ville déjà choisie
+  if(chosenCity){ input.value = Geo.label(chosenCity, LANG); setCityStatus(U().cityChosen(Geo.zoneName(chosenCity) || "—"), "ok"); }
+  else if(!input.value) setCityStatus(U().cityHint);
+  initCityField();
 }
 let relCtx = "couple";
 function renderContextCards(){
@@ -370,6 +510,7 @@ function renderProfile(p){
       <div class="cel-row"><span class="cel-lab">☉ ${t.sunLabel}</span><span>${sign.symbol} ${sign.name}</span></div>
       ${p.asc?`<div class="cel-row"><span class="cel-lab">↑ ${t.ascLabel}</span><span>${Lp.signs[p.asc.sign].symbol} ${Lp.signs[p.asc.sign].name} · ${p.asc.deg}°</span></div>`:""}
       ${p.moon?`<div class="cel-row"><span class="cel-lab">☾ ${t.moonLabel}</span><span>${Lp.signs[p.moon.sign].symbol} ${Lp.signs[p.moon.sign].name} · ${p.moon.deg}°</span></div>`:""}
+      ${placeRow(p, t)}
       <p class="cel-explain">${Lp.build.celestial(p, Lp)}</p>
       ${(p.birth&&p.birth.dst)?`<p class="cel-dst">☀ ${t.dstApplied}</p>`:""}
     </div>` : "";
@@ -452,6 +593,18 @@ function renderProfile(p){
 }
 
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+/* Décalage horaire lisible : 1 → « 1 », 5,75 → « 5:45 » (Népal, Inde, etc.). */
+function fmtOffset(h){
+  const m=Math.round(h*60), hh=Math.floor(m/60), mm=m%60;
+  return mm ? `${hh}:${String(mm).padStart(2,"0")}` : String(hh);
+}
+/* Ligne « lieu » du bloc céleste : ville, pays et décalage réellement appliqué. */
+function placeRow(p, t){
+  const txt = p.birth ? Geo.refLabel(p.birth.place, LANG) : "";
+  if(!txt) return "";
+  const off = `${t.utcShort}${p.birth.tz>=0?"+":"−"}${fmtOffset(Math.abs(p.birth.tz))}`;
+  return `<div class="cel-row"><span class="cel-lab">⌖ ${t.placeLabel}</span><span>${escapeHtml(txt)} · ${off}</span></div>`;
+}
 function showErr(el,msg){ el.textContent=msg; el.hidden=false; }
 function firstName(n){ return n.trim().split(/\s+/)[0]; }
 
@@ -472,17 +625,16 @@ document.getElementById("profile-form").addEventListener("submit", e=>{
   const time=document.getElementById("f-time").value;
   let birth=null;
   if(time){
-    const cityIdx=document.getElementById("f-city").value;
     const latM=parseFloat(document.getElementById("f-lat").value);
     const lonM=parseFloat(document.getElementById("f-lon").value);
     const tzM =parseFloat(document.getElementById("f-tz").value);
     if(!Number.isNaN(latM)&&!Number.isNaN(lonM)&&!Number.isNaN(tzM)){
       birth={ time, lat:latM, lon:lonM, tz:tzM, place:"—" };
-    } else if(cityIdx!==""){
-      const c=CITIES[+cityIdx];
-      let tz=c.tz, dstOn=false;
-      if(c.d && c.d!=="none"){ const [Y,M,D]=date.split("-").map(Number); if(isDST(c.d,Y,M,D)){ tz+=1; dstOn=true; } }
-      birth={ time, lat:c.lat, lon:c.lon, tz, place:c.n, dst:dstOn };
+    } else if(chosenCity){
+      const c=chosenCity;
+      // décalage réel du fuseau à cette date : règles historiques comprises
+      const off=Geo.birthOffset(Geo.zoneName(c), date, time, c.lon);
+      birth={ time, lat:c.lat, lon:c.lon, tz:off.tz, place:Geo.ref(c), dst:off.dst, zone:off.zone };
     } else {
       return showErr(err,U().errBirth);
     }
