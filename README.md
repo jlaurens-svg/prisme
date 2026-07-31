@@ -24,6 +24,7 @@ Site statique, sans étape de compilation — il suffit de servir le dossier.
 | `styles.css` | mise en forme |
 | `astro.js` | calculs astronomiques (lune, ascendant) |
 | `transits.js` | positions des planètes, rétrogradations, aspects |
+| `natal.js` | thème natal : maisons, aspects, et ce qui manque |
 | `ai.js` | lectures par IA : médiation du Miroir, lecture d’un rêve |
 | `config.js` | adresse du relais d'API (vide = mode clé personnelle) |
 | `cities.js` | recherche de ville et conversion heure locale → UT |
@@ -138,6 +139,28 @@ Le relais impose le modèle et `max_tokens`, filtre les origines et borne la
 taille des requêtes — sans quoi une clé derrière un relais ouvert reste
 consommable par n'importe qui. Coût indicatif : 4 à 5 centimes par médiation, un
 peu moins par rêve. Le même relais sert les deux lectures.
+
+### Le thème natal
+
+`natal.js` place les dix corps en signe, en degré et en maison, calcule le
+Milieu du Ciel, les aspects majeurs entre planètes — et surtout ce qui manque.
+La roue est dessinée à la main en SVG : ascendant à gauche, zodiaque
+antihoraire, maisons égales, aspects tirés au centre, colorés par nature.
+
+**Maisons égales depuis l'Ascendant**, et c'est un choix assumé : Placidus est
+plus répandu mais s'effondre au-delà des cercles polaires et demande une
+résolution itérative dont l'erreur passerait inaperçue. Le Milieu du Ciel est
+calculé à part (vérifié à ±2° du Soleil à midi TU au méridien de Greenwich, soit
+l'équation du temps) plutôt que confondu avec la dixième cuspide.
+
+La **lecture en creux** vaut la lecture pleine : éléments et modalités
+qu'aucune planète n'occupe, éléments tenus par une seule planète, maisons vides,
+planètes sans aucun aspect. Chacune a son texte — une absence de Feu n'est pas
+une infirmité, c'est un registre qu'on ira chercher ailleurs.
+
+Les lectures de position sont **composées** : fonction de la planète × manière
+du signe × domaine de la maison. Vingt-deux fragments plutôt que cent vingt
+textes, sans que deux positions se ressemblent.
 
 ### Le ciel du moment
 

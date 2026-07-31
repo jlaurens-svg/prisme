@@ -709,6 +709,7 @@ function renderProfile(p){
       <p>${synth.converge}</p>
     </section>
 
+    ${natalBlock(p)}
     ${transitBlock(p, t)}
     ${histPanel(t)}
     <div class="result-actions no-print">
@@ -2399,3 +2400,184 @@ renderAccountBtn();
 renderCreateCible();
 renderCompte();
 renderReves();
+
+/* ============================================================
+   LE THÈME NATAL — la carte, les positions, et ce qui manque
+
+   La roue est dessinée à la main en SVG : ascendant à gauche, zodiaque en sens
+   antihoraire, maisons égales, aspects tirés au centre. Rien d'externe.
+   ============================================================ */
+const NATAL_R = { ext:196, signeInt:166, maisonInt:126, planetes:146, aspects:118 };
+
+/* Longitude écliptique → point de l'écran. L'ascendant se place à gauche et le
+   zodiaque tourne dans le sens antihoraire, comme sur toutes les cartes. */
+function natalXY(lon, asc, r){
+  const a = (180 + (lon - asc)) * Math.PI / 180;
+  return [200 + r * Math.cos(a), 200 - r * Math.sin(a)];
+}
+function natalArc(l1, l2, asc, r1, r2){
+  const [x1, y1] = natalXY(l1, asc, r1), [x2, y2] = natalXY(l2, asc, r1);
+  const [x3, y3] = natalXY(l2, asc, r2), [x4, y4] = natalXY(l1, asc, r2);
+  return `M${x1.toFixed(1)},${y1.toFixed(1)} A${r1},${r1} 0 0 0 ${x2.toFixed(1)},${y2.toFixed(1)}`
+       + ` L${x3.toFixed(1)},${y3.toFixed(1)} A${r2},${r2} 0 0 1 ${x4.toFixed(1)},${y4.toFixed(1)} Z`;
+}
+/* Deux planètes à moins de 7° se chevauchent : on les écarte le long du cercle
+   sans toucher à leur position réelle, qui reste celle du trait de repère. */
+function natalEtaler(corps, asc){
+  const tri = corps.slice().sort((a, b) =>
+    Natal.rev360(a.lon - asc) - Natal.rev360(b.lon - asc));
+  let precedent = null;
+  tri.forEach(c => {
+    let rel = Natal.rev360(c.lon - asc);
+    if(precedent !== null && rel - precedent < 7) rel = precedent + 7;
+    precedent = rel;
+    c.lonAff = Natal.rev360(asc + rel);
+  });
+  return corps;
+}
+
+function natalWheel(th){
+  const n = U().natal, Lp = L(), asc = th.asc;
+  const signes = Natal.SIGNES.map((sg, i) => {
+    const l1 = i * 30, l2 = l1 + 30;
+    const [tx, ty] = natalXY(l1 + 15, asc, (NATAL_R.ext + NATAL_R.signeInt) / 2);
+    return `<path class="nw-signe nw-el-${Natal.ELEMENTS[sg]}" d="${natalArc(l1, l2, asc, NATAL_R.ext, NATAL_R.signeInt)}"/>
+            <text class="nw-sg" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${Lp.signs[sg].symbol}</text>`;
+  }).join("");
+
+  const maisons = Array.from({ length:12 }, (_, i) => {
+    const l1 = asc + i * 30;
+    const [x1, y1] = natalXY(l1, asc, NATAL_R.signeInt);
+    const [x2, y2] = natalXY(l1, asc, NATAL_R.maisonInt);
+    const [tx, ty] = natalXY(l1 + 15, asc, (NATAL_R.signeInt + NATAL_R.maisonInt) / 2);
+    return `<line class="nw-cusp" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>
+            <text class="nw-mn" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${i + 1}</text>`;
+  }).join("");
+
+  const corps = natalEtaler(th.corps.map(c => ({ ...c })), asc);
+  const traits = corps.map(c => {
+    const [x1, y1] = natalXY(c.lon, asc, NATAL_R.maisonInt);
+    const [x2, y2] = natalXY(c.lonAff, asc, NATAL_R.planetes - 12);
+    return `<line class="nw-tick" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;
+  }).join("");
+  const glyphes = corps.map(c => {
+    const [x, y] = natalXY(c.lonAff, asc, NATAL_R.planetes - 26);
+    return `<text class="nw-pl${c.retro ? " is-retro" : ""}" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${n.planetes[c.nom].symbole}</text>`;
+  }).join("");
+
+  const lignes = th.aspects.map(a => {
+    const ca = th.corps.find(c => c.nom === a.a), cb = th.corps.find(c => c.nom === a.b);
+    const [x1, y1] = natalXY(ca.lon, asc, NATAL_R.aspects);
+    const [x2, y2] = natalXY(cb.lon, asc, NATAL_R.aspects);
+    return `<line class="nw-asp nw-${a.cle}${a.exact ? " is-exact" : ""}"
+              x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;
+  }).join("");
+
+  const angle = (lon, cls, txt) => {
+    const [x1, y1] = natalXY(lon, asc, NATAL_R.ext);
+    const [x2, y2] = natalXY(lon, asc, NATAL_R.aspects);
+    const [tx, ty] = natalXY(lon, asc, NATAL_R.ext + 12);
+    return `<line class="nw-angle ${cls}" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>
+            <text class="nw-ax" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${txt}</text>`;
+  };
+
+  return `
+    <svg class="natal-wheel" viewBox="-20 -20 440 440" role="img"
+         aria-label="${escapeHtml(n.title)}">
+      <circle class="nw-ring" cx="200" cy="200" r="${NATAL_R.ext}"/>
+      <circle class="nw-ring" cx="200" cy="200" r="${NATAL_R.signeInt}"/>
+      <circle class="nw-ring" cx="200" cy="200" r="${NATAL_R.maisonInt}"/>
+      <circle class="nw-ring nw-ring-in" cx="200" cy="200" r="${NATAL_R.aspects}"/>
+      ${signes}${maisons}${lignes}${traits}${glyphes}
+      ${angle(th.asc, "nw-asc", "AC")}${angle(th.mc, "nw-mc", "MC")}
+    </svg>`;
+}
+
+/* Une ligne par planète : sa fonction, la manière du signe, le domaine de la
+   maison. Trois fragments composés plutôt que cent vingt textes écrits. */
+function natalLigne(c){
+  const n = U().natal, Lp = L();
+  const pl = n.planetes[c.nom], sg = Lp.signs[c.signe], mz = n.maisons[c.maison - 1];
+  return `
+    <li class="natal-pos${c.retro ? " is-retro" : ""}">
+      <span class="np-glyph">${pl.symbole}</span>
+      <span class="np-where"><b>${pl.nom}</b> ${sg.symbol} ${sg.name} ${c.degre}°
+        <span class="np-house">${n.enMaison(c.maison)}</span>
+        ${c.retro ? `<span class="np-r">℞ ${n.retro}</span>` : ""}</span>
+      <span class="np-read">${escapeHtml(pl.fonction)}, ${escapeHtml(n.manieres[c.signe])} — et c’est dans ${escapeHtml(mz.domaine)} que ça se joue.</span>
+    </li>`;
+}
+
+function natalAbsences(th){
+  const n = U().natal;
+  const a = th.absences;
+  const blocs = [];
+  a.elements.forEach(e => blocs.push({ t:n.elements[e], p:n.absences[e] }));
+  a.modalites.forEach(m => blocs.push({ t:n.modalites[m], p:n.absences[m] }));
+  a.tenus.forEach(x => blocs.push({ t:n.lTenu, p:n.tenu(n.elements[x.element], n.planetes[x.par].nom) }));
+  return `
+    <div class="hist-block">
+      <h4>${n.lAbsences}</h4>
+      <p>${n.absencesLead}</p>
+      ${blocs.length
+        ? `<div class="natal-manque">${blocs.map(b =>
+            `<div class="natal-trou"><strong>${escapeHtml(b.t)}</strong><p>${escapeHtml(b.p)}</p></div>`).join("")}</div>`
+        : `<p class="hist-empty">${n.absencesNone}</p>`}
+      ${a.solitaires.length ? `
+        <h4 class="reve-sub">${n.lSolitaires}</h4>
+        <p>${n.solitairesLead}</p>
+        <ul class="hist-mini">${a.solitaires.map(s =>
+          `<li>${escapeHtml(n.solitaire(n.planetes[s].nom))}</li>`).join("")}</ul>` : ""}
+      ${a.maisons.length ? `
+        <h4 class="reve-sub">${n.lMaisonsVides}</h4>
+        <p>${n.maisonsVidesLead}</p>
+        <ul class="natal-vides">${a.maisons.map(h => {
+          const m = n.maisons[h - 1];
+          return `<li><strong>${n.enMaison(h)} · ${escapeHtml(m.nom)}</strong> — ${escapeHtml(m.vide)}</li>`;
+        }).join("")}</ul>` : ""}
+    </div>`;
+}
+
+/* Le bloc complet, sous la grille du profil. */
+function natalBlock(p){
+  const n = U().natal, Lp = L();
+  const th = p.birth ? Natal.theme(p.date, p.birth) : null;
+  /* Sans heure de naissance, on dit pourquoi la carte manque plutôt que de la
+     faire disparaître sans explication. */
+  if(!th) return `
+    <section class="synth natal" id="natal">
+      <div class="card-tag"><span class="dot"></span><span>${n.eyebrow}</span></div>
+      <h3>${n.title}</h3>
+      <p>${n.needBirth}</p>
+    </section>`;
+  return `
+    <section class="synth natal" id="natal">
+      <div class="card-tag"><span class="dot"></span><span>${n.eyebrow}</span></div>
+      <h3>${n.title}</h3>
+      <p class="lead">${n.lead}</p>
+      <div class="natal-top">
+        ${natalWheel(th)}
+        <div class="natal-angles">
+          <p><b>${n.asc}</b> ${Lp.signs[th.ascSigne].symbol} ${Lp.signs[th.ascSigne].name} ${th.ascDegre}°</p>
+          <p><b>${n.mc}</b> ${Lp.signs[th.mcSigne].symbol} ${Lp.signs[th.mcSigne].name} ${th.mcDegre}°</p>
+          <p class="natal-note">${n.ascLead}</p>
+        </div>
+      </div>
+      <div class="hist-block">
+        <h4>${n.lPositions}</h4>
+        <ul class="natal-list">${th.corps.map(natalLigne).join("")}</ul>
+        ${th.corps.some(c => c.retro) ? `<p class="natal-note">${n.retroNote}</p>` : ""}
+      </div>
+      ${natalAbsences(th)}
+      <div class="hist-block">
+        <h4>${n.lAspects}</h4>
+        <ul class="natal-aspects">${th.aspects.slice(0, 8).map(a => {
+          const as = n.aspects[a.cle];
+          return `<li><span class="na-nom">${as.nom}</span>
+            ${escapeHtml(n.aspectLine(n.planetes[a.a].nom, n.planetes[a.b].nom, as.quoi))}
+            <span class="na-orbe">${a.orbe}°${a.exact ? ` · ${n.exact}` : ""}</span></li>`;
+        }).join("")}</ul>
+      </div>
+      <p class="sky-note">${n.system}</p>
+    </section>`;
+}

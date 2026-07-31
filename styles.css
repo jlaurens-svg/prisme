@@ -725,3 +725,59 @@ em{ font-style:italic; }
 .reve-archetypes li{ color:#cfccc5; font-size:.95rem; padding-left:1.3rem; position:relative; }
 .reve-archetypes li::before{ content:"◆"; position:absolute; left:0; color:var(--accent); font-size:.7rem; top:.35rem; }
 .reve-archetypes strong{ color:var(--ink); font-weight:500; }
+
+/* ---------- LE THÈME NATAL ---------- */
+.natal-top{ display:grid; gap:1.6rem; grid-template-columns:1fr; align-items:center; margin:1.4rem 0 2rem; }
+@media (min-width:820px){ .natal-top{ grid-template-columns:minmax(0,1.1fr) 1fr; } }
+.natal-wheel{ width:100%; max-width:460px; margin:0 auto; display:block; overflow:visible; }
+.nw-ring{ fill:none; stroke:var(--line-2); stroke-width:1; }
+.nw-ring-in{ stroke:var(--line); }
+.nw-signe{ stroke:var(--line); stroke-width:.6; }
+.nw-el-feu{ fill:rgba(255,157,176,.13); }
+.nw-el-terre{ fill:rgba(201,245,176,.11); }
+.nw-el-air{ fill:rgba(155,220,255,.11); }
+.nw-el-eau{ fill:rgba(201,184,255,.13); }
+.nw-sg{ fill:var(--ink); font-size:17px; text-anchor:middle; dominant-baseline:central; }
+.nw-cusp{ stroke:var(--line-2); stroke-width:.8; }
+.nw-mn{ fill:var(--ink-dim); font-family:"Inter Tight",sans-serif; font-size:11px;
+  text-anchor:middle; dominant-baseline:central; }
+.nw-tick{ stroke:var(--line-2); stroke-width:.7; }
+.nw-pl{ fill:var(--ink); font-size:19px; text-anchor:middle; dominant-baseline:central; }
+.nw-pl.is-retro{ fill:var(--accent); }
+.nw-asp{ stroke-width:.9; opacity:.5; }
+.nw-asp.is-exact{ stroke-width:1.5; opacity:.85; }
+.nw-conjonction{ stroke:#c9b8ff; }
+.nw-opposition{ stroke:#ff9db0; }
+.nw-carre{ stroke:#ff9db0; stroke-dasharray:3 3; }
+.nw-trigone{ stroke:#9bdcff; }
+.nw-sextile{ stroke:#c9f5b0; stroke-dasharray:2 4; }
+.nw-angle{ stroke:var(--accent); stroke-width:1.4; }
+.nw-mc{ stroke:#ffd39b; }
+.nw-ax{ fill:var(--accent); font-family:"Inter Tight",sans-serif; font-size:11px; letter-spacing:.1em;
+  text-anchor:middle; dominant-baseline:central; }
+.natal-angles p{ margin-bottom:.5rem; }
+.natal-angles b{ color:var(--accent); font-weight:500; }
+.natal-note{ font-size:.88rem !important; color:var(--ink-dim) !important; margin-top:1rem !important; }
+.natal-list{ list-style:none; padding:0; margin:1.2rem 0 0; display:flex; flex-direction:column; gap:1px;
+  background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+.natal-pos{ display:grid; grid-template-columns:2rem 1fr; gap:.2rem .9rem; background:var(--bg); padding:.9rem 1.1rem; }
+.np-glyph{ grid-row:1 / span 2; font-size:1.4rem; color:var(--ink); line-height:1.2; }
+.natal-pos.is-retro .np-glyph{ color:var(--accent); }
+.np-where{ color:var(--ink); font-family:"Inter Tight",sans-serif; font-size:.98rem; }
+.np-house{ color:var(--accent); font-size:.85rem; margin-left:.4rem; }
+.np-r{ color:#ffd39b; font-size:.78rem; margin-left:.4rem; }
+.np-read{ color:#cfccc5; font-size:.92rem; }
+.natal-manque{ display:grid; gap:1px; background:var(--line); border:1px solid var(--line);
+  border-radius:14px; overflow:hidden; margin-top:1.2rem; }
+.natal-trou{ background:var(--bg); padding:1.1rem 1.3rem; }
+.natal-trou strong{ display:block; font-family:"Inter Tight",sans-serif; letter-spacing:.14em;
+  text-transform:uppercase; font-size:.76rem; color:var(--accent); margin-bottom:.5rem; }
+.natal-trou p{ color:#cfccc5; font-size:.95rem !important; margin:0 !important; }
+.natal-vides{ list-style:none; padding:0; margin:1rem 0 0; display:flex; flex-direction:column; gap:.7rem; }
+.natal-vides li{ color:#cfccc5; font-size:.93rem; }
+.natal-vides strong{ color:var(--ink); font-weight:500; }
+.natal-aspects{ list-style:none; padding:0; margin:1.2rem 0 0; display:flex; flex-direction:column; gap:.65rem; }
+.natal-aspects li{ color:#cfccc5; font-size:.95rem; }
+.na-nom{ display:inline-block; min-width:6.6rem; font-family:"Inter Tight",sans-serif;
+  font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); }
+.na-orbe{ color:var(--ink-dim); font-size:.82rem; margin-left:.4rem; }
