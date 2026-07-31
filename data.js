@@ -257,9 +257,10 @@ fr: {
       if(harmon[aKey]===bKey) return `${a} et ${b} se nourrissent : l’un anime, l’autre approfondit. Un accord naturel, à condition d’en respecter les rythmes différents.`;
       return `${a} et ${b} fonctionnent autrement — friction possible, mais complémentarité forte si chacun apprend la langue de l’autre.`;
     },
-    relLife(a,b,score){
+    relLife(a,b,score,ra=a,rb=b){
       if(a===b) return `Mêmes fils de fond (${a}) : des valeurs et un rythme de vie proches, un terrain d’entente immédiat.`;
-      const diff=Math.abs(a-b);
+      if(ra===rb) return `Même racine (${ra}) portée différemment (${a} et ${b}) : le même fond de valeurs, mais l’un le vit à une octave plus haute — proximité réelle, intensités inégales.`;
+      const diff=Math.abs(ra-rb);
       if(diff<=2) return `Des chemins voisins (${a} et ${b}) : assez proches pour se comprendre, assez distincts pour se compléter.`;
       return `Des chemins contrastés (${a} et ${b}) : vous n’avancez pas au même pas, ce qui peut autant enrichir qu’exiger des ajustements.`;
     },
@@ -533,9 +534,10 @@ en: {
       if(harmon[aKey]===bKey) return `${a} and ${b} feed each other: one animates, the other deepens. A natural accord — as long as you respect your different rhythms.`;
       return `${a} and ${b} run on different logics — friction is possible, but the complementarity is strong if each learns the other’s language.`;
     },
-    relLife(a,b,score){
+    relLife(a,b,score,ra=a,rb=b){
       if(a===b) return `Same underlying thread (${a}): close values and life rhythm, immediate common ground.`;
-      const diff=Math.abs(a-b);
+      if(ra===rb) return `Same root (${ra}) carried differently (${a} and ${b}): the same ground of values, but one lives it an octave higher — real closeness, uneven intensities.`;
+      const diff=Math.abs(ra-rb);
       if(diff<=2) return `Neighboring paths (${a} and ${b}): close enough to understand each other, distinct enough to complete each other.`;
       return `Contrasting paths (${a} and ${b}): you don’t move at the same pace, which can enrich as much as it demands adjustment.`;
     },

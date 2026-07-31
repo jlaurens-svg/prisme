@@ -26,8 +26,18 @@ function sunSign(month, day){
 }
 
 /* ---------------- Calculs : Numérologie ---------------- */
-function reduceNum(n){ while(n>9 && n!==11 && n!==22 && n!==33){ n = String(n).split("").reduce((s,d)=>s+(+d),0);} return n; }
-function lifePath(dateStr){ const [y,m,d]=dateStr.split("-").map(Number); return reduceNum(reduceNum(y)+reduceNum(m)+reduceNum(d)); }
+const MASTER_NUMS = new Set([11,22,33]);
+function digitSum(n){ return String(n).split("").reduce((s,d)=>s+(+d),0); }
+function reduceNum(n){ while(n>9 && !MASTER_NUMS.has(n)) n = digitSum(n); return n; }
+/* Racine à un chiffre, nombres maîtres inclus : 11 → 2, 22 → 4, 33 → 6.
+   Sert aux comparaisons (11 et 2 partagent le même fil de fond). */
+function numRoot(n){ while(n>9) n = digitSum(n); return n; }
+/* Notation d'usage : un nombre maître s'écrit avec sa racine — 11/2, 22/4, 33/6. */
+function numLabel(n){ return MASTER_NUMS.has(n) ? `${n}/${numRoot(n)}` : String(n); }
+/* Chemin de vie : on additionne les chiffres du jour, du mois et de l'année
+   sans réduire chaque partie au préalable — réduire d'abord détruit le nombre
+   maître avant la fin du calcul (27/12/1979 donnait 2 au lieu de 11). */
+function lifePath(dateStr){ const [y,m,d]=dateStr.split("-").map(Number); return reduceNum(digitSum(y)+digitSum(m)+digitSum(d)); }
 const LETTER_VALUES={a:1,j:1,s:1,b:2,k:2,t:2,c:3,l:3,u:3,d:4,m:4,v:4,e:5,n:5,w:5,f:6,o:6,x:6,g:7,p:7,y:7,h:8,q:8,z:8,i:9,r:9};
 const VOWELS=new Set(["a","e","i","o","u","y"]);
 function normalize(str){ return str.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z]/g,""); }
@@ -43,7 +53,9 @@ function nameNumber(name, onlyVowels){
 
 /* ---------------- Scoring relationnel (neutre) ---------------- */
 function elementScore(a,b){ if(a===b) return 78; const h={feu:"air",air:"feu",terre:"eau",eau:"terre"}; return h[a]===b?85:60; }
-function lifeScore(a,b){ if(a===b) return 75; return Math.abs(a-b)<=2 ? 80 : 66; }
+/* Comparaison sur la racine : 11 et 2 ne sont pas deux chemins opposés. */
+function lifeScore(a,b){ if(a===b) return 75; const ra=numRoot(a), rb=numRoot(b);
+  if(ra===rb) return 78; return Math.abs(ra-rb)<=2 ? 80 : 66; }
 function mbtiShared(a,b){ let s=0; for(let i=0;i<4;i++) if(a[i]===b[i]) s++; return s; }
 function mbtiScore(a,b){ const sh=mbtiShared(a,b), comp=a[1]===b[1];
   if(sh>=3) return 80; if(sh===2&&comp) return 84; if(sh===2) return 74; if(sh===1) return 66; return 58; }
@@ -370,7 +382,7 @@ function renderProfile(p){
       <div class="result-badges">
         <span class="badge">${sign.symbol} <b>${sign.name}</b> · ${Lp.elements[p.el].name}</span>
         ${ascBadge}${moonBadge}
-        <span class="badge">${t.bLife} <b>${p.life}</b> · ${lp.titre}</span>
+        <span class="badge">${t.bLife} <b>${numLabel(p.life)}</b> · ${lp.titre}</span>
         <span class="badge">${t.bMbti} <b>${p.mbti}</b> · ${type.nom}</span>
       </div>
     </div>
@@ -389,14 +401,14 @@ function renderProfile(p){
 
       <article class="card">
         <div class="card-tag"><span class="dot"></span><span>${t.lens02}</span></div>
-        <h3>${p.life} · ${lp.titre}</h3>
+        <h3>${numLabel(p.life)} · ${lp.titre}</h3>
         <p class="sub">${t.bLife}${lp.maitre?` · ${t.masterNum}`:""}</p>
         <div class="chips">${lp.mots.map(m=>`<span class="chip">${m}</span>`).join("")}</div>
         <p>${lp.desc}</p>
         <div class="mini"><strong>${t.otherNumbers}</strong>
           <dl class="kv">
-            <dt>${Lp.numFrames.expression.label} · ${p.expr}</dt><dd>${expr.titre} — ${Lp.numFrames.expression.role}</dd>
-            <dt>${Lp.numFrames.intime.label} · ${p.intime}</dt><dd>${intime.titre} — ${Lp.numFrames.intime.role}</dd>
+            <dt>${Lp.numFrames.expression.label} · ${numLabel(p.expr)}</dt><dd>${expr.titre} — ${Lp.numFrames.expression.role}</dd>
+            <dt>${Lp.numFrames.intime.label} · ${numLabel(p.intime)}</dt><dd>${intime.titre} — ${Lp.numFrames.intime.role}</dd>
           </dl>
         </div>
       </article>
@@ -508,9 +520,9 @@ function renderRelation(pa, pb, ctx){
         <p>${Lp.build.relElement(pa.el,pb.el,elS,Lp)}</p>
       </article>
       <article class="card">
-        <div class="card-tag"><span class="dot"></span><span>${t.bLife} · ${pa.life} & ${pb.life}</span></div>
-        <h3>${t.bLife} ${pa.life} &amp; ${pb.life}</h3>
-        <p>${Lp.build.relLife(pa.life,pb.life,liS)}</p>
+        <div class="card-tag"><span class="dot"></span><span>${t.bLife} · ${numLabel(pa.life)} & ${numLabel(pb.life)}</span></div>
+        <h3>${t.bLife} ${numLabel(pa.life)} &amp; ${numLabel(pb.life)}</h3>
+        <p>${Lp.build.relLife(pa.life,pb.life,liS,numRoot(pa.life),numRoot(pb.life))}</p>
       </article>
       <article class="card">
         <div class="card-tag"><span class="dot"></span><span>MBTI · ${pa.mbti} & ${pb.mbti}</span></div>
