@@ -132,6 +132,16 @@ Safety — absolute priority: if the accounts reveal physical violence, threats,
       + `${L.autre} : ${v(p.autre)}`;
   }
 
+  /* L'histoire de vie, si elle est jointe : elle explique pourquoi une phrase
+     anodine touche si fort. Transmise seulement sur demande explicite. */
+  function blocHistoire(a, b, lang){
+    if(!a.histoire && !b.histoire) return "";
+    const L = lang === "en"
+      ? { t:"Life history each person recorded (age : what happened). Use it to explain why a given sentence lands so hard — never as a diagnosis, and never to excuse a behaviour.", none:"(not filled in)" }
+      : { t:"Histoire de vie que chacun a renseignée (âge : ce qui est arrivé). Sers-t'en pour expliquer pourquoi telle phrase touche si fort — jamais comme un diagnostic, jamais pour excuser un comportement.", none:"(non renseignée)" };
+    return `\n\n## ${L.t}\n\n### ${a.name}\n${a.histoire || L.none}\n\n### ${b.name}\n${b.histoire || L.none}`;
+  }
+
   function requete(a, b, ctx, lang){
     const relation = (CTX[lang] || CTX.fr)[ctx] || (CTX[lang] || CTX.fr).couple;
     const intro = lang === "en"
@@ -145,7 +155,8 @@ Safety — absolute priority: if the accounts reveal physical violence, threats,
         effort: "high",
         format: { type: "json_schema", schema: SCHEMA },
       },
-      messages: [{ role: "user", content: `${intro}\n\n${bloc(a, lang)}\n\n${bloc(b, lang)}` }],
+      messages: [{ role: "user",
+        content: `${intro}\n\n${bloc(a, lang)}\n\n${bloc(b, lang)}${blocHistoire(a, b, lang)}` }],
     };
   }
 

@@ -16,7 +16,14 @@ function go(name){
   document.querySelectorAll(".nav-links a").forEach(a => a.classList.toggle("is-current", a.dataset.nav === name));
   window.scrollTo({ top:0, behavior:"smooth" });
 }
-document.querySelectorAll("[data-nav]").forEach(el => el.addEventListener("click", e => { e.preventDefault(); go(el.dataset.nav); }));
+document.querySelectorAll("[data-nav]").forEach(el => { el.dataset.navBound = "1"; el.addEventListener("click", e => { e.preventDefault(); go(el.dataset.nav); }); });
+/* Les blocs rendus après coup (profil, histoire) contiennent aussi des
+   data-nav : on délègue pour ne pas avoir à recâbler à chaque rendu. */
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-nav]");
+  if(!el || el.dataset.navBound) return;
+  e.preventDefault(); go(el.dataset.nav);
+});
 
 /* ---------------- Calculs : Astrologie (soleil) ---------------- */
 function sunSign(month, day){
@@ -534,6 +541,7 @@ function applyI18n(){
   fillSelectMbti(document.getElementById("rb-mbti"));
   fillCities(); renderContextCards(); buildQuiz();
   renderSky();
+  renderHistoire();
   renderHeritage();
   renderJung();
   renderFamille();
@@ -676,6 +684,7 @@ function renderProfile(p){
     </section>
 
     ${transitBlock(p, t)}
+    ${histBlock()}
     <div class="result-actions no-print">
       <button class="btn btn-primary" id="act-compare">${t.actCompare}</button>
       <button class="btn btn-ghost" id="act-save">${saved?t.actSaved:t.actSave}</button>
@@ -909,6 +918,7 @@ function renderMirrorAI(){
     <p class="ai-privacy">⚠ ${m.privacy}</p>
     ${pret ? `
       <label class="ai-consent"><input type="checkbox" id="mir-ai-ok" /> <span>${m.consent}</span></label>
+      ${histLoad().length ? `<label class="ai-consent"><input type="checkbox" id="mir-ai-hist" /> <span>${U().histoire.mirrorConsent}</span></label>` : ""}
       <button class="btn btn-accent" id="mir-ai-go" disabled>${m.button}</button>
     ` : `
       <p class="ai-setup">${m.setup} ${m.setupKey}</p>
@@ -951,7 +961,11 @@ async function runMediation(){
   setAiStatus(m.loadingLong, "wait");
   try {
     const { a, b, ctx } = lastMirror;
-    lastMediation = await MirrorAI.analyse(a, b, ctx, LANG);
+    // l'histoire de vie n'est jointe que si la case dédiée est cochée
+    const joindre = document.getElementById("mir-ai-hist");
+    const avec = (joindre && joindre.checked)
+      ? [{ ...a, histoire: histPourAnalyse() }, { ...b }] : [a, b];
+    lastMediation = await MirrorAI.analyse(avec[0], avec[1], ctx, LANG);
     paintMediation(lastMediation);
   } catch(e){
     const detail = m.errs[e.code] || m.errs.api;
@@ -1065,3 +1079,187 @@ document.getElementById("bcta-form").addEventListener("submit", e=>{
 /* ---------------- Init ---------------- */
 applyI18n();
 initMilkyWay();
+
+/* ---------------- Histoire de vie ----------------
+   Chaque événement, lu à travers l'âge qu'on avait, laisse une « version » de
+   soi. Ces versions se taisent quand tout va bien et reprennent la parole sous
+   tension : c'est ce que cette section rend visible.
+
+   Données sensibles : elles restent dans le stockage local de l'appareil et ne
+   partent que si l'utilisateur demande explicitement la lecture du tiers. */
+const HIST_STORE = "prisme-histoire";
+
+function histLoad(){
+  let brut = null;
+  try { brut = localStorage.getItem(HIST_STORE); } catch(_){ return []; }
+  try { const v = JSON.parse(brut || "[]"); return Array.isArray(v) ? v : []; }
+  catch(_){ return []; }
+}
+function histSave(list){
+  try { localStorage.setItem(HIST_STORE, JSON.stringify(list)); } catch(_){}
+}
+/* L'étape de développement atteinte à cet âge : elle détermine ce que la
+   personne pouvait faire de l'événement, pas sa gravité. */
+function histStage(age){
+  const st = U().histoire.stages;
+  return st.find(s => age <= s.max) || st[st.length - 1];
+}
+function histTypes(){ return U().histoire.events; }
+
+function fillHistTypes(){
+  const sel = document.getElementById("hist-type");
+  if(!sel) return;
+  const cur = sel.value, h = U().histoire;
+  sel.innerHTML = `<option value="">${h.typePick}</option>` +
+    Object.entries(h.events).map(([k, v]) => `<option value="${k}">${escapeHtml(v.label)}</option>`).join("");
+  if(cur) sel.value = cur;
+}
+
+/* Liste des moments enregistrés, du plus jeune au plus récent. */
+function renderHistList(){
+  const box = document.getElementById("hist-list");
+  if(!box) return;
+  const h = U().histoire, list = histLoad().sort((a, b) => a.age - b.age);
+  if(!list.length){ box.innerHTML = `<p class="hist-empty">${h.empty}</p>`; return; }
+  box.innerHTML = `
+    <h3 class="hist-sub">${h.timelineTitle}</h3>
+    <ol class="hist-line">
+      ${list.map((e, i) => `
+        <li class="hist-item">
+          <span class="hist-age">${escapeHtml(h.ageLabel(e.age))}</span>
+          <span class="hist-what">${escapeHtml((h.events[e.type] || h.events.autre).label)}
+            ${e.note ? `<em>— ${escapeHtml(e.note)}</em>` : ""}</span>
+          <button type="button" class="hist-del" data-i="${i}" aria-label="${h.remove}">×</button>
+        </li>`).join("")}
+    </ol>
+    <button type="button" class="btn btn-ghost hist-clear" id="hist-clear">${h.clearAll}</button>`;
+
+  box.querySelectorAll(".hist-del").forEach(b => b.addEventListener("click", () => {
+    const l = histLoad().sort((a, b2) => a.age - b2.age);
+    l.splice(+b.dataset.i, 1); histSave(l); renderHistoire();
+  }));
+  const clr = document.getElementById("hist-clear");
+  if(clr) clr.addEventListener("click", () => { histSave([]); renderHistoire(); });
+}
+
+/* Une carte par version : ce que l'âge pouvait en faire, ce qu'elle en a
+   conclu, ce qu'elle garde, ce qui la réveille, ce qui la calme. */
+function histVersionCard(e){
+  const h = U().histoire;
+  const t = h.events[e.type] || h.events.autre;
+  const st = histStage(e.age);
+  return `
+    <article class="card hist-version">
+      <div class="card-tag"><span class="dot"></span><span>${escapeHtml(h.ageLabel(e.age))}</span></div>
+      <h3>${escapeHtml(h.versionTitle(e.age))}</h3>
+      <p class="sub">${escapeHtml(t.label)}${e.note ? ` — ${escapeHtml(e.note)}` : ""}</p>
+      <div class="mini"><strong>${h.lRead}</strong><p>${escapeHtml(st.lecture)}</p></div>
+      <div class="mini"><strong>${h.lBelief}</strong><p>${escapeHtml(t.croyance)}</p></div>
+      <div class="mini"><strong>${h.lGuard}</strong><p>${escapeHtml(t.garde)}</p></div>
+      <div class="mini"><strong>${h.lTrigger}</strong><p>${escapeHtml(t.declencheur)}</p></div>
+      <div class="mini"><strong>${h.lSoothe}</strong><p>${escapeHtml(t.apaise)}</p></div>
+    </article>`;
+}
+
+/* Sous tension, ce sont les versions les plus jeunes qui répondent en premier :
+   elles se sont installées avant les mots, donc avant le recul. */
+function histParTension(){
+  return histLoad().slice().sort((a, b) => a.age - b.age);
+}
+
+function renderHistOut(){
+  const box = document.getElementById("hist-out");
+  if(!box) return;
+  const h = U().histoire, list = histLoad().sort((a, b) => a.age - b.age);
+  if(!list.length){ box.innerHTML = ""; return; }
+  const tension = histParTension().slice(0, 3);
+  box.innerHTML = `
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${h.eyebrow}</span></div>
+      <h3>${h.versionsTitle}</h3>
+      <p>${h.versionsLead}</p>
+      <div class="cards hist-versions">${list.map(histVersionCard).join("")}</div>
+    </section>
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${h.conflictTitle}</span></div>
+      <h3>${h.conflictTitle}</h3>
+      <p>${h.conflictLead}</p>
+      <ol class="hist-tension">
+        ${tension.map(e => {
+          const t = h.events[e.type] || h.events.autre;
+          return `<li><strong>${escapeHtml(h.versionTitle(e.age))}</strong> — ${escapeHtml(t.declencheur)}.
+                  <span class="hist-soothe">${escapeHtml(t.apaise)}.</span></li>`;
+        }).join("")}
+      </ol>
+      <p class="hist-care">${h.care}</p>
+      <p class="sky-note">${h.disclaimer}</p>
+    </section>`;
+}
+
+function renderHistoire(){
+  fillHistTypes();
+  renderHistList();
+  renderHistOut();
+}
+
+const histForm = document.getElementById("hist-form");
+if(histForm) histForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const err = document.getElementById("hist-error"); err.hidden = true;
+  const h = U().histoire;
+  const age = parseInt(document.getElementById("hist-age").value, 10);
+  const type = document.getElementById("hist-type").value;
+  const note = document.getElementById("hist-note").value.trim();
+  if(!Number.isInteger(age) || age < 0 || age > 120) return showErr(err, h.errAge);
+  if(!type) return showErr(err, h.errType);
+  histSave(histLoad().concat([{ age, type, note }]));
+  document.getElementById("hist-age").value = "";
+  document.getElementById("hist-type").value = "";
+  document.getElementById("hist-note").value = "";
+  renderHistoire();
+  document.getElementById("hist-out").scrollIntoView({ behavior:"smooth" });
+});
+
+/* Bloc « ce que votre histoire ajoute », affiché sous le portrait. */
+function histBlock(){
+  const h = U().histoire, list = histLoad().sort((a, b) => a.age - b.age);
+  if(!list.length){
+    return `
+      <section class="synth">
+        <div class="card-tag"><span class="dot"></span><span>${h.eyebrow}</span></div>
+        <h3>${h.profileTitle}</h3>
+        <p>${h.profileNone}</p>
+        <button class="btn btn-accent-outline" data-nav="histoire">${h.profileLink}</button>
+      </section>`;
+  }
+  const tension = histParTension().slice(0, 3);
+  return `
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${h.eyebrow}</span></div>
+      <h3>${h.profileTitle}</h3>
+      <p>${h.conflictLead}</p>
+      <ol class="hist-tension">
+        ${tension.map(e => {
+          const t = h.events[e.type] || h.events.autre;
+          return `<li><strong>${escapeHtml(h.versionTitle(e.age))}</strong> — ${escapeHtml(t.declencheur)}.
+                  <span class="hist-soothe">${escapeHtml(t.apaise)}.</span></li>`;
+        }).join("")}
+      </ol>
+      <button class="btn btn-accent-outline" data-nav="histoire">${h.profileLink}</button>
+    </section>`;
+}
+
+/* Résumé transmissible au tiers du Miroir — uniquement sur demande explicite. */
+function histPourAnalyse(){
+  const h = U().histoire;
+  const list = histLoad().sort((a, b) => a.age - b.age);
+  if(!list.length) return "";
+  return list.map(e => {
+    const t = h.events[e.type] || h.events.autre;
+    return `- ${h.ageLabel(e.age)} : ${t.label}${e.note ? ` (${e.note})` : ""}`;
+  }).join("\n");
+}
+
+/* applyI18n() tourne plus haut dans le fichier, avant que ce bloc soit évalué :
+   on fait donc le premier rendu de l'histoire ici. */
+renderHistoire();

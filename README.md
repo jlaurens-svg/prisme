@@ -20,6 +20,7 @@ Site statique, sans étape de compilation — il suffit de servir le dossier.
 | `index.html` | structure des vues |
 | `styles.css` | mise en forme |
 | `astro.js` | calculs astronomiques (lune, ascendant) |
+| `transits.js` | positions des planètes, rétrogradations, aspects |
 | `mirror-ai.js` | médiation du Miroir par IA (consigne, schéma, appel) |
 | `config.js` | adresse du relais d'API (vide = mode clé personnelle) |
 | `cities.js` | recherche de ville et conversion heure locale → UT |
@@ -69,3 +70,26 @@ dans le navigateur de la machine.
 Le relais impose le modèle et `max_tokens`, filtre les origines et borne la
 taille des requêtes — sans quoi une clé derrière un relais ouvert reste
 consommable par n'importe qui. Coût indicatif : 4 à 5 centimes par médiation.
+
+### Le ciel du moment
+
+`transits.js` calcule les positions géocentriques des huit planètes (méthode
+Schlyter, avec les perturbations de Jupiter, Saturne et Uranus) et détecte les
+rétrogradations sur le signe de la variation de longitude d'un jour sur
+l'autre. L'accueil affiche les rétrogradations en cours et leurs dates ; le
+profil n'affiche que les transits qui touchent réellement un point du thème.
+
+Rien n'est codé en dur : la page dit ce que le ciel fait le jour de la visite.
+
+### Histoire de vie
+
+Une section où l'on enregistre les moments marquants par âge. Chacun donne une
+« version de soi » : ce que cet âge pouvait faire de l'événement, ce qu'elle en
+a conclu, ce qu'elle protège depuis, ce qui la réveille et ce qui la calme.
+Sous tension, ce sont les versions les plus jeunes qui répondent en premier —
+c'est ce que la section rend visible.
+
+Ces données sont les plus sensibles du site : elles restent dans le stockage
+local de l'appareil, et ne sont transmises à la médiation du Miroir que si une
+case dédiée est cochée. Cadre non diagnostique, avec orientation explicite vers
+un professionnel quand un événement est encore vif.

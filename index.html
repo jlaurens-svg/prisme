@@ -20,6 +20,7 @@
     <a href="#" data-nav="create" data-i18n="nav.create">Mon profil</a>
     <a href="#" data-nav="relation" data-i18n="nav.relation">Relation</a>
     <a href="#" data-nav="mirror" data-i18n="nav.mirror">Miroir</a>
+    <a href="#" data-nav="histoire" data-i18n="histoire.nav">Histoire</a>
     <a href="#" data-nav="method" data-i18n="nav.method">Méthode</a>
     <button class="lang-toggle" id="lang-toggle" aria-label="Language">EN</button>
   </nav>
@@ -269,6 +270,33 @@
       </form>
     </div>
     <div id="mirror-out"></div>
+  </section>
+
+  <!-- ============ HISTOIRE DE VIE ============ -->
+  <section class="view view-histoire" data-view="histoire">
+    <div class="form-wrap form-wrap-wide">
+      <p class="eyebrow" data-i18n="histoire.eyebrow"></p>
+      <h2 class="view-title" data-i18n="histoire.title"></h2>
+      <p class="view-lead" data-i18n="histoire.lead"></p>
+      <p class="hist-privacy" data-i18n="histoire.privacy"></p>
+
+      <form id="hist-form" class="form hist-form">
+        <h3 class="hist-add-title" data-i18n="histoire.addTitle"></h3>
+        <div class="hist-fields">
+          <div class="field hist-age"><label for="hist-age" data-i18n="histoire.fAge"></label>
+            <input id="hist-age" type="number" min="0" max="120" step="1" inputmode="numeric" /></div>
+          <div class="field hist-type"><label for="hist-type" data-i18n="histoire.fType"></label>
+            <select id="hist-type"></select></div>
+        </div>
+        <div class="field"><label for="hist-note" data-i18n="histoire.fNote"></label>
+          <input id="hist-note" type="text" maxlength="120" data-i18n-ph="histoire.phNote" /></div>
+        <button type="submit" class="btn btn-accent" data-i18n="histoire.add"></button>
+        <p class="form-error" id="hist-error" hidden></p>
+      </form>
+
+      <div id="hist-list"></div>
+    </div>
+    <div id="hist-out"></div>
   </section>
 
   <!-- ============ MÉTHODE ============ -->
