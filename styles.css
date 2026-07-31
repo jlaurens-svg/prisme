@@ -597,3 +597,17 @@ em{ font-style:italic; }
 .hist-soothe{ display:block; color:var(--ink-dim); font-size:.9rem; margin-top:.2rem; }
 .hist-care{ margin-top:1.6rem !important; padding:1rem 1.2rem; border-radius:12px;
   border:1px solid var(--line-2); background:var(--bg-2); font-size:.92rem !important; }
+
+/* Le panneau d'histoire de vie vit dans le profil, sous les autres lentilles :
+   il reprend la boîte des synthèses et empile ses propres sous-blocs. */
+.hist-panel .hist-privacy{ margin:1.2rem 0 2rem; }
+.hist-panel .hist-form{ margin-top:.4rem; }
+/* .synth h3 est plus spécifique que .hist-sub : on lui rend sa petite taille. */
+.hist-panel .hist-sub{ font-size:.78rem; margin:2.6rem 0 1rem; }
+.hist-block{ margin-top:3rem; }
+.hist-block h4{ font-family:"Inter Tight",sans-serif; font-size:1.2rem; font-weight:500;
+  color:var(--ink); margin:0 0 .6rem; }
+.hist-mini{ list-style:none; padding:0; margin:.5rem 0 0; display:flex; flex-direction:column;
+  gap:.5rem; font-size:.9rem; color:#cfccc5; }
+.hist-mini strong{ color:var(--ink); font-weight:500; }
+.hist-jump{ margin-top:1.2rem; }

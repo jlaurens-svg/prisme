@@ -84,11 +84,17 @@ Rien n'est codé en dur : la page dit ce que le ciel fait le jour de la visite.
 
 ### Histoire de vie
 
-Une section où l'on enregistre les moments marquants par âge. Chacun donne une
-« version de soi » : ce que cet âge pouvait faire de l'événement, ce qu'elle en
-a conclu, ce qu'elle protège depuis, ce qui la réveille et ce qui la calme.
-Sous tension, ce sont les versions les plus jeunes qui répondent en premier —
-c'est ce que la section rend visible.
+C'est la **lentille 04 du profil**, pas une section à part : on la trouve dans
+« Mon profil », sous les trois autres lentilles. On y enregistre les moments
+marquants par âge, et chacun donne une « version de soi » : ce que cet âge
+pouvait faire de l'événement, ce qu'elle en a conclu, ce qu'elle protège depuis,
+ce qui la réveille et ce qui la calme. Sous tension, ce sont les versions les
+plus jeunes qui répondent en premier — c'est ce que la lentille rend visible.
+
+Une histoire par profil, et non une par appareil : sans quoi l'histoire de l'un
+s'afficherait sous le portrait de l'autre dès qu'on en consulte deux sur la même
+machine. Les moments saisis avant ce découpage rejoignent le premier profil
+ouvert.
 
 Ces données sont les plus sensibles du site : elles restent dans le stockage
 local de l'appareil, et ne sont transmises à la médiation du Miroir que si une

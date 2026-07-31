@@ -26,9 +26,10 @@ fr: {
       { i:"01", h:"Astrologie", p:"Non pas un horoscope, mais une grammaire des tempéraments : éléments, modalités, énergies.", cta:"Calculer mon thème astral", to:"create" },
       { i:"02", h:"Numérologie", p:"Votre date et votre nom réduits à des nombres porteurs de sens : le fil de fond d’une vie.", cta:"Calculer mon chemin de vie", to:"create" },
       { i:"03", h:"MBTI", p:"Une cartographie cognitive éprouvée : comment vous prenez l’énergie, percevez, décidez, vous organisez.", cta:"Découvrir mon profil", to:"create" },
-      { i:"04", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
+      { i:"04", h:"Histoire de vie", p:"Ce qui vous est arrivé, et à quel âge. Chaque moment marquant a laissé une version de vous, qui reprend la parole quand ça chauffe.", cta:"Renseigner mon histoire", to:"create" },
+      { i:"05", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
     ],
-    lensesCta:{ text:"Et surtout, les quatre réunies : ce que dit l’ensemble de votre profil.", button:"Voir l’ensemble de mon profil" },
+    lensesCta:{ text:"Et surtout, les cinq réunies : ce que dit l’ensemble de votre profil.", button:"Voir l’ensemble de mon profil" },
     manifesto1:"Ni dogme, ni ésotérisme. ", manifestoEm:"Des savoirs anciens,", manifesto2:" que l’humanité affine depuis des millénaires et que toutes les cultures du monde ont fait vivre — comme sociétés et comme individus — pour mieux se comprendre et mieux habiter ce qui les entoure.",
     heritage:{
       eyebrow:"Un héritage vivant",
@@ -159,7 +160,6 @@ fr: {
       }
     },
     histoire:{
-      nav:"Histoire",
       eyebrow:"L’histoire de vie", title:"Toutes les versions de vous",
       lead:"Vous n’êtes pas seulement la personne que vous êtes aujourd’hui. Vous êtes aussi l’enfant de six ans qui a vu ses parents se séparer, l’adolescent qu’on a mis à l’écart, le jeune adulte qui a encaissé un échec. Ces versions ne disparaissent pas : elles se taisent quand tout va bien, et elles reprennent la parole quand ça chauffe. Les nommer, c’est cesser de les confondre avec soi.",
       disclaimer:"Outil de réflexion, pas un diagnostic. Personne ne se réduit à ce qui lui est arrivé, et deux personnes ayant vécu la même chose n’en tirent pas la même chose.",
@@ -187,7 +187,9 @@ fr: {
       conflictNone:"Ajoutez des moments pour voir quelles versions sont les plus susceptibles de s’exprimer sous tension.",
       profileTitle:"Ce que votre histoire ajoute",
       profileLink:"Compléter mon histoire de vie",
-      profileNone:"Vous n’avez pas encore renseigné d’histoire de vie. C’est la couche que les trois lentilles ne voient pas : ce qui vous est arrivé, et à quel âge.",
+      profileNone:"Vous n’avez pas encore renseigné d’histoire de vie. C’est la couche que les trois autres lentilles ne voient pas : ce qui vous est arrivé, et à quel âge.",
+      count:(n)=>n===1?"1 moment enregistré":`${n} moments enregistrés`,
+      none:"Aucun moment enregistré",
       mirrorConsent:"Inclure notre histoire de vie dans l’analyse (plus juste, mais plus intime).",
       /* Ce que l'âge permet de faire d'un événement. */
       stages:[
@@ -314,6 +316,7 @@ fr: {
     resultEyebrow:"Portrait PRISME",
     bSign:"", bLife:"Chemin de vie", bMbti:"MBTI", bAsc:"Ascendant", bMoon:"Lune",
     lens01:"Lentille 01 — Astrologie", lens02:"Lentille 02 — Numérologie", lens03:"Lentille 03 — MBTI",
+    lens04:"Lentille 04 — Histoire de vie",
     modalite:"", planet:"",
     force:"Force", chantier:"Chantier",
     sunLabel:"Soleil", ascLabel:"Ascendant", moonLabel:"Lune",
@@ -529,9 +532,10 @@ en: {
       { i:"01", h:"Astrology", p:"Not a horoscope, but a grammar of temperaments: elements, modalities, energies.", cta:"Calculate my birth chart", to:"create" },
       { i:"02", h:"Numerology", p:"Your date and name reduced to numbers that carry meaning: the underlying thread of a life.", cta:"Calculate my life path", to:"create" },
       { i:"03", h:"MBTI", p:"A proven cognitive map: how you draw energy, perceive, decide, organize.", cta:"Discover my profile", to:"create" },
-      { i:"04", h:"Graphology", p:"Your handwriting as a fingerprint: the stroke, the rhythm, the spacing. A close reading, by an analyst.", cta:"Book a session", to:"consult", tag:"by appointment" }
+      { i:"04", h:"Life history", p:"What happened to you, and at what age. Every defining moment left a version of you behind — the one that speaks up when things get heated.", cta:"Fill in my history", to:"create" },
+      { i:"05", h:"Graphology", p:"Your handwriting as a fingerprint: the stroke, the rhythm, the spacing. A close reading, by an analyst.", cta:"Book a session", to:"consult", tag:"by appointment" }
     ],
-    lensesCta:{ text:"And above all, the four together: what your whole profile reveals.", button:"See my full profile" },
+    lensesCta:{ text:"And above all, the five together: what your whole profile reveals.", button:"See my full profile" },
     manifesto1:"No dogma, no mysticism. ", manifestoEm:"Age-old bodies of knowledge,", manifesto2:" refined by humanity over millennia and kept alive by cultures the world over — as societies and as individuals — to better understand ourselves and better inhabit what surrounds us.",
     heritage:{
       eyebrow:"A living lineage",
@@ -662,7 +666,6 @@ en: {
       }
     },
     histoire:{
-      nav:"History",
       eyebrow:"Life history", title:"Every version of you",
       lead:"You are not only the person you are today. You are also the six-year-old who watched their parents separate, the teenager who was pushed out, the young adult who took a hit. Those versions don't disappear: they keep quiet when things are fine, and they speak up when things heat up. Naming them means no longer mistaking them for yourself.",
       disclaimer:"A tool for reflection, not a diagnosis. Nobody is reducible to what happened to them, and two people who lived through the same thing don't take the same thing from it.",
@@ -690,7 +693,9 @@ en: {
       conflictNone:"Add moments to see which versions are most likely to speak up under pressure.",
       profileTitle:"What your history adds",
       profileLink:"Fill in my life history",
-      profileNone:"You haven't filled in a life history yet. It's the layer the three lenses can't see: what happened to you, and at what age.",
+      profileNone:"You haven't filled in a life history yet. It's the layer the three other lenses can't see: what happened to you, and at what age.",
+      count:(n)=>n===1?"1 moment saved":`${n} moments saved`,
+      none:"No moment saved",
       mirrorConsent:"Include our life histories in the analysis (more accurate, but more intimate).",
       stages:[
         { max:2,   nom:"the first months",
@@ -815,6 +820,7 @@ en: {
     resultEyebrow:"PRISME portrait",
     bSign:"", bLife:"Life path", bMbti:"MBTI", bAsc:"Rising", bMoon:"Moon",
     lens01:"Lens 01 — Astrology", lens02:"Lens 02 — Numerology", lens03:"Lens 03 — MBTI",
+    lens04:"Lens 04 — Life history",
     modalite:"", planet:"",
     force:"Strength", chantier:"Growth edge",
     sunLabel:"Sun", ascLabel:"Rising", moonLabel:"Moon",

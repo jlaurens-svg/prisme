@@ -12,6 +12,14 @@ function resolve(obj, path){ return path.split(".").reduce((o,k)=> (o||{})[k], o
 
 /* ---------------- Navigation ---------------- */
 function go(name){
+  /* L'histoire de vie a rejoint le profil : plus de vue à elle. On garde le nom
+     pour les anciens liens et on emmène au bon endroit. */
+  if(name === "histoire"){
+    if(!lastProfile) return go("create");
+    go("profile");
+    setTimeout(histScroll, 80);
+    return;
+  }
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("is-active", v.dataset.view === name));
   document.querySelectorAll(".nav-links a").forEach(a => a.classList.toggle("is-current", a.dataset.nav === name));
   window.scrollTo({ top:0, behavior:"smooth" });
@@ -541,7 +549,6 @@ function applyI18n(){
   fillSelectMbti(document.getElementById("rb-mbti"));
   fillCities(); renderContextCards(); buildQuiz();
   renderSky();
-  renderHistoire();
   renderHeritage();
   renderJung();
   renderFamille();
@@ -673,6 +680,8 @@ function renderProfile(p){
         <p>${type.desc}</p>
         <div class="mini"><strong>${t.force}</strong><p>${type.force}</p></div>
       </article>
+
+      ${histCard(t)}
     </div>
 
     <section class="synth">
@@ -684,7 +693,7 @@ function renderProfile(p){
     </section>
 
     ${transitBlock(p, t)}
-    ${histBlock()}
+    ${histPanel(t)}
     <div class="result-actions no-print">
       <button class="btn btn-primary" id="act-compare">${t.actCompare}</button>
       <button class="btn btn-ghost" id="act-save">${saved?t.actSaved:t.actSave}</button>
@@ -692,6 +701,8 @@ function renderProfile(p){
       <button class="btn btn-ghost" id="act-redo">${t.actRedo}</button>
     </div>
   `;
+
+  bindHist();
 
   document.getElementById("act-compare").addEventListener("click", ()=>{
     document.getElementById("ra-name").value=p.name;
@@ -918,7 +929,8 @@ function renderMirrorAI(){
     <p class="ai-privacy">⚠ ${m.privacy}</p>
     ${pret ? `
       <label class="ai-consent"><input type="checkbox" id="mir-ai-ok" /> <span>${m.consent}</span></label>
-      ${histLoad().length ? `<label class="ai-consent"><input type="checkbox" id="mir-ai-hist" /> <span>${U().histoire.mirrorConsent}</span></label>` : ""}
+      ${/* L'histoire est celle du profil ouvert : sans profil affiché, rien à joindre. */
+        histLoad().length ? `<label class="ai-consent"><input type="checkbox" id="mir-ai-hist" /> <span>${U().histoire.mirrorConsent}</span></label>` : ""}
       <button class="btn btn-accent" id="mir-ai-go" disabled>${m.button}</button>
     ` : `
       <p class="ai-setup">${m.setup} ${m.setupKey}</p>
@@ -1088,15 +1100,50 @@ initMilkyWay();
    Données sensibles : elles restent dans le stockage local de l'appareil et ne
    partent que si l'utilisateur demande explicitement la lecture du tiers. */
 const HIST_STORE = "prisme-histoire";
+/* Une histoire par profil : les versions de soi appartiennent à une personne,
+   pas à l'appareil. Sans ça, l'histoire de l'un s'afficherait sous le profil de
+   l'autre dès qu'on en consulte deux sur la même machine. */
+const HIST_ORPHAN = " sans-profil";
+
+function histAll(){
+  let brut = null;
+  try { brut = localStorage.getItem(HIST_STORE); } catch(_){ return {}; }
+  let v;
+  try { v = JSON.parse(brut || "{}"); } catch(_){ return {}; }
+  // Ancien format : un seul tableau, rattaché à personne.
+  if(Array.isArray(v)) return v.length ? { [HIST_ORPHAN]: v } : {};
+  return (v && typeof v === "object") ? v : {};
+}
+function histStore(all){
+  try { localStorage.setItem(HIST_STORE, JSON.stringify(all)); } catch(_){}
+}
+/* L'histoire lue et écrite est celle du profil affiché. Hors profil, il n'y a
+   rien à montrer — d'où le tableau vide. */
+function histKey(){ return lastProfile ? profileKey(lastProfile) : ""; }
 
 function histLoad(){
-  let brut = null;
-  try { brut = localStorage.getItem(HIST_STORE); } catch(_){ return []; }
-  try { const v = JSON.parse(brut || "[]"); return Array.isArray(v) ? v : []; }
-  catch(_){ return []; }
+  const k = histKey();
+  if(!k) return [];
+  const all = histAll();
+  if(Array.isArray(all[k])) return all[k];
+  /* Reprise de l'ancien format : les moments saisis quand l'histoire était une
+     section à part rejoignent le premier profil ouvert — celui de la personne
+     qui les a saisis, dans la quasi-totalité des cas. */
+  const sansProfil = all[HIST_ORPHAN];
+  if(Array.isArray(sansProfil) && sansProfil.length){
+    delete all[HIST_ORPHAN];
+    all[k] = sansProfil;
+    histStore(all);
+    return sansProfil;
+  }
+  return [];
 }
 function histSave(list){
-  try { localStorage.setItem(HIST_STORE, JSON.stringify(list)); } catch(_){}
+  const k = histKey();
+  if(!k) return;
+  const all = histAll();
+  if(list.length) all[k] = list; else delete all[k];
+  histStore(all);
 }
 /* L'étape de développement atteinte à cet âge : elle détermine ce que la
    personne pouvait faire de l'événement, pas sa gravité. */
@@ -1119,7 +1166,7 @@ function fillHistTypes(){
 function renderHistList(){
   const box = document.getElementById("hist-list");
   if(!box) return;
-  const h = U().histoire, list = histLoad().sort((a, b) => a.age - b.age);
+  const h = U().histoire, list = histLoad().slice().sort((a, b) => a.age - b.age);
   if(!list.length){ box.innerHTML = `<p class="hist-empty">${h.empty}</p>`; return; }
   box.innerHTML = `
     <h3 class="hist-sub">${h.timelineTitle}</h3>
@@ -1135,11 +1182,11 @@ function renderHistList(){
     <button type="button" class="btn btn-ghost hist-clear" id="hist-clear">${h.clearAll}</button>`;
 
   box.querySelectorAll(".hist-del").forEach(b => b.addEventListener("click", () => {
-    const l = histLoad().sort((a, b2) => a.age - b2.age);
-    l.splice(+b.dataset.i, 1); histSave(l); renderHistoire();
+    const l = histLoad().slice().sort((a, b2) => a.age - b2.age);
+    l.splice(+b.dataset.i, 1); histSave(l); histRefresh();
   }));
   const clr = document.getElementById("hist-clear");
-  if(clr) clr.addEventListener("click", () => { histSave([]); renderHistoire(); });
+  if(clr) clr.addEventListener("click", () => { histSave([]); histRefresh(); });
 }
 
 /* Une carte par version : ce que l'âge pouvait en faire, ce qu'elle en a
@@ -1170,19 +1217,17 @@ function histParTension(){
 function renderHistOut(){
   const box = document.getElementById("hist-out");
   if(!box) return;
-  const h = U().histoire, list = histLoad().sort((a, b) => a.age - b.age);
+  const h = U().histoire, list = histLoad().slice().sort((a, b) => a.age - b.age);
   if(!list.length){ box.innerHTML = ""; return; }
   const tension = histParTension().slice(0, 3);
   box.innerHTML = `
-    <section class="synth">
-      <div class="card-tag"><span class="dot"></span><span>${h.eyebrow}</span></div>
-      <h3>${h.versionsTitle}</h3>
+    <div class="hist-block">
+      <h4>${h.versionsTitle}</h4>
       <p>${h.versionsLead}</p>
       <div class="cards hist-versions">${list.map(histVersionCard).join("")}</div>
-    </section>
-    <section class="synth">
-      <div class="card-tag"><span class="dot"></span><span>${h.conflictTitle}</span></div>
-      <h3>${h.conflictTitle}</h3>
+    </div>
+    <div class="hist-block">
+      <h4>${h.conflictTitle}</h4>
       <p>${h.conflictLead}</p>
       <ol class="hist-tension">
         ${tension.map(e => {
@@ -1193,7 +1238,7 @@ function renderHistOut(){
       </ol>
       <p class="hist-care">${h.care}</p>
       <p class="sky-note">${h.disclaimer}</p>
-    </section>`;
+    </div>`;
 }
 
 function renderHistoire(){
@@ -1202,8 +1247,17 @@ function renderHistoire(){
   renderHistOut();
 }
 
-const histForm = document.getElementById("hist-form");
-if(histForm) histForm.addEventListener("submit", e => {
+/* La grille du profil et la carte de synthèse dépendent aussi des moments
+   enregistrés : après un ajout ou un retrait, on refait le profil entier. */
+function histRefresh(){
+  if(lastProfile) renderProfile(lastProfile); else renderHistoire();
+}
+function histScroll(){
+  const el = document.getElementById("hist-panel");
+  if(el) el.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+function histSubmit(e){
   e.preventDefault();
   const err = document.getElementById("hist-error"); err.hidden = true;
   const h = U().histoire;
@@ -1213,53 +1267,80 @@ if(histForm) histForm.addEventListener("submit", e => {
   if(!Number.isInteger(age) || age < 0 || age > 120) return showErr(err, h.errAge);
   if(!type) return showErr(err, h.errType);
   histSave(histLoad().concat([{ age, type, note }]));
-  document.getElementById("hist-age").value = "";
-  document.getElementById("hist-type").value = "";
-  document.getElementById("hist-note").value = "";
-  renderHistoire();
-  document.getElementById("hist-out").scrollIntoView({ behavior:"smooth" });
-});
+  histRefresh();
+  histScroll();
+}
 
-/* Bloc « ce que votre histoire ajoute », affiché sous le portrait. */
-function histBlock(){
-  const h = U().histoire, list = histLoad().sort((a, b) => a.age - b.age);
-  if(!list.length){
-    return `
-      <section class="synth">
-        <div class="card-tag"><span class="dot"></span><span>${h.eyebrow}</span></div>
-        <h3>${h.profileTitle}</h3>
-        <p>${h.profileNone}</p>
-        <button class="btn btn-accent-outline" data-nav="histoire">${h.profileLink}</button>
-      </section>`;
-  }
-  const tension = histParTension().slice(0, 3);
+/* Lentille 04 dans la grille du profil : ce que l'histoire ajoute aux trois
+   autres, avec un raccourci vers le panneau qui la complète. */
+function histCard(t){
+  const h = U().histoire, list = histLoad();
+  const tension = histParTension().slice(0, 2);
   return `
-    <section class="synth">
-      <div class="card-tag"><span class="dot"></span><span>${h.eyebrow}</span></div>
+    <article class="card">
+      <div class="card-tag"><span class="dot"></span><span>${t.lens04}</span></div>
       <h3>${h.profileTitle}</h3>
-      <p>${h.conflictLead}</p>
-      <ol class="hist-tension">
-        ${tension.map(e => {
-          const t = h.events[e.type] || h.events.autre;
-          return `<li><strong>${escapeHtml(h.versionTitle(e.age))}</strong> — ${escapeHtml(t.declencheur)}.
-                  <span class="hist-soothe">${escapeHtml(t.apaise)}.</span></li>`;
-        }).join("")}
-      </ol>
-      <button class="btn btn-accent-outline" data-nav="histoire">${h.profileLink}</button>
+      <p class="sub">${escapeHtml(list.length ? h.count(list.length) : h.none)}</p>
+      ${list.length ? `
+        <p>${h.conflictLead}</p>
+        <div class="mini"><strong>${h.conflictTitle}</strong>
+          <ul class="hist-mini">${tension.map(e => {
+            const ev = h.events[e.type] || h.events.autre;
+            return `<li><strong>${escapeHtml(h.versionTitle(e.age))}</strong> — ${escapeHtml(ev.declencheur)}</li>`;
+          }).join("")}</ul>
+        </div>`
+      : `<p>${h.profileNone}</p>`}
+      <button class="btn btn-accent-outline hist-jump" data-hist-jump>${h.profileLink}</button>
+    </article>`;
+}
+
+/* Le panneau complet vit dans le profil : on y saisit les moments et on y lit
+   les versions qui en découlent. L'histoire de vie n'est pas une section à
+   part — c'est une lentille du profil, au même titre que les trois autres. */
+function histPanel(t){
+  const h = U().histoire;
+  return `
+    <section class="synth hist-panel" id="hist-panel">
+      <div class="card-tag"><span class="dot"></span><span>${t.lens04}</span></div>
+      <h3>${h.title}</h3>
+      <p class="lead">${h.lead}</p>
+      <p class="hist-privacy">${h.privacy}</p>
+
+      <form id="hist-form" class="form hist-form">
+        <h4 class="hist-add-title">${h.addTitle}</h4>
+        <div class="hist-fields">
+          <div class="field hist-age"><label for="hist-age">${h.fAge}</label>
+            <input id="hist-age" type="number" min="0" max="120" step="1" inputmode="numeric" /></div>
+          <div class="field hist-type"><label for="hist-type">${h.fType}</label>
+            <select id="hist-type"></select></div>
+        </div>
+        <div class="field"><label for="hist-note">${h.fNote}</label>
+          <input id="hist-note" type="text" maxlength="120" placeholder="${escapeHtml(h.phNote)}" /></div>
+        <button type="submit" class="btn btn-accent">${h.add}</button>
+        <p class="form-error" id="hist-error" hidden></p>
+      </form>
+
+      <div id="hist-list"></div>
+      <div id="hist-out"></div>
     </section>`;
+}
+
+/* Le panneau est rendu avec le profil : ses écouteurs sont donc à recâbler à
+   chaque rendu. */
+function bindHist(){
+  const form = document.getElementById("hist-form");
+  if(form) form.addEventListener("submit", histSubmit);
+  document.querySelectorAll("[data-hist-jump]").forEach(b => b.addEventListener("click", histScroll));
+  renderHistoire();
 }
 
 /* Résumé transmissible au tiers du Miroir — uniquement sur demande explicite. */
 function histPourAnalyse(){
   const h = U().histoire;
-  const list = histLoad().sort((a, b) => a.age - b.age);
+  const list = histLoad().slice().sort((a, b) => a.age - b.age);
   if(!list.length) return "";
   return list.map(e => {
     const t = h.events[e.type] || h.events.autre;
     return `- ${h.ageLabel(e.age)} : ${t.label}${e.note ? ` (${e.note})` : ""}`;
   }).join("\n");
 }
-
-/* applyI18n() tourne plus haut dans le fichier, avant que ce bloc soit évalué :
-   on fait donc le premier rendu de l'histoire ici. */
-renderHistoire();
