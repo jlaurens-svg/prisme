@@ -18,7 +18,7 @@ fr: {
     hero: {
       eyebrow:"Astrologie · Numérologie · MBTI · Graphologie",
       t1:"Vous êtes", t2:"plus d’une", t3:"lecture.",
-      sub:"PRISME décompose ce que vous êtes à travers plusieurs lentilles anciennes et modernes — puis les recompose en un portrait lisible. Pour vous comprendre, comprendre vos proches, et travailler mieux ensemble.",
+      sub:"PRISME décompose ce que vous êtes à travers plusieurs prismes anciens et modernes — puis les recompose en un portrait lisible. Pour vous comprendre, comprendre vos proches, et travailler mieux ensemble.",
       cta1:"Créer mon profil", cta2:"Comparer deux personnes",
       note:"Aucune inscription : le compte reste sur votre appareil. Tout est calculé en local, sauf les lectures par IA que vous demandez."
     },
@@ -227,7 +227,7 @@ fr: {
       none:"Aucun rêve noté",
       dateLabel:"Nuit du",
       profileTitle:"Ce que vos rêves rejouent",
-      profileNone:"Vous n’avez encore noté aucun rêve. C’est la seule lentille qui se remplit en dormant : au réveil, avant le café, pendant que ça tient encore.",
+      profileNone:"Vous n’avez encore noté aucun rêve. C’est le seul prisme qui se remplit en dormant : au réveil, avant le café, pendant que ça tient encore.",
       profileLink:"Ouvrir mon journal de rêves",
       symbolsTitle:"Les images repérées",
       symbolsLead:"Ces images reviennent souvent dans les récits de rêve. Ce qui suit n’est pas leur signification — c’est ce qu’elles mettent souvent en scène, et la question qu’elles posent. Gardez ce qui vous parle.",
@@ -354,7 +354,7 @@ fr: {
       conflictNone:"Ajoutez des moments pour voir quelles versions sont les plus susceptibles de s’exprimer sous tension.",
       profileTitle:"Ce que votre histoire ajoute",
       profileLink:"Compléter mon histoire de vie",
-      profileNone:"Vous n’avez pas encore renseigné d’histoire de vie. C’est la couche que les trois autres lentilles ne voient pas : ce qui vous est arrivé, et à quel âge.",
+      profileNone:"Vous n’avez pas encore renseigné d’histoire de vie. C’est la couche que les trois autres prismes ne voient pas : ce qui vous est arrivé, et à quel âge.",
       count:(n)=>n===1?"1 moment enregistré":`${n} moments enregistrés`,
       none:"Aucun moment enregistré",
       mirrorConsent:"Inclure notre histoire de vie dans l’analyse (plus juste, mais plus intime).",
@@ -482,9 +482,9 @@ fr: {
 
     resultEyebrow:"Portrait PRISME",
     bSign:"", bLife:"Chemin de vie", bMbti:"MBTI", bAsc:"Ascendant", bMoon:"Lune",
-    lens01:"Lentille 01 — Astrologie", lens02:"Lentille 02 — Numérologie", lens03:"Lentille 03 — MBTI",
-    lens04:"Lentille 04 — Histoire de vie",
-    lens05:"Lentille 05 — Les rêves",
+    lens01:"Prisme 1 — Astrologie", lens02:"Prisme 2 — Numérologie", lens03:"Prisme 3 — MBTI",
+    lens04:"Prisme 4 — Histoire de vie",
+    lens05:"Prisme 5 — Les rêves",
     modalite:"", planet:"",
     force:"Force", chantier:"Chantier",
     sunLabel:"Soleil", ascLabel:"Ascendant", moonLabel:"Lune",
@@ -636,7 +636,7 @@ fr: {
       const p1=`Votre astrologie vous oriente vers ${L.elements[el].desc}. C’est votre pente naturelle, la façon dont vous réagissez avant de réfléchir. Là où le ${sign.name} brille — ${sign.force.toLowerCase()} — vous êtes déjà chez vous.`;
       const p2=`Votre chemin de vie ${p.life}, celui du ${lp.titre.toLowerCase()}, ajoute une direction de fond : ${lp.desc.toLowerCase()} C’est moins une humeur qu’une trajectoire — la leçon qui revient, sous des formes différentes, tout au long d’une vie.`;
       const p3=`Votre type ${p.mbti} décrit comment tout cela s’organise concrètement : ${type.desc.toLowerCase()} En relation, ${type.relation}`;
-      let converge="Là où les trois lentilles se rejoignent : ";
+      let converge="Là où les trois prismes se rejoignent : ";
       const m=p.mbti, notes=[], isF=m.includes("F"), isN=m.includes("N"), isJ=m.includes("J");
       if((el==="feu"||el==="air")&&m.includes("E")) notes.push("une énergie tournée vers l’extérieur, qui a besoin d’agir et d’échanger pour exister");
       if((el==="eau"||el==="terre")&&m.includes("I")) notes.push("un monde intérieur riche, qui se nourrit de calme avant de se donner");

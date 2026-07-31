@@ -78,7 +78,7 @@ et c'est un choix, pas un détail technique.
 
 ### Les rêves
 
-Lentille 05 du profil, dans « Moi ». Un journal tenu au réveil, puis trois
+Prisme 5 du profil, dans « Moi ». Un journal tenu au réveil, puis trois
 lectures qui se complètent :
 
 - les **images repérées** dans le récit — une vingtaine de motifs très attestés,
@@ -126,12 +126,12 @@ Rien n'est codé en dur : la page dit ce que le ciel fait le jour de la visite.
 
 ### Histoire de vie
 
-C'est la **lentille 04 du profil**, pas une section à part : on la trouve dans
-« Mon profil », sous les trois autres lentilles. On y enregistre les moments
+C'est le **prisme 4 du profil**, pas une section à part : on le trouve dans
+« Moi », sous les trois autres prismes. On y enregistre les moments
 marquants par âge, et chacun donne une « version de soi » : ce que cet âge
 pouvait faire de l'événement, ce qu'elle en a conclu, ce qu'elle protège depuis,
 ce qui la réveille et ce qui la calme. Sous tension, ce sont les versions les
-plus jeunes qui répondent en premier — c'est ce que la lentille rend visible.
+plus jeunes qui répondent en premier — c'est ce que le prisme rend visible.
 
 Une histoire par profil, et non une par appareil : sans quoi l'histoire de l'un
 s'afficherait sous le portrait de l'autre dès qu'on en consulte deux sur la même

@@ -514,7 +514,7 @@ function applyI18n(){
   document.getElementById("h-cta1").textContent=h.cta1;
   document.getElementById("h-cta2").textContent=h.cta2;
   document.getElementById("h-note").textContent=h.note;
-  // lentilles (avec CTA)
+  // prismes (avec CTA)
   const lensBox=document.getElementById("lenses");
   lensBox.innerHTML = U().lenses.map(x=>
     `<article class="lens">
@@ -528,7 +528,7 @@ function applyI18n(){
     if(b.dataset.scroll){ const el=document.getElementById(b.dataset.scroll); if(el) el.scrollIntoView({behavior:"smooth"}); }
     else go(b.dataset.nav);
   }));
-  // CTA de synthèse sous les lentilles
+  // CTA de synthèse sous les prismes
   const lct=document.getElementById("lenses-cta-text"); if(lct) lct.textContent=U().lensesCta.text;
   const lcb=document.getElementById("lenses-cta-btn"); if(lcb) lcb.textContent=U().lensesCta.button;
   // manifeste
@@ -1298,7 +1298,7 @@ function histSubmit(e){
   histScroll();
 }
 
-/* Lentille 04 dans la grille du profil : ce que l'histoire ajoute aux trois
+/* Prisme 4 dans la grille du profil : ce que l'histoire ajoute aux trois
    autres, avec un raccourci vers le panneau qui la complète. */
 function histCard(t){
   const h = U().histoire, list = histLoad();
@@ -1323,7 +1323,7 @@ function histCard(t){
 
 /* Le panneau complet vit dans le profil : on y saisit les moments et on y lit
    les versions qui en découlent. L'histoire de vie n'est pas une section à
-   part — c'est une lentille du profil, au même titre que les trois autres. */
+   part — c'est un prisme du profil, au même titre que les trois autres. */
 function histPanel(t){
   const h = U().histoire;
   return `
@@ -1373,7 +1373,7 @@ function histPourAnalyse(){
 }
 
 /* ============================================================
-   LES RÊVES — lentille 05 du profil
+   LES RÊVES — prisme 5 du profil
 
    Un rêve ne prédit rien et ne se décode pas avec un dictionnaire. Ce qu'on
    peut en faire : le noter avant qu'il s'efface, repérer les images qui
@@ -1700,7 +1700,7 @@ function reveSubmit(e){
   reveScroll();
 }
 
-/* Lentille 05 dans la grille du profil. */
+/* Prisme 5 dans la grille du profil. */
 function reveCard(t){
   const r = U().reves, list = reveTri();
   const dernier = list[0];

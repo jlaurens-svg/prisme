@@ -598,7 +598,7 @@ em{ font-style:italic; }
 .hist-care{ margin-top:1.6rem !important; padding:1rem 1.2rem; border-radius:12px;
   border:1px solid var(--line-2); background:var(--bg-2); font-size:.92rem !important; }
 
-/* Le panneau d'histoire de vie vit dans le profil, sous les autres lentilles :
+/* Le panneau d'histoire de vie vit dans le profil, sous les autres prismes :
    il reprend la boîte des synthèses et empile ses propres sous-blocs. */
 .hist-panel .hist-privacy{ margin:1.2rem 0 2rem; }
 .hist-panel .hist-form{ margin-top:.4rem; }
