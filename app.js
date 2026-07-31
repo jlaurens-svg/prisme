@@ -24,6 +24,7 @@ function go(name){
      à chaque ouverture, sinon un profil créé entre-temps n'y apparaît pas. */
   if(name === "compte") renderCompte();
   if(name === "reves") renderReves();
+  if(name === "relation") renderSchema();
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("is-active", v.dataset.view === name));
   document.querySelectorAll(".nav-links a").forEach(a => a.classList.toggle("is-current", a.dataset.nav === name));
   window.scrollTo({ top:0, behavior:"smooth" });
@@ -576,6 +577,7 @@ document.getElementById("lang-toggle").addEventListener("click", ()=>{
   renderCreateCible();
   renderCompte();
   renderReves();
+  renderSchema();
 });
 
 /* ---------------- Segmented control quiz/known ---------------- */
@@ -2581,3 +2583,107 @@ function natalBlock(p){
       <p class="sky-note">${n.system}</p>
     </section>`;
 }
+
+/* ============================================================
+   LE SCHÉMA RELATIONNEL
+
+   Ce qui se répète parmi les gens qu'on garde près de soi. On ne signale qu'une
+   domination nette — au-dessus de la moitié pour un élément, des deux tiers pour
+   une lettre MBTI — et jamais sous quatre personnes : en dessous, le hasard
+   produit des « schémas » à volonté.
+   ============================================================ */
+const SCHEMA_MIN = 4;
+
+function schemaDonnees(){
+  const gens = compteProches().map(p => {
+    const [ , m, d] = p.date.split("-").map(Number);
+    const signe = sunSign(m, d);
+    return { ...p, signe, element: L().signs[signe].element, vie: lifePath(p.date) };
+  });
+  if(gens.length < SCHEMA_MIN) return { gens, assez:false };
+
+  const parEl = {};
+  gens.forEach(g => { parEl[g.element] = (parEl[g.element] || 0) + 1; });
+  const dominant = Object.entries(parEl).sort((a, b) => b[1] - a[1])[0];
+  const elDom = (dominant && dominant[1] / gens.length >= 0.5) ? dominant[0] : null;
+  const elAbsents = ["feu","terre","air","eau"].filter(e => !parEl[e]);
+
+  /* Les lettres MBTI ne se comptent que sur les personnes qui en ont un : un
+     enfant sans type ne doit pas peser dans la statistique. */
+  const typés = gens.filter(g => g.mbti);
+  const lettres = [];
+  if(typés.length >= SCHEMA_MIN){
+    [["E","I"], ["S","N"], ["T","F"], ["J","P"]].forEach(([x, y], axe) => {
+      const nx = typés.filter(g => g.mbti[axe] === x).length;
+      const ny = typés.length - nx;
+      const [l, n] = nx >= ny ? [x, nx] : [y, ny];
+      if(n / typés.length >= 0.7) lettres.push({ lettre:l, n, tot:typés.length });
+    });
+  }
+
+  const parVie = {};
+  gens.forEach(g => { parVie[g.vie] = (parVie[g.vie] || 0) + 1; });
+  const vies = Object.entries(parVie).filter(([, n]) => n >= 3)
+                     .sort((a, b) => b[1] - a[1]).map(([v, n]) => ({ vie:+v, n }));
+
+  /* Par type de lien : c'est là que le schéma parle le plus, parce qu'il ne
+     mélange plus les amitiés et les amours. */
+  const parLien = {};
+  gens.forEach(g => { const k = compteLien(g); if(k) (parLien[k] = parLien[k] || []).push(g); });
+  const liens = [];
+  Object.entries(parLien).forEach(([k, list]) => {
+    if(list.length < 3) return;
+    const c = {};
+    list.forEach(g => { c[g.element] = (c[g.element] || 0) + 1; });
+    const top = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+    if(top && top[1] / list.length >= 0.66) liens.push({ lien:k, element:top[0], n:top[1], tot:list.length });
+  });
+
+  return { gens, assez:true, parEl, elDom, elAbsents, lettres, vies, liens };
+}
+
+function renderSchema(){
+  const box = document.getElementById("schema-out");
+  if(!box) return;
+  const s = U().schema, n = U().natal, Lp = L();
+  const d = schemaDonnees();
+  if(!d.assez){
+    box.innerHTML = `
+      <section class="synth">
+        <div class="card-tag"><span class="dot"></span><span>${s.eyebrow}</span></div>
+        <h3>${s.title}</h3>
+        <p>${s.thin}</p>
+      </section>`;
+    return;
+  }
+  const blocs = [];
+  if(d.elDom) blocs.push({
+    t: s.cptElement(d.parEl[d.elDom], n.elements[d.elDom], d.gens.length),
+    p: s.dom[d.elDom] });
+  d.elAbsents.forEach(e => blocs.push({ t: n.elements[e], p: s.absent[e] }));
+  d.lettres.forEach(x => blocs.push({ t: s.cptLettre(x.n, x.tot, x.lettre), p: s.lettres[x.lettre] }));
+  d.vies.forEach(v => blocs.push({ t: s.cptVie(v.n, numLabel(v.vie)), p: s.vieNote }));
+
+  box.innerHTML = `
+    <section class="synth">
+      <div class="card-tag"><span class="dot"></span><span>${s.eyebrow}</span></div>
+      <h3>${s.title}</h3>
+      <p class="lead">${s.lead}</p>
+      ${blocs.length
+        ? `<div class="natal-manque">${blocs.map(b =>
+            `<div class="natal-trou"><strong>${escapeHtml(b.t)}</strong><p>${escapeHtml(b.p)}</p></div>`).join("")}</div>`
+        : `<p class="hist-empty">${s.none}</p>`}
+      <div class="hist-block">
+        <h4>${s.lienTitle}</h4>
+        ${d.liens.length
+          ? `<ul class="natal-vides">${d.liens.map(x =>
+              `<li>${escapeHtml(s.lienDom(U().compte.liens[x.lien].toLowerCase(), n.elements[x.element]))}</li>`).join("")}</ul>`
+          : `<p class="hist-empty">${s.lienThin}</p>`}
+      </div>
+      <p class="hist-care">${s.care}</p>
+    </section>`;
+}
+
+/* Déclaré juste au-dessus : appelé plus haut, SCHEMA_MIN ne serait pas encore
+   initialisé et tout le fichier s'arrêterait là. */
+renderSchema();

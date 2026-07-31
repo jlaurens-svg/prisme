@@ -58,6 +58,22 @@ Le décalage UTC appliqué est celui qui valait **à la date de naissance**, lu
 dans la base tzdata du navigateur — les règles historiques d'heure d'été sont
 donc respectées.
 
+### Le schéma relationnel
+
+Sous « Mes proches », un bloc compte ce qui se répète parmi les gens enregistrés
+dans le compte : l'élément dominant et ceux qui manquent, une lettre MBTI qui
+revient, un chemin de vie partagé, et — le plus parlant — l'homogénéité par type
+de lien, parce qu'elle ne mélange plus les amitiés et les amours.
+
+Les seuils sont volontairement hauts : rien sous quatre personnes, la moitié
+pour un élément, les deux tiers pour une lettre. En dessous, le hasard produit
+des « schémas » à volonté. Les personnes sans type MBTI ne pèsent pas dans le
+comptage des lettres. Retirer quelqu'un du compte le retire du schéma : il se
+recalcule à chaque ouverture.
+
+Le cadre est posé : un schéma n'est pas un destin, et la question utile n'est
+pas « pourquoi eux ? » mais « qu'est-ce que ça me permet de ne pas faire ? ».
+
 ### Le type MBTI est facultatif
 
 Un troisième choix, « je ne le connais pas », permet de créer un profil sans
