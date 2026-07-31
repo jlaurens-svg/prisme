@@ -323,6 +323,101 @@ const FIGURE_ART = ["pythagore","cleopatre","tesla"].reduce((o,k)=>{
   return o;
 }, {});
 
+/* ---------------- Le ciel du moment ----------------
+   Positions et rétrogradations calculées à la volée (voir transits.js).
+   Rien n'est codé en dur : la page dit ce que le ciel fait aujourd'hui. */
+function fmtJour(d){
+  if(!d) return "";
+  return d.toLocaleDateString(LANG === "en" ? "en-GB" : "fr-FR", { day:"numeric", month:"long" });
+}
+/* Cache : le calcul est rapide mais inutile à refaire à chaque bascule de langue. */
+let cielDuJour = null;
+function ciel(){ if(!cielDuJour) cielDuJour = skyAt(new Date()); return cielDuJour; }
+
+function nomPlanete(nom){ return U().sky.planets[nom]; }
+function nomSigne(s){ return L().signs[s].name; }
+
+/* Ligne « Saturne en Bélier, 14° · depuis le 26 juillet, jusqu'au 10 décembre » */
+function ligneCorps(c, s){
+  const p = nomPlanete(c.nom);
+  const dates = [c.debut ? s.since(fmtJour(c.debut)) : "", c.fin ? s.until(fmtJour(c.fin)) : ""]
+    .filter(Boolean).join(" · ");
+  return `
+    <article class="sky-card${c.lente ? " is-slow" : ""}">
+      <div class="sky-head">
+        <span class="sky-glyph" aria-hidden="true">${p.symbole}</span>
+        <div>
+          <h4>${s.inSign(p.nom, nomSigne(c.signe), c.degre)}</h4>
+          <p class="sky-theme">${p.theme}</p>
+        </div>
+        <span class="sky-badge">℞</span>
+      </div>
+      <p>${p.retro}</p>
+      ${dates ? `<p class="sky-dates">${dates}</p>` : ""}
+      ${c.lente ? `<p class="sky-slow">${s.slowNote}</p>` : ""}
+    </article>`;
+}
+
+function renderSky(){
+  const box = document.getElementById("sky-now");
+  if(!box) return;
+  const s = U().sky, c = ciel();
+  const retro = c.retrogrades;
+  // les cycles longs passent après : ils concernent une génération, pas un jour
+  const ordre = [...retro].sort((a, b) => (a.lente - b.lente));
+  box.innerHTML = `
+    <div class="sky-wrap">
+      <p class="eyebrow">${s.eyebrow}</p>
+      <h2 class="sky-title">${s.title}</h2>
+      <p class="sky-lead">${s.lead}</p>
+      ${retro.length ? `
+        <h3 class="sky-sub">${s.retroTitle}</h3>
+        <div class="sky-grid">${ordre.map(x => ligneCorps(x, s)).join("")}</div>
+      ` : `<p class="sky-calm">${s.calm}</p>`}
+      <p class="sky-note">${s.disclaimer}</p>
+    </div>`;
+}
+
+/* ---------------- Le ciel appliqué à un profil ----------------
+   Un transit ne dit rien tout seul : il faut qu'il touche un point du thème.
+   Sans heure de naissance on n'a que le Soleil, et on le signale. */
+function transitBlock(p, t){
+  const s = U().sky;
+  const points = {
+    soleil: p.lonSun,
+    lune: p.moon ? p.moon.lon : null,
+    ascendant: p.asc ? p.asc.lon : null,
+  };
+  const { touches } = transitsFor(points, new Date());
+  // on garde les rencontres les plus parlantes, sans noyer la page
+  const retenus = touches.slice(0, 4);
+
+  const ligne = (x) => {
+    const pl = nomPlanete(x.planete);
+    const cible = s.points[x.point];
+    return `
+      <div class="tr-row">
+        <div class="tr-head">
+          <span class="sky-glyph" aria-hidden="true">${pl.symbole}</span>
+          <strong>${pl.nom}${x.corps.retro ? " ℞" : ""} ${LANG==="en"?"in":"en"} ${nomSigne(x.corps.signe)}</strong>
+          ${x.exact ? `<span class="tr-exact">${s.exact}</span>` : ""}
+        </div>
+        <p>${s.aspects[x.cle](pl.nom, cible)}</p>
+        <p class="tr-theme">${x.corps.retro ? pl.retro : pl.direct}</p>
+      </div>`;
+  };
+
+  return `
+    <section class="synth sky-profile">
+      <div class="card-tag"><span class="dot"></span><span>${s.eyebrow}</span></div>
+      <h3>${s.profileTitle}</h3>
+      <p>${s.profileLead}</p>
+      ${retenus.length ? retenus.map(ligne).join("") : `<p class="sky-calm">${s.none}</p>`}
+      ${p.birth ? "" : `<p class="sky-note">${s.noteNoBirth}</p>`}
+      <p class="sky-note">${s.disclaimer}</p>
+    </section>`;
+}
+
 function renderHeritage(){
   const t=U(), Lp=L(), h=t.heritage;
   const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
@@ -438,6 +533,7 @@ function applyI18n(){
   fillSelectMbti(document.getElementById("ra-mbti"));
   fillSelectMbti(document.getElementById("rb-mbti"));
   fillCities(); renderContextCards(); buildQuiz();
+  renderSky();
   renderHeritage();
   renderJung();
   renderFamille();
@@ -482,6 +578,14 @@ function computeProfile(name, dateStr, mbti, birth){
   const [ ,m,d]=dateStr.split("-").map(Number);
   const p={ name, date:dateStr, mbti, sign:sunSign(m,d), life:lifePath(dateStr),
             expr:nameNumber(name,false), intime:nameNumber(name,true) };
+  // longitude solaire exacte : sert aux transits. Sans heure connue, midi UT —
+  // le Soleil bouge d'un degré par jour, l'erreur reste sous le demi-degré.
+  {
+    const [Y,Mo,D]=dateStr.split("-").map(Number);
+    const ut = (birth && birth.time) ? (()=>{ const [hh,mm]=birth.time.split(":").map(Number);
+                                              return hh + mm/60 - birth.tz; })() : 12;
+    p.lonSun = sunLongitude(julianDay(Y,Mo,D,ut));
+  }
   p.el = L().signs[p.sign].element;
   if(birth && birth.time && birth.lat!=null && birth.lon!=null && birth.tz!=null){
     p.birth=birth;
@@ -571,6 +675,7 @@ function renderProfile(p){
       <p>${synth.converge}</p>
     </section>
 
+    ${transitBlock(p, t)}
     <div class="result-actions no-print">
       <button class="btn btn-primary" id="act-compare">${t.actCompare}</button>
       <button class="btn btn-ghost" id="act-save">${saved?t.actSaved:t.actSave}</button>

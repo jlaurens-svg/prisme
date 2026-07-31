@@ -521,3 +521,39 @@ em{ font-style:italic; }
   .nav-links a[data-nav="home"]{ display:none; }
   .lenses{ grid-template-columns:1fr; }
 }
+
+/* ---------- LE CIEL DU MOMENT ---------- */
+.sky-now{ padding:0 clamp(1.2rem,5vw,2rem); }
+.sky-wrap{ max-width:var(--maxw); margin:0 auto; padding:clamp(2.4rem,6vw,4rem) 0;
+  border-top:1px solid var(--line); }
+.sky-title{ font-size:clamp(1.8rem,4vw,2.6rem); margin:.3rem 0 .8rem; }
+.sky-lead{ color:var(--ink-dim); max-width:640px; margin-bottom:2rem; }
+.sky-sub{ font-family:"Inter Tight",sans-serif; font-size:.78rem; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+.sky-grid{ display:grid; gap:1px; background:var(--line); border:1px solid var(--line);
+  border-radius:16px; overflow:hidden; grid-template-columns:1fr; }
+@media (min-width:820px){ .sky-grid{ grid-template-columns:1fr 1fr; } }
+.sky-card{ background:var(--bg); padding:clamp(1.4rem,3vw,2rem); }
+.sky-card.is-slow{ background:var(--bg-2); }
+.sky-head{ display:flex; align-items:flex-start; gap:.9rem; margin-bottom:.9rem; }
+.sky-glyph{ font-size:1.6rem; line-height:1; color:var(--accent); flex:none; }
+.sky-head h4{ font-family:"Fraunces",serif; font-size:1.25rem; font-weight:400; }
+.sky-theme{ font-size:.82rem; color:var(--ink-dim); margin-top:.15rem; }
+.sky-badge{ margin-left:auto; font-size:.85rem; color:#ffd39b; border:1px solid #ffd39b;
+  border-radius:100px; padding:.1rem .55rem; flex:none; }
+.sky-card p{ color:#cfccc5; font-size:.95rem; }
+.sky-dates{ margin-top:.8rem; font-size:.82rem !important; color:var(--accent) !important;
+  font-family:"Inter Tight",sans-serif; }
+.sky-slow{ margin-top:.5rem; font-size:.78rem !important; color:#6f6c66 !important; font-style:italic; }
+.sky-calm{ color:#d6d3cc; font-size:1.05rem; padding:1.2rem 1.4rem; border:1px solid var(--line);
+  border-radius:12px; background:var(--bg-2); }
+.sky-note{ font-size:.78rem; color:#6f6c66; font-style:italic; margin-top:1.2rem; }
+
+/* le ciel appliqué à un profil */
+.sky-profile .tr-row{ padding:1.1rem 0; border-top:1px solid var(--line); }
+.sky-profile .tr-row:first-of-type{ border-top:none; }
+.sky-profile .tr-head{ display:flex; align-items:center; gap:.7rem; margin-bottom:.5rem; }
+.sky-profile .tr-head strong{ font-family:"Inter Tight",sans-serif; color:var(--ink); font-weight:500; }
+.sky-profile .tr-exact{ font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--bg); background:var(--accent); border-radius:100px; padding:.1rem .5rem; }
+.sky-profile .tr-theme{ font-size:.9rem !important; color:#9d9a94 !important; }
