@@ -27,9 +27,10 @@ fr: {
       { i:"02", h:"Numérologie", p:"Votre date et votre nom réduits à des nombres porteurs de sens : le fil de fond d’une vie.", cta:"Calculer mon chemin de vie", to:"create" },
       { i:"03", h:"MBTI", p:"Une cartographie cognitive éprouvée : comment vous prenez l’énergie, percevez, décidez, vous organisez.", cta:"Découvrir mon profil", to:"create" },
       { i:"04", h:"Histoire de vie", p:"Ce qui vous est arrivé, et à quel âge. Chaque moment marquant a laissé une version de vous, qui reprend la parole quand ça chauffe.", cta:"Renseigner mon histoire", to:"create" },
-      { i:"05", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
+      { i:"05", h:"Les rêves", p:"Ce que la nuit met en scène : un journal tenu au réveil, les images qui reviennent d’une nuit à l’autre, et une relecture au conditionnel.", cta:"Ouvrir mon journal de rêves", to:"create" },
+      { i:"06", h:"Graphologie", p:"Votre écriture comme empreinte : le trait, le rythme, l’espace. Une lecture fine, menée par un analyste.", cta:"Prendre rendez-vous", to:"consult", tag:"sur rendez-vous" }
     ],
-    lensesCta:{ text:"Et surtout, les cinq réunies : ce que dit l’ensemble de votre profil.", button:"Voir l’ensemble de mon profil" },
+    lensesCta:{ text:"Et surtout, les six réunies : ce que dit l’ensemble de votre profil.", button:"Voir l’ensemble de mon profil" },
     manifesto1:"Ni dogme, ni ésotérisme. ", manifestoEm:"Des savoirs anciens,", manifesto2:" que l’humanité affine depuis des millénaires et que toutes les cultures du monde ont fait vivre — comme sociétés et comme individus — pour mieux se comprendre et mieux habiter ce qui les entoure.",
     heritage:{
       eyebrow:"Un héritage vivant",
@@ -158,6 +159,124 @@ fr: {
         trigone:(p,pt)=>`${p} coule vers ${pt} : la période facilite ce thème. Peu d’effort, mais rien ne se fait tout seul non plus.`,
         sextile:(p,pt)=>`${p} tend une perche à ${pt} : une ouverture est là, à saisir — elle ne s’imposera pas.`,
       }
+    },
+    reves:{
+      eyebrow:"Les rêves", title:"Ce que la nuit met en scène",
+      lead:"Un rêve ne prédit rien et ne se décode pas avec un dictionnaire. Mais il met en scène quelque chose : une situation qu’il rejoue, une place qu’il vous donne, une issue qu’il refuse. Notez-les au réveil, tant qu’ils tiennent encore — c’est ce qui revient d’une nuit à l’autre qui parle, plus qu’un rêve isolé.",
+      disclaimer:"Aucune image n’a de sens fixe. Ce que vous lirez ici sont des hypothèses de lecture, pas des significations : dans votre rêve, un serpent fait quelque chose de précis que seul vous pouvez reconnaître.",
+      care:"Un rêve qui revient à l’identique nuit après nuit, ou qui rejoue un événement réel sans rien en changer, ne se travaille pas seul devant un écran. C’est le moment d’en parler à un professionnel.",
+      privacy:"Vos rêves restent sur cet appareil. Rien n’est envoyé, sauf si vous demandez explicitement la lecture par l’IA, rêve par rêve.",
+      addTitle:"Noter un rêve",
+      fDate:"La nuit du", fTexte:"Ce dont vous vous souvenez",
+      phTexte:"Au présent, dans l’ordre où ça revient. Les détails absurdes comptent autant que le reste…",
+      fEmotion:"Au réveil, vous étiez…", emotionPick:"Choisir…",
+      fTags:"Ce rêve était…",
+      add:"Enregistrer ce rêve", remove:"Retirer", clearAll:"Tout effacer",
+      errTexte:"Racontez le rêve en quelques mots au moins.",
+      empty:"Rien de noté pour l’instant. Le premier rêve suffit pour commencer ; les motifs, eux, apparaissent au bout de quelques nuits.",
+      journalTitle:"Votre journal de nuit",
+      count:(n)=>n===1?"1 rêve noté":`${n} rêves notés`,
+      none:"Aucun rêve noté",
+      dateLabel:"Nuit du",
+      profileTitle:"Ce que vos rêves rejouent",
+      profileNone:"Vous n’avez encore noté aucun rêve. C’est la seule lentille qui se remplit en dormant : au réveil, avant le café, pendant que ça tient encore.",
+      profileLink:"Ouvrir mon journal de rêves",
+      symbolsTitle:"Les images repérées",
+      symbolsLead:"Ces images reviennent souvent dans les récits de rêve. Ce qui suit n’est pas leur signification — c’est ce qu’elles mettent souvent en scène, et la question qu’elles posent. Gardez ce qui vous parle.",
+      symbolsNone:"Aucune image du répertoire n’a été repérée dans ce que vous avez noté. Ce n’est pas un manque : le répertoire est court, et votre rêve n’a aucune raison d’y figurer.",
+      lStage:"Ce que l’image met en scène", lAsk:"La question qu’elle pose",
+      seen:(n)=>n===1?"dans 1 rêve":`dans ${n} rêves`,
+      patternsTitle:"Ce qui revient",
+      patternsLead:"Un rêve isolé dit peu. La répétition, elle, insiste : voici ce qui traverse plusieurs de vos nuits.",
+      patternsThin:"Encore trop peu de rêves notés pour dégager un motif. Revenez après quelques nuits.",
+      pEmotion:(e)=>`Au réveil, c’est « ${e} » qui domine.`,
+      pRecurrent:(n)=>n===1?"1 rêve marqué comme récurrent.":`${n} rêves marqués comme récurrents.`,
+      pNightmare:(n)=>n===1?"1 cauchemar noté.":`${n} cauchemars notés.`,
+      pSpan:(a,b)=>`Journal tenu du ${a} au ${b}.`,
+      emotions:{
+        angoisse:"angoissé·e", peur:"apeuré·e", tristesse:"triste", colere:"en colère",
+        honte:"honteux·se", confusion:"perdu·e", soulagement:"soulagé·e", joie:"heureux·se", serenite:"serein·e",
+      },
+      tags:{
+        recurrent:"récurrent", cauchemar:"un cauchemar", lucide:"lucide (je savais que je rêvais)",
+        agreable:"agréable", banal:"banal, presque du quotidien",
+      },
+      /* Répertoire volontairement court : des motifs très attestés dans les
+         récits de rêve, lus comme des mises en scène et jamais comme des clés. */
+      symbols:{
+        chute:{ nom:"La chute", mots:["chute","chutais","tombe","tombais","tomber","precipice","dans le vide"],
+          lecture:"Une chute met en scène l’instant où l’appui cède. Ce n’est pas l’atterrissage qui compte dans le rêve — c’est le moment où plus rien ne tient.",
+          question:"Qu’est-ce qui, en ce moment, tient moins bien que vous ne le dites ?" },
+        vol:{ nom:"L’envol", mots:["voler","volais","je vole","envol","planer","planais","des ailes"],
+          lecture:"Voler met en scène une échappée : voir de plus haut, se soustraire à ce qui retient, parfois se croire au-dessus.",
+          question:"À quoi voudriez-vous échapper — et qu’est-ce que cela vous coûterait ?" },
+        poursuite:{ nom:"Être poursuivi", mots:["poursuivi","poursuivie","poursuite","me suivait","me suit","fuir","fuyais","je courais"],
+          lecture:"Une poursuite met en scène ce qu’on ne veut pas regarder en face. Ce qui poursuit vient rarement du dehors.",
+          question:"Qu’est-ce que vous évitez, et depuis combien de temps ?" },
+        paralysie:{ nom:"Ne pas pouvoir crier ni bouger", mots:["crier","aucun son","pas un son","paralyse","paralysee","immobile","bouger","muet","muette"],
+          lecture:"L’impuissance à agir ou à parler met en scène une situation où votre voix ne porte pas, où le corps répond avant vous.",
+          question:"Où, éveillé·e, n’arrivez-vous pas à dire ce que vous pensez ?" },
+        examen:{ nom:"L’examen", mots:["examen","epreuve","oral","copie","note","salle de classe","ecole","interrogation"],
+          lecture:"Un examen met en scène le fait d’être évalué et pris au dépourvu — souvent des décennies après l’école, quand le jury a changé de visage.",
+          question:"Qui tient aujourd’hui le rôle du jury ?" },
+        retard:{ nom:"Arriver trop tard", mots:["retard","en retard","train","rate le","rater","avion","quai","porte fermee"],
+          lecture:"Rater un départ met en scène le temps qui file et une occasion qu’on croit unique.",
+          question:"Quelle décision remettez-vous à plus tard ?" },
+        nudite:{ nom:"Être exposé", mots:["nu","nue","tout nu","deshabille","sans vetement","en sous-vetement"],
+          lecture:"Être vu sans ses vêtements met en scène la crainte d’être vu tel qu’on est, sans la mise en forme habituelle.",
+          question:"Que tenez-vous caché, et devant qui ?" },
+        maison:{ nom:"La maison", mots:["maison","appartement","chambre","une piece","escalier","cave","grenier","couloir"],
+          lecture:"Une maison de rêve tient souvent lieu de soi : les pièces fermées, les étages oubliés, la cave qu’on n’ouvre pas.",
+          question:"Quelle pièce de vous n’ouvrez-vous plus ?" },
+        eau:{ nom:"L’eau, la vague", mots:["eau","mer","ocean","vague","noyer","noyais","riviere","inondation","submerge","piscine"],
+          lecture:"L’eau met en scène ce qui déborde et ce qui porte à la fois — un état plus qu’un événement.",
+          question:"Qu’est-ce qui, en ce moment, vous submerge ou vous porte ?" },
+        mort:{ nom:"La mort", mots:["mort","morte","mourir","mourais","enterrement","cercueil","funerailles","decede"],
+          lecture:"Un rêve de mort met en scène une fin, pas un présage : une période, un rôle, une version de vous qui s’achève.",
+          question:"Qu’est-ce qui vient de se terminer, que vous n’avez pas encore posé ?" },
+        bebe:{ nom:"L’enfant", mots:["bebe","nourrisson","un enfant","accouch","grossesse","enceinte","berceau"],
+          lecture:"Un enfant met en scène ce qui commence et demande à être gardé : un projet, un début, une part fragile de vous.",
+          question:"Qu’est-ce qui commence et réclame votre attention ?" },
+        animal:{ nom:"L’animal", mots:["serpent","chien","loup","araignee","un chat","ours","insecte","un animal","rat"],
+          lecture:"Un animal met en scène une force qui ne raisonne pas — instinct, peur, colère, attachement — selon ce qu’il fait dans le rêve, pas selon son espèce.",
+          question:"Quelle réaction, chez vous, échappe à votre contrôle ?" },
+        vehicule:{ nom:"Le véhicule", mots:["voiture","volant","freins","conduire","conduisais","accident","la route","autoroute","velo"],
+          lecture:"Un véhicule met en scène votre trajectoire et qui la conduit. Les freins, la place du passager et l’état de la route disent le reste.",
+          question:"Qui tient le volant, dans votre vie en ce moment ?" },
+        perdu:{ nom:"Se perdre", mots:["perdu","perdue","egare","le chemin","labyrinthe","la sortie","je ne savais plus ou","je ne reconnaissais pas"],
+          lecture:"Se perdre met en scène une direction qui manque — pas une incapacité.",
+          question:"Sur quel choix avez-vous perdu vos repères ?" },
+        passe:{ nom:"Une personne du passé", mots:["mon ex","ancien","ancienne","mon pere","ma mere","grand-mere","grand-pere","ami d’enfance","ami d'enfance","depuis mort"],
+          lecture:"Le retour d’une personne du passé met en scène ce qui est resté en suspens avec elle — ou ce qu’elle représente pour vous, plus qu’elle-même.",
+          question:"Qu’est-ce qui, avec cette personne, n’a jamais été dit ?" },
+        dents:{ nom:"Les dents", mots:["dents","une dent","molaire","dents tombent","dents qui tombent"],
+          lecture:"Perdre ses dents met en scène une prise qui faiblit : mordre, tenir, se défendre — ou l’image que l’on donne.",
+          question:"Où sentez-vous que vous perdez du terrain ?" },
+        foule:{ nom:"Le regard des autres", mots:["foule","une scene","le public","spectateurs","tout le monde me regardait","un discours","estrade"],
+          lecture:"Être regardé met en scène le jugement — et le rêve dit surtout de qui vous attendez l’approbation.",
+          question:"Devant qui jouez-vous, en ce moment ?" },
+        appel:{ nom:"L’appel qui ne passe pas", mots:["telephone","appeler","appelais","ne repond","ne repondait","reseau","un message","ca sonnait"],
+          lecture:"Un appel qui ne passe pas met en scène un lien coupé et l’urgence de le rétablir.",
+          question:"À qui devez-vous parler, et qu’est-ce qui vous retient ?" },
+      },
+      ai:{
+        tag:"La lecture du rêve", title:"Faire relire ce rêve",
+        text:"Les images repérées plus haut sont un répertoire, le même pour tout le monde. Une lecture par l’IA part de votre récit à vous : ce que la scène rejoue, ce qu’elle refuse, et trois questions à vous poser. Au conditionnel, sans prédiction, et en disant ce qu’il ne faut pas en conclure.",
+        privacy:"Ce rêve-là sortira de votre navigateur pour être analysé. Aucun autre, et rien de votre profil.",
+        consent:"J’accepte que le texte de ce rêve soit envoyé pour analyse.",
+        button:"Demander la lecture", working:"Lecture en cours…", again:"Relire ce rêve",
+        pick:"Choisissez un rêve du journal à faire relire.",
+        setup:"Cette lecture demande une configuration.",
+        setupKey:"En attendant, vous pouvez utiliser votre propre clé d’API Anthropic : elle reste sur cet appareil.",
+        keyPh:"sk-ant-…", keySave:"Enregistrer la clé", keyForget:"Oublier la clé",
+        lResume:"Le rêve, reformulé", lScene:"Ce que la scène rejoue", lImages:"Les images de ce rêve",
+        lTension:"La tension", lQuestions:"Trois questions au réveil", lGarde:"Ce qu’il ne faut pas en conclure",
+        errCle:"La clé a été refusée. Vérifiez-la et recommencez.",
+        errQuota:"La limite d’usage est atteinte. Réessayez plus tard.",
+        errReseau:"La connexion a échoué. Réessayez.",
+        errRefus:"Le modèle n’a pas donné suite à cette demande.",
+        errAutre:"La lecture n’a pas abouti. Réessayez plus tard.",
+      },
     },
     histoire:{
       eyebrow:"L’histoire de vie", title:"Toutes les versions de vous",
@@ -317,6 +436,7 @@ fr: {
     bSign:"", bLife:"Chemin de vie", bMbti:"MBTI", bAsc:"Ascendant", bMoon:"Lune",
     lens01:"Lentille 01 — Astrologie", lens02:"Lentille 02 — Numérologie", lens03:"Lentille 03 — MBTI",
     lens04:"Lentille 04 — Histoire de vie",
+    lens05:"Lentille 05 — Les rêves",
     modalite:"", planet:"",
     force:"Force", chantier:"Chantier",
     sunLabel:"Soleil", ascLabel:"Ascendant", moonLabel:"Lune",
@@ -437,10 +557,11 @@ fr: {
   ],
 
   method: `
-    <h3>Cinq prismes, des statuts différents</h3>
+    <h3>Six prismes, des statuts différents</h3>
     <p>L’<strong>astrologie</strong> et la <strong>numérologie</strong> sont des systèmes symboliques : ils ne prédisent pas l’avenir et n’ont pas de validité scientifique. PRISME les utilise comme des <em>langages</em> — des cadres pour mettre des mots sur des tendances, ouvrir la conversation, se raconter autrement.</p>
     <p>Le <strong>MBTI</strong> est un outil de psychologie des préférences, très répandu en développement personnel et en entreprise. Utile pour se situer, il reste une simplification : les nuances comptent plus que les quatre lettres.</p>
     <p>L’<strong>histoire de vie</strong> ne relève d’aucun système : ce sont vos propres réponses. PRISME n’y devine rien de caché — il rapproche l’âge d’un événement de ce qu’un enfant de cet âge pouvait en faire. Ce n’est pas un diagnostic, et rien de ce qui vous est arrivé ne dit ce que vous valez.</p>
+    <p>Les <strong>rêves</strong> ne s’interprètent pas avec un dictionnaire. Aucune image n’a de sens fixe : un serpent n’est pas « la trahison ». PRISME repère les images très courantes dans les récits de rêve et propose ce qu’elles <em>mettent souvent en scène</em> — des hypothèses de lecture, à garder ou à jeter. Ce qui compte est ce qui revient d’une nuit à l’autre.</p>
     <p>La <strong>graphologie</strong> ne se calcule pas : elle demande un regard humain, et se fait sur rendez-vous.</p>
     <h3>Comment nous calculons</h3>
     <ul>
@@ -451,6 +572,7 @@ fr: {
       <li><strong>Nombre d’expression & nombre intime</strong> — valeur des lettres de votre nom (méthode pythagoricienne), tout le nom puis les voyelles.</li>
       <li><strong>Type MBTI</strong> — issu de votre questionnaire ou de votre saisie directe.</li>
       <li><strong>Versions de vous</strong> — croisement de l’âge que vous indiquez avec le type de moment : l’âge donne ce qu’on pouvait alors comprendre de l’événement, le type de moment donne ce qu’il installe. Ces réponses ne quittent pas votre appareil.</li>
+      <li><strong>Images des rêves</strong> — un répertoire d’une vingtaine de motifs très attestés, repérés par mots entiers dans ce que vous écrivez (dans les deux langues, pour qui note ses rêves en français et lit en anglais). Aucune analyse automatique du sens : la répétition d’une nuit à l’autre est comptée, rien de plus.</li>
     </ul>
     <h3>Notre parti pris</h3>
     <p>Un langage <strong>sans genre</strong>, sans injonction, sans fatalité. Chaque portrait nomme une force <em>et</em> un chantier, parce qu’une personne n’est jamais un verdict. Prenez ce qui résonne, laissez le reste.</p>
@@ -536,9 +658,10 @@ en: {
       { i:"02", h:"Numerology", p:"Your date and name reduced to numbers that carry meaning: the underlying thread of a life.", cta:"Calculate my life path", to:"create" },
       { i:"03", h:"MBTI", p:"A proven cognitive map: how you draw energy, perceive, decide, organize.", cta:"Discover my profile", to:"create" },
       { i:"04", h:"Life history", p:"What happened to you, and at what age. Every defining moment left a version of you behind — the one that speaks up when things get heated.", cta:"Fill in my history", to:"create" },
-      { i:"05", h:"Graphology", p:"Your handwriting as a fingerprint: the stroke, the rhythm, the spacing. A close reading, by an analyst.", cta:"Book a session", to:"consult", tag:"by appointment" }
+      { i:"05", h:"Dreams", p:"What the night stages: a journal kept on waking, the images that return from one night to the next, and a reading in the conditional.", cta:"Open my dream journal", to:"create" },
+      { i:"06", h:"Graphology", p:"Your handwriting as a fingerprint: the stroke, the rhythm, the spacing. A close reading, by an analyst.", cta:"Book a session", to:"consult", tag:"by appointment" }
     ],
-    lensesCta:{ text:"And above all, the five together: what your whole profile reveals.", button:"See my full profile" },
+    lensesCta:{ text:"And above all, the six together: what your whole profile reveals.", button:"See my full profile" },
     manifesto1:"No dogma, no mysticism. ", manifestoEm:"Age-old bodies of knowledge,", manifesto2:" refined by humanity over millennia and kept alive by cultures the world over — as societies and as individuals — to better understand ourselves and better inhabit what surrounds us.",
     heritage:{
       eyebrow:"A living lineage",
@@ -667,6 +790,122 @@ en: {
         trigone:(p,pt)=>`${p} flows toward ${pt}: the season eases this theme. Little effort — though nothing does itself either.`,
         sextile:(p,pt)=>`${p} offers ${pt} an opening: it's there to take, and it won't impose itself.`,
       }
+    },
+    reves:{
+      eyebrow:"Dreams", title:"What the night stages",
+      lead:"A dream predicts nothing and cannot be decoded with a dictionary. But it stages something: a situation it re-enacts, a place it puts you in, a way out it refuses. Write them down on waking, while they still hold — what returns from one night to the next says more than any single dream.",
+      disclaimer:"No image has a fixed meaning. What you read here are reading hypotheses, not meanings: in your dream, a snake is doing something specific that only you can recognise.",
+      care:"A dream that returns unchanged night after night, or that re-enacts a real event without altering anything, is not worked through alone in front of a screen. That is the moment to talk to a professional.",
+      privacy:"Your dreams stay on this device. Nothing is sent unless you explicitly ask for the AI reading, one dream at a time.",
+      addTitle:"Write down a dream",
+      fDate:"Night of", fTexte:"What you remember",
+      phTexte:"In the present tense, in the order it comes back. The absurd details count as much as the rest…",
+      fEmotion:"On waking, you felt…", emotionPick:"Choose…",
+      fTags:"This dream was…",
+      add:"Save this dream", remove:"Remove", clearAll:"Clear everything",
+      errTexte:"Write the dream down in a few words at least.",
+      empty:"Nothing written down yet. One dream is enough to start; the patterns take a few nights to appear.",
+      journalTitle:"Your night journal",
+      count:(n)=>n===1?"1 dream saved":`${n} dreams saved`,
+      none:"No dream saved",
+      dateLabel:"Night of",
+      profileTitle:"What your dreams re-enact",
+      profileNone:"You haven't written down any dream yet. It's the one lens that fills up while you sleep: on waking, before coffee, while it still holds.",
+      profileLink:"Open my dream journal",
+      symbolsTitle:"Images spotted",
+      symbolsLead:"These images come up often in dream accounts. What follows is not their meaning — it's what they often stage, and the question they raise. Keep what speaks to you.",
+      symbolsNone:"None of the repertoire's images were spotted in what you wrote. That's not a gap: the repertoire is short, and your dream has no reason to appear in it.",
+      lStage:"What the image stages", lAsk:"The question it raises",
+      seen:(n)=>n===1?"in 1 dream":`in ${n} dreams`,
+      patternsTitle:"What returns",
+      patternsLead:"A single dream says little. Repetition insists: here is what runs through several of your nights.",
+      patternsThin:"Too few dreams so far to draw out a pattern. Come back after a few nights.",
+      pEmotion:(e)=>`On waking, “${e}” dominates.`,
+      pRecurrent:(n)=>n===1?"1 dream marked as recurring.":`${n} dreams marked as recurring.`,
+      pNightmare:(n)=>n===1?"1 nightmare recorded.":`${n} nightmares recorded.`,
+      pSpan:(a,b)=>`Journal kept from ${a} to ${b}.`,
+      emotions:{
+        angoisse:"anxious", peur:"afraid", tristesse:"sad", colere:"angry",
+        honte:"ashamed", confusion:"lost", soulagement:"relieved", joie:"happy", serenite:"calm",
+      },
+      tags:{
+        recurrent:"recurring", cauchemar:"a nightmare", lucide:"lucid (I knew I was dreaming)",
+        agreable:"pleasant", banal:"mundane, almost everyday",
+      },
+      symbols:{
+        chute:{ nom:"Falling", mots:["falling","i fell","fell","cliff","the void","dropping"],
+          lecture:"Falling stages the moment the footing gives way. What matters in the dream isn't the landing — it's the instant nothing holds any more.",
+          question:"What, right now, is holding less well than you let on?" },
+        vol:{ nom:"Flying", mots:["flying","i flew","i fly","took off","gliding","wings"],
+          lecture:"Flying stages an escape: seeing from higher up, slipping free of what holds you — sometimes believing yourself above it.",
+          question:"What would you like to escape — and what would it cost you?" },
+        poursuite:{ nom:"Being chased", mots:["chased","chasing me","following me","running away","i ran","pursued"],
+          lecture:"A chase stages what you won't look at head-on. What pursues rarely comes from outside.",
+          question:"What are you avoiding, and for how long now?" },
+        paralysie:{ nom:"Unable to shout or move", mots:["shout","scream","no sound","couldn't move","paralysed","paralyzed","frozen","mute"],
+          lecture:"Being unable to act or speak stages a situation where your voice doesn't carry, where the body answers before you do.",
+          question:"Where, awake, can't you say what you think?" },
+        examen:{ nom:"The exam", mots:["exam","test","oral","paper","grade","classroom","school"],
+          lecture:"An exam stages being assessed and caught off guard — often decades after school, once the panel has changed faces.",
+          question:"Who plays the panel today?" },
+        retard:{ nom:"Arriving too late", mots:["late","train","missed","plane","platform","door closed"],
+          lecture:"Missing a departure stages time running out and an opportunity you believe is unique.",
+          question:"Which decision are you putting off?" },
+        nudite:{ nom:"Being exposed", mots:["naked","undressed","no clothes","in my underwear"],
+          lecture:"Being seen without clothes stages the fear of being seen as you are, without the usual arrangement.",
+          question:"What are you keeping hidden, and from whom?" },
+        maison:{ nom:"The house", mots:["house","flat","apartment","bedroom","a room","stairs","cellar","basement","attic","corridor"],
+          lecture:"A dream house often stands in for the self: the closed rooms, the forgotten floors, the cellar you don't open.",
+          question:"Which room of yourself do you no longer open?" },
+        eau:{ nom:"Water, the wave", mots:["water","sea","ocean","wave","drown","drowning","river","flood","overwhelm","pool"],
+          lecture:"Water stages what overflows and what carries, both at once — a state rather than an event.",
+          question:"What, right now, is overwhelming you or carrying you?" },
+        mort:{ nom:"Death", mots:["death","died","dying","dead","funeral","coffin","burial"],
+          lecture:"A dream of death stages an ending, not an omen: a period, a role, a version of you coming to a close.",
+          question:"What has just ended that you haven't put down yet?" },
+        bebe:{ nom:"The child", mots:["baby","newborn","a child","giving birth","pregnant","pregnancy","cradle"],
+          lecture:"A child stages what is beginning and needs keeping: a project, a start, a fragile part of you.",
+          question:"What is beginning that is asking for your attention?" },
+        animal:{ nom:"The animal", mots:["snake","dog","wolf","spider","a cat","bear","insect","an animal","rat"],
+          lecture:"An animal stages a force that doesn't reason — instinct, fear, anger, attachment — according to what it does in the dream, not its species.",
+          question:"Which of your reactions escapes your control?" },
+        vehicule:{ nom:"The vehicle", mots:["car","wheel","brakes","driving","i drove","crash","the road","motorway","bike"],
+          lecture:"A vehicle stages your trajectory and who is driving it. The brakes, the passenger seat and the state of the road say the rest.",
+          question:"Who is at the wheel in your life right now?" },
+        perdu:{ nom:"Getting lost", mots:["lost","the way","maze","labyrinth","the exit","didn't know where","didn't recognise"],
+          lecture:"Getting lost stages a missing direction — not an inability.",
+          question:"On which choice have you lost your bearings?" },
+        passe:{ nom:"Someone from the past", mots:["my ex","old friend","my father","my mother","grandmother","grandfather","childhood friend","who died"],
+          lecture:"The return of someone from the past stages what was left unfinished with them — or what they represent to you, more than the person themselves.",
+          question:"What was never said to that person?" },
+        dents:{ nom:"Teeth", mots:["teeth","a tooth","molar","teeth falling","tooth fell"],
+          lecture:"Losing teeth stages a weakening grip: biting, holding, defending yourself — or the image you present.",
+          question:"Where do you feel you are losing ground?" },
+        foule:{ nom:"Being watched", mots:["crowd","a stage","the audience","everyone was watching","a speech","podium"],
+          lecture:"Being watched stages judgement — and the dream says mostly whose approval you are waiting for.",
+          question:"Who are you performing for right now?" },
+        appel:{ nom:"The call that won't connect", mots:["phone","calling","i called","no answer","didn't answer","signal","a message","it rang"],
+          lecture:"A call that won't connect stages a severed link and the urgency of restoring it.",
+          question:"Who do you need to talk to, and what is stopping you?" },
+      },
+      ai:{
+        tag:"The dream reading", title:"Have this dream read back",
+        text:"The images spotted above are a repertoire, the same for everyone. An AI reading starts from your own account: what the scene re-enacts, what it refuses, and three questions to ask yourself. In the conditional, with no prediction, and saying what must not be concluded from it.",
+        privacy:"This one dream will leave your browser to be analysed. No other, and nothing from your profile.",
+        consent:"I agree that the text of this dream be sent for analysis.",
+        button:"Ask for the reading", working:"Reading…", again:"Read this dream again",
+        pick:"Choose a dream from the journal to have read back.",
+        setup:"This reading needs configuration.",
+        setupKey:"In the meantime you can use your own Anthropic API key: it stays on this device.",
+        keyPh:"sk-ant-…", keySave:"Save the key", keyForget:"Forget the key",
+        lResume:"The dream, restated", lScene:"What the scene re-enacts", lImages:"The images in this dream",
+        lTension:"The tension", lQuestions:"Three questions on waking", lGarde:"What must not be concluded",
+        errCle:"The key was refused. Check it and try again.",
+        errQuota:"The usage limit has been reached. Try again later.",
+        errReseau:"The connection failed. Try again.",
+        errRefus:"The model did not act on this request.",
+        errAutre:"The reading did not go through. Try again later.",
+      },
     },
     histoire:{
       eyebrow:"Life history", title:"Every version of you",
@@ -824,6 +1063,7 @@ en: {
     bSign:"", bLife:"Life path", bMbti:"MBTI", bAsc:"Rising", bMoon:"Moon",
     lens01:"Lens 01 — Astrology", lens02:"Lens 02 — Numerology", lens03:"Lens 03 — MBTI",
     lens04:"Lens 04 — Life history",
+    lens05:"Lens 05 — Dreams",
     modalite:"", planet:"",
     force:"Strength", chantier:"Growth edge",
     sunLabel:"Sun", ascLabel:"Rising", moonLabel:"Moon",
@@ -944,10 +1184,11 @@ en: {
   ],
 
   method: `
-    <h3>Five prisms, different statuses</h3>
+    <h3>Six prisms, different statuses</h3>
     <p><strong>Astrology</strong> and <strong>numerology</strong> are symbolic systems: they don’t predict the future and have no scientific validity. PRISME uses them as <em>languages</em> — frames to put words on tendencies, open a conversation, tell your story differently.</p>
     <p><strong>MBTI</strong> is a tool from the psychology of preferences, widely used in personal development and business. Useful for locating yourself, it’s still a simplification: nuance matters more than the four letters.</p>
     <p><strong>Life history</strong> belongs to no system: it is your own answers. PRISME guesses nothing hidden in them — it sets the age of an event against what a child that age could do with it. It is not a diagnosis, and nothing that happened to you says what you are worth.</p>
+    <p><strong>Dreams</strong> are not interpreted with a dictionary. No image has a fixed meaning: a snake is not "betrayal". PRISME spots images that are very common in dream accounts and offers what they <em>often stage</em> — reading hypotheses, to keep or discard. What matters is what returns from one night to the next.</p>
     <p><strong>Graphology</strong> cannot be computed: it needs a human eye, and happens by appointment.</p>
     <h3>How we compute</h3>
     <ul>
@@ -958,6 +1199,7 @@ en: {
       <li><strong>Expression & soul urge numbers</strong> — the value of your name’s letters (Pythagorean method), the whole name then the vowels.</li>
       <li><strong>MBTI type</strong> — from your questionnaire or your direct entry.</li>
       <li><strong>Versions of you</strong> — the age you give crossed with the kind of moment: the age gives what could be understood of it back then, the kind of moment gives what it settled in. Those answers never leave your device.</li>
+      <li><strong>Dream images</strong> — a repertoire of about twenty well-attested motifs, spotted by whole words in what you write (in both languages, for those who note their dreams in French and read in English). No automatic analysis of meaning: repetition from one night to the next is counted, nothing more.</li>
     </ul>
     <h3>Our stance</h3>
     <p>A <strong>genderless</strong> language, with no injunction, no fate. Every portrait names a strength <em>and</em> a growth edge, because a person is never a verdict. Take what resonates, leave the rest.</p>

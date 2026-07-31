@@ -1,13 +1,17 @@
 /* ---------------------------------------------------------------------------
-   PRISME — Médiation par IA de la section Miroir
+   PRISME — les lectures par IA
 
-   Les deux récits sont envoyés à Claude, qui rend une lecture de tiers :
-   bienveillante mais objective, sans donner tort ni raison.
+   Deux usages, un seul transport :
 
-   ATTENTION — c'est la seule partie du site qui sort du navigateur. Le reste
-   de PRISME calcule tout localement ; ici les deux textes sont transmis à
-   l'API Anthropic. L'interface le dit explicitement et demande l'accord des
-   deux personnes avant l'envoi.
+     • mediation(a, b, ctx, lang) — le Miroir. Les deux récits d'un désaccord
+       sont envoyés à Claude, qui rend une lecture de tiers : bienveillante mais
+       objective, sans donner tort ni raison.
+     • reve(reve, lang) — un rêve raconté est relu comme une mise en scène, au
+       conditionnel. Aucune prédiction, aucun dictionnaire mécanique.
+
+   ATTENTION — c'est la seule partie du site qui sort du navigateur. Le reste de
+   PRISME calcule tout localement ; ici le texte saisi est transmis à l'API
+   Anthropic. L'interface le dit explicitement et demande l'accord avant l'envoi.
 
    Une clé d'API ne peut pas vivre dans une page publique : elle serait lisible
    par n'importe qui. Deux modes, donc :
@@ -20,7 +24,7 @@
 
    Configuration : voir config.js à la racine.
 --------------------------------------------------------------------------- */
-const MirrorAI = (function(){
+const PrismeAI = (function(){
 
   const MODEL   = "claude-opus-5";
   const API_URL = "https://api.anthropic.com/v1/messages";
@@ -63,7 +67,7 @@ const MirrorAI = (function(){
     required: ["nom", "phrase"],
     additionalProperties: false,
   };
-  const SCHEMA = {
+  const SCHEMA_MEDIATION = {
     type: "object",
     properties: {
       alerte: {
@@ -84,7 +88,7 @@ const MirrorAI = (function(){
   };
 
   /* ---------------- consigne au modèle ---------------- */
-  const CONSIGNE = {
+  const CONSIGNE_MEDIATION = {
     fr: `Tu es un tiers de médiation. Deux personnes ont décrit le même désaccord, chacune de son côté, sans lire ce que l'autre a écrit. Tu es le seul à voir les deux versions.
 
 Ton travail n'est pas de départager. Il est de rendre lisible ce que chacun ne peut pas voir depuis sa place.
@@ -142,7 +146,7 @@ Safety — absolute priority: if the accounts reveal physical violence, threats,
     return `\n\n## ${L.t}\n\n### ${a.name}\n${a.histoire || L.none}\n\n### ${b.name}\n${b.histoire || L.none}`;
   }
 
-  function requete(a, b, ctx, lang){
+  function requeteMediation(a, b, ctx, lang){
     const relation = (CTX[lang] || CTX.fr)[ctx] || (CTX[lang] || CTX.fr).couple;
     const intro = lang === "en"
       ? `Context: ${relation}. Here are the two accounts.`
@@ -150,10 +154,10 @@ Safety — absolute priority: if the accounts reveal physical violence, threats,
     return {
       model: MODEL,
       max_tokens: 16000,
-      system: (CONSIGNE[lang] || CONSIGNE.fr),
+      system: (CONSIGNE_MEDIATION[lang] || CONSIGNE_MEDIATION.fr),
       output_config: {
         effort: "high",
-        format: { type: "json_schema", schema: SCHEMA },
+        format: { type: "json_schema", schema: SCHEMA_MEDIATION },
       },
       messages: [{ role: "user",
         content: `${intro}\n\n${bloc(a, lang)}\n\n${bloc(b, lang)}${blocHistoire(a, b, lang)}` }],
@@ -219,9 +223,102 @@ Safety — absolute priority: if the accounts reveal physical violence, threats,
   }
 
   /* Rend la médiation pour deux récits. a et b : { name, recit, ressenti, besoin, autre }. */
-  async function analyse(a, b, ctx, lang){
-    return lire(await envoyer(requete(a, b, ctx, lang || "fr")));
+  async function mediation(a, b, ctx, lang){
+    return lire(await envoyer(requeteMediation(a, b, ctx, lang || "fr")));
   }
 
-  return { mode, analyse, setKey, hasKey: () => !!storedKey(), MODEL };
+  /* ---------------- lecture d'un rêve ----------------
+     Un rêve n'annonce rien. Ce qu'on peut en dire, c'est ce qu'il met en scène
+     et la question qu'il pose — au conditionnel, et rien de plus. */
+  const IMAGE = {
+    type: "object",
+    properties: {
+      image:   { type: "string", description: "L'image du rêve, telle qu'elle a été racontée. Quelques mots." },
+      lecture: { type: "string", description: "Ce que cette image pourrait mettre en scène. Au conditionnel. Deux phrases au plus." },
+    },
+    required: ["image", "lecture"],
+    additionalProperties: false,
+  };
+  const SCHEMA_REVE = {
+    type: "object",
+    properties: {
+      alerte: {
+        type: "string",
+        enum: ["aucune", "vigilance"],
+        description: "vigilance si le rêve rejoue un traumatisme, revient à l'identique de façon envahissante, ou contient des idées de mort dirigées contre soi ; aucune sinon.",
+      },
+      alerteTexte: { type: "string", description: "Vide si alerte vaut aucune. Sinon, ce qu'il faut dire, avec une orientation vers un professionnel." },
+      resume:  { type: "string", description: "Le rêve reformulé en termes neutres, sans interprétation. Deux ou trois phrases." },
+      scene:   { type: "string", description: "Ce que le rêve met en scène : la situation, pas le symbole. C'est le cœur de la lecture." },
+      images:  { type: "array", items: IMAGE, minItems: 2, maxItems: 4 },
+      tension: { type: "string", description: "Le conflit ou le manque que la scène rejoue. Une ou deux phrases." },
+      questions: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 3,
+        description: "Trois questions à se poser au réveil. Ouvertes, précises, sans réponse suggérée." },
+      garde:   { type: "string", description: "Ce qu'il ne faut PAS conclure de ce rêve. Une phrase, ferme." },
+    },
+    required: ["alerte", "alerteTexte", "resume", "scene", "images", "tension", "questions", "garde"],
+    additionalProperties: false,
+  };
+
+  const CONSIGNE_REVE = {
+    fr: `Vous relisez un rêve que quelqu'un vient de raconter. Cette personne lira votre texte.
+
+Un rêve n'annonce rien et ne se décode pas avec un dictionnaire. Ce qu'on peut en dire, c'est ce qu'il met en scène, et la question qu'il pose au réveil.
+
+Comment vous travaillez :
+— Au conditionnel, toujours. « Cette image pourrait mettre en scène… », jamais « cela signifie que… ». Vous proposez des hypothèses, la personne tranche.
+— Vous ne vous appuyez que sur ce qui est raconté. Vous n'inventez ni personnage, ni passé, ni détail absent du récit. Si le récit est trop mince pour dire quelque chose, vous le dites plutôt que de broder.
+— Aucune prédiction, aucun présage, aucune correspondance fixe entre une image et un sens. Un serpent n'est pas « la trahison » ; dans ce rêve-ci, il fait quelque chose de précis.
+— Pas de diagnostic psychologique, pas d'étiquette, pas de verdict sur la vie de la personne.
+— La scène compte plus que les symboles : cherchez la situation que le rêve rejoue — être poursuivi sans pouvoir crier, arriver trop tard, chercher une pièce qui n'existe pas — avant de commenter les objets.
+— Vous vouvoyez la personne. Français simple, sans jargon d'analyse.
+— « garde » est obligatoire et sert de garde-fou : dites ce qu'il ne faut surtout pas conclure de ce rêve.
+
+Sécurité : si le rêve rejoue à l'identique un événement traumatique, revient de façon envahissante nuit après nuit, ou contient des idées de mort dirigées contre soi, mettez alerte sur « vigilance » et écrivez dans alerteTexte qu'un rêve qui insiste ainsi se travaille avec un professionnel, pas seul devant un écran.`,
+
+    en: `You are re-reading a dream someone has just recounted. That person will read your text.
+
+A dream announces nothing and cannot be decoded with a dictionary. What can be said of it is what it stages, and the question it leaves on waking.
+
+How you work:
+— Always in the conditional. "This image could be staging…", never "this means that…". You offer hypotheses; the person decides.
+— Rely only on what is recounted. Invent no character, no past, no detail absent from the account. If the account is too thin to say anything, say so rather than embroider.
+— No prediction, no omen, no fixed correspondence between an image and a meaning. A snake is not "betrayal"; in this dream, it is doing something specific.
+— No psychological diagnosis, no labels, no verdict on the person's life.
+— The scene matters more than the symbols: look for the situation the dream re-enacts — being chased unable to shout, arriving too late, searching for a room that doesn't exist — before commenting on objects.
+— Plain, direct English, no analytic jargon.
+— "garde" is required and acts as a guardrail: say what must not be concluded from this dream.
+
+Safety: if the dream re-enacts a traumatic event unchanged, returns intrusively night after night, or contains thoughts of death directed at oneself, set alerte to "vigilance" and write in alerteTexte that a dream insisting like this is worked through with a professional, not alone in front of a screen.`,
+  };
+
+  /* reve : { texte, date, emotion, tags, recurrent } — seuls texte et emotion
+     sont vraiment utiles au modèle, le reste situe le rêve. */
+  function requeteReve(reve, lang){
+    const L = lang === "en"
+      ? { intro:"Here is the dream, as it was written down.", quand:"Night of", ressenti:"Felt on waking",
+          tags:"The person marked this dream as", rien:"(not filled in)" }
+      : { intro:"Voici le rêve, tel qu'il a été noté.", quand:"Nuit du", ressenti:"Ressenti au réveil",
+          tags:"La personne a marqué ce rêve comme", rien:"(non renseigné)" };
+    const bouts = [L.intro, "", reve.texte.trim()];
+    if(reve.date)    bouts.push("", `${L.quand} : ${reve.date}`);
+    if(reve.emotion) bouts.push(`${L.ressenti} : ${reve.emotion}`);
+    if(reve.tags && reve.tags.length) bouts.push(`${L.tags} : ${reve.tags.join(", ")}`);
+    return {
+      model: MODEL,
+      max_tokens: 16000,
+      system: (CONSIGNE_REVE[lang] || CONSIGNE_REVE.fr),
+      output_config: {
+        effort: "high",
+        format: { type: "json_schema", schema: SCHEMA_REVE },
+      },
+      messages: [{ role: "user", content: bouts.join("\n") }],
+    };
+  }
+
+  async function reve(r, lang){
+    return lire(await envoyer(requeteReve(r, lang || "fr")));
+  }
+
+  return { mode, mediation, reve, setKey, hasKey: () => !!storedKey(), MODEL };
 })();

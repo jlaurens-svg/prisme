@@ -1,8 +1,11 @@
-# Relais de médiation
+# Relais des lectures par IA
 
 Petite fonction serveur dont le seul rôle est de **détenir la clé d'API** pour
 que la page publique n'ait pas à la contenir. Une clé placée dans `app.js`
 serait lisible par n'importe qui et consommée à vos frais en quelques heures.
+
+Elle sert les deux lectures du site : la médiation du Miroir et la lecture d'un
+rêve. Un seul déploiement suffit pour les deux.
 
 ## Déployer (une seule fois, ~5 minutes)
 
@@ -48,9 +51,10 @@ renvoie `403 origin_not_allowed` depuis le nouveau domaine.
 ## Coût
 
 Environ **4 à 5 centimes par médiation** (Claude Opus 5, ~1 500 jetons en
-entrée, ~1 500 en sortie). Cloudflare est gratuit jusqu'à 100 000 requêtes par
-jour. Pour surveiller ou plafonner la dépense, utilisez les limites de la
-console Anthropic.
+entrée, ~1 500 en sortie), un peu moins par lecture de rêve — un rêve est plus
+court que deux récits. Cloudflare est gratuit jusqu'à 100 000 requêtes par jour.
+Pour surveiller ou plafonner la dépense, utilisez les limites de la console
+Anthropic.
 
 ## Autres hébergeurs
 
@@ -61,6 +65,6 @@ Deno Deploy — gardez les mêmes vérifications.
 ## Tester sans rien déployer
 
 L'interface propose un mode « clé personnelle » : la clé est saisie dans le
-navigateur et reste dans le stockage local de la machine. Pratique pour essayer
-la fonctionnalité tout de suite, **à ne pas proposer au public** — chaque
-visiteur devrait fournir sa propre clé.
+navigateur et reste dans le stockage local de la machine. Elle sert aux deux
+lectures. Pratique pour essayer la fonctionnalité tout de suite, **à ne pas
+proposer au public** — chaque visiteur devrait fournir sa propre clé.

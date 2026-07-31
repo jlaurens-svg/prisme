@@ -1,15 +1,17 @@
 # PRISME
 
-Se comprendre — et comprendre ses proches — à travers trois lentilles :
-**astrologie · numérologie · MBTI**. Moderne, sans genre, bilingue (FR/EN).
+Se comprendre — et comprendre ses proches — à travers six prismes :
+**astrologie · numérologie · MBTI · histoire de vie · rêves · graphologie**.
+Moderne, sans genre, bilingue (FR/EN).
 
-Tout est calculé **localement** dans le navigateur, à une exception près : la
-*lecture du tiers* du Miroir envoie les deux récits à un modèle d'IA, après
-consentement explicite (voir `worker/`). Portraits : domaine public (Wikimedia
-Commons).
+Tout est calculé **localement** dans le navigateur, à deux exceptions près, toutes
+deux facultatives et explicites : la *lecture du tiers* du Miroir envoie les deux
+récits à un modèle d'IA, et la *lecture d'un rêve* envoie ce rêve-là (voir
+`worker/`). Portraits : domaine public (Wikimedia Commons).
 
-*Understand yourself and those close to you through three lenses:
-astrology, numerology, MBTI. A symbolic, reflective tool with no predictive value.*
+*Understand yourself and those close to you through six prisms: astrology,
+numerology, MBTI, life history, dreams, graphology. A symbolic, reflective tool
+with no predictive value.*
 
 ## Structure
 
@@ -22,7 +24,7 @@ Site statique, sans étape de compilation — il suffit de servir le dossier.
 | `styles.css` | mise en forme |
 | `astro.js` | calculs astronomiques (lune, ascendant) |
 | `transits.js` | positions des planètes, rétrogradations, aspects |
-| `mirror-ai.js` | médiation du Miroir par IA (consigne, schéma, appel) |
+| `ai.js` | lectures par IA : médiation du Miroir, lecture d’un rêve |
 | `config.js` | adresse du relais d'API (vide = mode clé personnelle) |
 | `cities.js` | recherche de ville et conversion heure locale → UT |
 | `data.js` | contenus et traductions FR/EN |
@@ -55,6 +57,26 @@ Le décalage UTC appliqué est celui qui valait **à la date de naissance**, lu
 dans la base tzdata du navigateur — les règles historiques d'heure d'été sont
 donc respectées.
 
+### Les rêves
+
+Lentille 05 du profil, dans « Moi ». Un journal tenu au réveil, puis trois
+lectures qui se complètent :
+
+- les **images repérées** dans le récit — une vingtaine de motifs très attestés,
+  cherchés par mots entiers (« ours » ne doit pas se reconnaître dans
+  « poursuivi ») et dans les deux langues, pour qui note ses rêves en français et
+  lit l'interface en anglais ;
+- **ce qui revient** d'une nuit à l'autre : les images vues dans plusieurs rêves,
+  l'émotion dominante au réveil, les récurrents et les cauchemars ;
+- la **lecture par IA** d'un rêve choisi — au conditionnel, sans prédiction, avec
+  un champ obligatoire qui dit ce qu'il ne faut *pas* en conclure.
+
+Le répertoire d'images propose ce qu'un motif met souvent en scène, jamais un
+sens fixe : c'est l'intérêt et la limite d'un dictionnaire, et la page des
+prismes le dit. Seul le rêve sélectionné est transmis, et seulement après accord
+coché ; les lectures obtenues restent en mémoire et ne sont pas écrites sur le
+disque.
+
 ### Médiation du Miroir
 
 La section Miroir peut faire relire les deux récits par un tiers — une analyse
@@ -70,7 +92,8 @@ dans le navigateur de la machine.
 
 Le relais impose le modèle et `max_tokens`, filtre les origines et borne la
 taille des requêtes — sans quoi une clé derrière un relais ouvert reste
-consommable par n'importe qui. Coût indicatif : 4 à 5 centimes par médiation.
+consommable par n'importe qui. Coût indicatif : 4 à 5 centimes par médiation, un
+peu moins par rêve. Le même relais sert les deux lectures.
 
 ### Le ciel du moment
 
