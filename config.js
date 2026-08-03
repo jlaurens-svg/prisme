@@ -6,4 +6,4 @@
    fournir sa propre clé, qui reste dans son navigateur.
 
    Ne mettez JAMAIS de clé d'API dans ce fichier : il est public. */
-window.PRISME_AI_ENDPOINT = "https://prisme-mediation.essai.workers.dev";
+window.PRISME_AI_ENDPOINT = "";
