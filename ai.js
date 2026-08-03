@@ -8,6 +8,9 @@
        objective, sans donner tort ni raison.
      • reve(reve, lang) — un rêve raconté est relu comme une mise en scène, au
        conditionnel. Aucune prédiction, aucun dictionnaire mécanique.
+     • profil(dossier, lang) — le dossier complet d'une personne, croisé plutôt
+       qu'additionné : là où les prismes s'accordent, et surtout là où ils se
+       contredisent.
 
    ATTENTION — c'est la seule partie du site qui sort du navigateur. Le reste de
    PRISME calcule tout localement ; ici le texte saisi est transmis à l'API
@@ -360,5 +363,112 @@ Safety: if the dream re-enacts a traumatic event unchanged, returns intrusively 
     return lire(await envoyer(requeteReve(r, lang || "fr")));
   }
 
-  return { mode, mediation, reve, setKey, hasKey: () => !!storedKey(), MODEL };
+  /* ---------------- lecture d'ensemble du profil ----------------
+     Le site compose déjà une synthèse, mais mécaniquement : elle additionne les
+     prismes sans jamais voir là où ils se contredisent. C'est précisément ce
+     qu'on demande ici — les accords, et surtout les désaccords. */
+  const CROISEMENT = {
+    type: "object",
+    properties: {
+      quoi:    { type: "string", description: "Ce qui se joue, en une ou deux phrases concrètes." },
+      prismes: { type: "array", items: { type: "string" }, minItems: 2,
+                 description: "Les prismes concernés, nommés simplement : thème natal, numérologie, MBTI, histoire de vie, rêves, ciel du moment." },
+    },
+    required: ["quoi", "prismes"],
+    additionalProperties: false,
+  };
+  const SCHEMA_PROFIL = {
+    type: "object",
+    properties: {
+      alerte: {
+        type: "string",
+        enum: ["aucune", "vigilance"],
+        description: "vigilance si l'histoire de vie transmise contient des violences encore vives ou des idées de mort ; aucune sinon.",
+      },
+      alerteTexte: { type: "string", description: "Vide si alerte vaut aucune. Sinon, une phrase sobre et une orientation vers un professionnel." },
+      portrait: { type: "string", description: "Un portrait en prose, quatre à six phrases, qui croise les prismes au lieu de les énumérer. Écrit pour cette personne-là, pas pour son signe." },
+      fil:      { type: "string", description: "Le fil conducteur : ce qui revient d'un prisme à l'autre, formulé en une phrase qu'on pourrait retenir." },
+      accords:  { type: "array", items: CROISEMENT, minItems: 2, maxItems: 4,
+                  description: "Là où les prismes disent la même chose. C'est ce qui est le plus solide dans la lecture." },
+      tensions: { type: "array", items: CROISEMENT, minItems: 1, maxItems: 4,
+                  description: "Là où les prismes se contredisent. La partie la plus importante : une synthèse qui n'a trouvé aucune contradiction n'a pas regardé." },
+      angleMort:{ type: "string", description: "Ce que cette personne ne voit probablement pas d'elle-même, d'après ce qui est transmis. Franc, sans dureté." },
+      chantier: { type: "string", description: "Un chantier concret et faisable, pas un conseil général." },
+      question: { type: "string", description: "Une seule question à garder, ouverte, sans réponse suggérée." },
+      garde:    { type: "string", description: "Ce qu'il ne faut PAS conclure de cette lecture. Obligatoire." },
+    },
+    required: ["alerte", "alerteTexte", "portrait", "fil", "accords", "tensions",
+               "angleMort", "chantier", "question", "garde"],
+    additionalProperties: false,
+  };
+
+  const CONSIGNE_PROFIL = {
+    fr: `Vous relisez le dossier complet d'une personne, tel qu'elle l'a rempli. Elle lira votre texte.
+
+Ce dossier réunit plusieurs prismes : un thème natal, des nombres, un type MBTI, parfois une histoire de vie, parfois des rêves, et le ciel du jour. Le site en a déjà tiré une synthèse mécanique, qui additionne. Votre travail est autre : croiser.
+
+Comment vous travaillez :
+— Vous écrivez pour cette personne-là. Aucune phrase de votre texte ne doit pouvoir s'appliquer à tous les Capricornes ou à tous les INFJ. Si une phrase pourrait tenir dans un horoscope, elle n'a rien à faire ici.
+— L'astrologie et la numérologie sont des langages symboliques, pas des faits sur le monde. Vous vous en servez comme d'un vocabulaire pour décrire des tendances, jamais comme d'une cause : on ne dit pas « parce que Saturne est en maison 5 », on dit « la carte met un poids là où… ».
+— Les tensions sont la partie la plus importante. Un dossier qui n'aurait aucune contradiction n'existe pas : cherchez où le thème pousse dans un sens et le type dans l'autre, où l'histoire de vie contredit ce que la numérologie promet, où les rêves disent le contraire du portrait diurne. Nommez-les précisément.
+— Aucune prédiction, aucun destin, aucun pronostic sur la vie, la santé, la carrière ou le couple. Pas de diagnostic psychologique.
+— L'histoire de vie, si elle est transmise, est du vécu, pas une explication. Elle éclaire ce à quoi la personne est sensible ; elle ne détermine pas ce qu'elle est et n'excuse aucun comportement. Si elle contient des violences, nommez sobrement et n'entrez pas dans le détail.
+— Vous vouvoyez la personne. Français simple, direct, adulte. Pas de flatterie, pas de jargon, pas de « vous êtes quelqu'un de très… ».
+— « garde » est obligatoire : dites ce qu'il ne faut surtout pas conclure de cette lecture.
+
+Sécurité : si l'histoire transmise fait apparaître des violences encore vives ou des idées de mort, mettez alerte sur « vigilance » et écrivez dans alerteTexte une phrase sobre avec une orientation vers un professionnel. Ne construisez pas le portrait autour du traumatisme.`,
+
+    en: `You are re-reading a person's full file, as they filled it in. They will read your text.
+
+The file gathers several lenses: a birth chart, numbers, an MBTI type, sometimes a life history, sometimes dreams, and the sky of the day. The site has already produced a mechanical synthesis, which adds things up. Your work is different: to cross them.
+
+How you work:
+— You write for this person. No sentence of yours should apply to every Capricorn or every INFJ. If a sentence could sit in a horoscope, it doesn't belong here.
+— Astrology and numerology are symbolic languages, not facts about the world. You use them as vocabulary to describe tendencies, never as causes: not "because Saturn is in the 5th house", but "the chart puts weight where…".
+— The tensions are the most important part. No file is without contradiction: look for where the chart pushes one way and the type the other, where the life history contradicts what the numbers promise, where the dreams say the opposite of the daytime portrait. Name them precisely.
+— No prediction, no fate, no forecast about life, health, career or relationships. No psychological diagnosis.
+— A life history, if provided, is lived experience, not an explanation. It shows what the person is sensitive to; it doesn't determine who they are and excuses no behaviour. If it contains violence, name it soberly and don't go into detail.
+— Plain, direct, adult English. No flattery, no jargon, no "you are a very…".
+— "garde" is required: say what must not be concluded from this reading.
+
+Safety: if the history provided reveals violence still raw or thoughts of death, set alerte to "vigilance" and write one sober sentence in alerteTexte pointing to a professional. Do not build the portrait around the trauma.`,
+  };
+
+  /* dossier : { nom, natal, nombres, mbti, histoire, reves, ciel } — chaque
+     morceau est du texte déjà mis en forme par l'appelant, et chacun peut
+     manquer. Seuls les morceaux transmis sont envoyés. */
+  function requeteProfil(dossier, lang){
+    const L = lang === "en"
+      ? { intro:"Here is the file.", qui:"Person", natal:"Birth chart", nombres:"Numbers",
+          mbti:"MBTI type", hist:"Life history recorded (age — what happened)",
+          reves:"Dream journal", ciel:"Sky of the day" }
+      : { intro:"Voici le dossier.", qui:"Personne", natal:"Thème natal", nombres:"Les nombres",
+          mbti:"Type MBTI", hist:"Histoire de vie renseignée (âge — ce qui est arrivé)",
+          reves:"Journal de rêves", ciel:"Le ciel du jour" };
+    const bouts = [L.intro];
+    const bloc = (titre, txt) => { if(txt) bouts.push("", `## ${titre}`, "", txt); };
+    if(dossier.nom) bouts.push("", `${L.qui} : ${dossier.nom}`);
+    bloc(L.natal, dossier.natal);
+    bloc(L.nombres, dossier.nombres);
+    bloc(L.mbti, dossier.mbti);
+    bloc(L.hist, dossier.histoire);
+    bloc(L.reves, dossier.reves);
+    bloc(L.ciel, dossier.ciel);
+    return {
+      model: MODEL,
+      max_tokens: 16000,
+      system: (CONSIGNE_PROFIL[lang] || CONSIGNE_PROFIL.fr),
+      output_config: {
+        effort: "high",
+        format: { type: "json_schema", schema: SCHEMA_PROFIL },
+      },
+      messages: [{ role: "user", content: bouts.join("\n") }],
+    };
+  }
+
+  async function profil(dossier, lang){
+    return lire(await envoyer(requeteProfil(dossier, lang || "fr")));
+  }
+
+  return { mode, mediation, reve, profil, setKey, hasKey: () => !!storedKey(), MODEL };
 })();

@@ -25,7 +25,7 @@ Site statique, sans étape de compilation — il suffit de servir le dossier.
 | `astro.js` | calculs astronomiques (lune, ascendant) |
 | `transits.js` | positions des planètes, rétrogradations, aspects |
 | `natal.js` | thème natal : maisons, aspects, et ce qui manque |
-| `ai.js` | lectures par IA : médiation du Miroir, lecture d’un rêve |
+| `ai.js` | lectures par IA : Miroir, rêve, profil d’ensemble |
 | `config.js` | adresse du relais d'API (vide = mode clé personnelle) |
 | `cities.js` | recherche de ville et conversion heure locale → UT |
 | `data.js` | contenus et traductions FR/EN |
@@ -137,6 +137,21 @@ sens fixe : c'est l'intérêt et la limite d'un dictionnaire, et la page des
 prismes le dit. Seul le rêve sélectionné est transmis, et seulement après accord
 coché ; les lectures obtenues restent en mémoire et ne sont pas écrites sur le
 disque.
+
+### La lecture d'ensemble du profil
+
+La synthèse composée additionne les prismes ; elle ne peut pas voir là où ils se
+contredisent. `PrismeAI.profil()` croise tout ce qui est renseigné — thème natal
+complet (positions, maisons, aspects, absences), nombres, type MBTI, histoire de
+vie et journal de rêves si les cases sont cochées, ciel du jour — et rend un
+portrait, un fil, les **accords**, les **tensions**, l'angle mort, un chantier,
+une question et un garde-fou.
+
+Les tensions sont le champ obligatoire du schéma : une synthèse qui n'a trouvé
+aucune contradiction n'a pas regardé. La consigne interdit explicitement la
+phrase d'horoscope (« aucune phrase ne doit pouvoir s'appliquer à tous les
+Capricornes »), la causalité astrologique (« pas *parce que* Saturne est en
+maison 5 »), la prédiction et le diagnostic.
 
 ### Médiation du Miroir
 

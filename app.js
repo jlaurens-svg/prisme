@@ -68,7 +68,10 @@ function nameNumber(name, onlyVowels){
     if(onlyVowels===false && VOWELS.has(ch)) continue;
     sum += LETTER_VALUES[ch]||0;
   }
-  return reduceNum(sum);
+  /* Un nom sans voyelle — « Ng », des initiales — donnait 0, et il n'existe pas
+     de nombre 0 : le portrait plantait à l'affichage. On retombe sur 1, le
+     nombre du commencement, plutôt que de casser la page. */
+  return sum ? reduceNum(sum) : 1;
 }
 
 /* ---------------- Scoring relationnel (neutre) ---------------- */
@@ -627,6 +630,7 @@ function computeProfile(name, dateStr, mbti, birth){
 /* ---------------- Rendu profil ---------------- */
 let lastProfile=null;
 function renderProfile(p){
+  if(lastProfile && profileKey(lastProfile) !== profileKey(p)){ lectureRes = null; lectureStatut = null; }
   lastProfile=p;
   // recalcule les données célestes selon les nouvelles clés de langue si besoin
   if(p.birth){ const c=computeCelestial(p.date, p.birth.time, p.birth.tz, p.birth.lat, p.birth.lon); p.moon=c.moon; p.asc=c.asc; }
@@ -714,6 +718,7 @@ function renderProfile(p){
     ${natalBlock(p)}
     ${transitBlock(p, t)}
     ${histPanel(t)}
+    <section class="synth lec" id="lecture-ai"></section>
     <div class="result-actions no-print">
       <button class="btn btn-primary" id="act-compare">${t.actCompare}</button>
       <button class="btn btn-ghost" id="act-save">${saved?t.actSaved:t.actSave}</button>
@@ -723,6 +728,7 @@ function renderProfile(p){
   `;
 
   bindHist();
+  renderLectureAI();
 
   document.getElementById("act-compare").addEventListener("click", ()=>{
     document.getElementById("ra-name").value=p.name;
@@ -2687,3 +2693,175 @@ function renderSchema(){
 /* Déclaré juste au-dessus : appelé plus haut, SCHEMA_MIN ne serait pas encore
    initialisé et tout le fichier s'arrêterait là. */
 renderSchema();
+
+/* ============================================================
+   LA LECTURE D'ENSEMBLE — le profil croisé par l'IA
+
+   La synthèse composée additionne les prismes ; elle ne peut pas voir là où ils
+   se contredisent. C'est tout l'objet de cette lecture, et c'est ce qu'on
+   demande d'abord au modèle.
+   ============================================================ */
+let lectureRes = null, lectureStatut = null;
+
+/* Le dossier envoyé : chaque morceau est du texte déjà mis en forme, et chacun
+   peut manquer. Rien n'est deviné. */
+function dossierNatal(p){
+  if(!p.birth) return "";
+  const th = Natal.theme(p.date, p.birth);
+  if(!th) return "";
+  const n = U().natal, Lp = L();
+  const lignes = th.corps.map(c =>
+    `- ${n.planetes[c.nom].nom} en ${Lp.signs[c.signe].name} ${c.degre}°, ${n.enMaison(c.maison)}${c.retro ? " (rétrograde)" : ""}`);
+  const asp = th.aspects.slice(0, 10).map(a =>
+    `- ${n.aspects[a.cle].nom} ${n.planetes[a.a].nom}–${n.planetes[a.b].nom} (${a.orbe}°)`);
+  const manque = [];
+  th.absences.elements.forEach(e => manque.push(`aucune planète en ${n.elements[e]}`));
+  th.absences.modalites.forEach(m => manque.push(`aucune planète en signes ${n.modalites[m]}s`));
+  th.absences.tenus.forEach(x => manque.push(`${n.elements[x.element]} tenu par ${n.planetes[x.par].nom} seul`));
+  th.absences.solitaires.forEach(s => manque.push(`${n.planetes[s].nom} sans aucun aspect`));
+  if(th.absences.maisons.length) manque.push(`maisons vides : ${th.absences.maisons.join(", ")}`);
+  return [
+    `${n.asc} : ${Lp.signs[th.ascSigne].name} ${th.ascDegre}° · ${n.mc} : ${Lp.signs[th.mcSigne].name} ${th.mcDegre}°`,
+    "", ...lignes, "", `${n.lAspects} :`, ...asp,
+    "", `${n.lAbsences} : ${manque.length ? manque.join(" ; ") : "rien"}`,
+  ].join("\n");
+}
+function dossierNombres(p){
+  const t = U(), Lp = L();
+  return [
+    `${t.bLife} ${numLabel(p.life)} — ${Lp.numbers[p.life].titre}`,
+    `${Lp.numFrames.expression.label} ${numLabel(p.expr)} — ${Lp.numbers[p.expr].titre}`,
+    `${Lp.numFrames.intime.label} ${numLabel(p.intime)} — ${Lp.numbers[p.intime].titre}`,
+  ].join("\n");
+}
+function dossierMbti(p){
+  const Lp = L();
+  if(!p.mbti) return U().mbtiNone;
+  const ty = Lp.mbti[p.mbti];
+  return `${p.mbti} — ${ty.nom} (${ty.groupe})`;
+}
+function dossierCiel(){
+  const u = U().sky, c = ciel();
+  if(!c || !c.retrogrades) return "";
+  const retro = c.retrogrades.map(x =>
+    `${u.planets[x.nom].nom} ${U().natal.retro} — ${L().signs[x.signe].name} ${x.degre}°`);
+  return retro.length ? retro.join(" ; ") : u.calm;
+}
+function dossierReves(){
+  const r = U().reves, list = reveTri().slice(0, 6);
+  if(!list.length) return "";
+  const compte = {};
+  reveLoad().forEach(e => reveImages(e.texte).forEach(k => { compte[k] = (compte[k] || 0) + 1; }));
+  const revient = Object.entries(compte).filter(([, n]) => n >= 2)
+    .map(([k, n]) => `${r.symbols[k].nom} (${n})`);
+  return [
+    ...list.map(e => `- ${r.dateLabel} ${e.date}${e.emotion ? ` (${r.emotions[e.emotion]})` : ""} : ${e.texte}`),
+    revient.length ? `\n${r.patternsTitle} : ${revient.join(", ")}` : "",
+  ].filter(Boolean).join("\n");
+}
+
+function renderLectureAI(){
+  const box = document.getElementById("lecture-ai");
+  if(!box || !lastProfile) return;
+  const a = U().lecture;
+  const pret = PrismeAI.mode() !== "aucun";
+  const aHist = !!histPourAnalyse(), aReves = !!dossierReves();
+  box.innerHTML = `
+    <div class="card-tag"><span class="dot"></span><span>${a.tag}</span></div>
+    <h3>${a.title}</h3>
+    <p>${a.text}</p>
+    <p class="ai-privacy">⚠ ${a.privacy}</p>
+    ${pret ? `
+      <label class="ai-consent"><input type="checkbox" id="lec-ok" /> <span>${a.consent}</span></label>
+      ${aHist ? `<label class="ai-consent"><input type="checkbox" id="lec-hist" /> <span>${a.consentHistoire}</span></label>` : ""}
+      ${aReves ? `<label class="ai-consent"><input type="checkbox" id="lec-reves" /> <span>${a.consentReves}</span></label>` : ""}
+      <button class="btn btn-accent" id="lec-go" disabled>${lectureRes ? a.again : a.button}</button>
+    ` : `
+      <p class="ai-setup">${a.setup} ${a.setupKey}</p>
+      <div class="ai-key">
+        <input type="password" id="lec-key" autocomplete="off" spellcheck="false" placeholder="${a.keyPh}" />
+        <button class="btn btn-ghost" id="lec-key-save">${a.keySave}</button>
+      </div>
+    `}
+    <p class="ai-status" id="lec-status" role="status" aria-live="polite"></p>
+    <div id="lec-out"></div>`;
+
+  const ok = document.getElementById("lec-ok"), go = document.getElementById("lec-go");
+  if(ok && go) ok.addEventListener("change", () => { go.disabled = !ok.checked; });
+  if(go) go.addEventListener("click", lireProfil);
+  const save = document.getElementById("lec-key-save");
+  if(save) save.addEventListener("click", () => {
+    const v = (document.getElementById("lec-key").value || "").trim();
+    if(!v) return;
+    PrismeAI.setKey(v);
+    renderLectureAI();
+  });
+  if(lectureStatut) setLectureStatut(lectureStatut.texte, lectureStatut.type);
+  if(lectureRes) peindreLecture(lectureRes);
+}
+function setLectureStatut(texte, type){
+  lectureStatut = texte ? { texte, type } : null;
+  const el = document.getElementById("lec-status");
+  if(!el) return;
+  el.textContent = texte || "";
+  el.className = `ai-status${type ? " is-" + type : ""}`;
+}
+
+async function lireProfil(){
+  const a = U().lecture, p = lastProfile;
+  if(!p) return;
+  const go = document.getElementById("lec-go");
+  if(go) go.disabled = true;
+  setLectureStatut(a.working, "load");
+  try {
+    const coche = (id) => { const el = document.getElementById(id); return !!(el && el.checked); };
+    lectureRes = await PrismeAI.profil({
+      nom: firstName(p.name),
+      natal: dossierNatal(p),
+      nombres: dossierNombres(p),
+      mbti: dossierMbti(p),
+      histoire: coche("lec-hist") ? histPourAnalyse() : "",
+      reves: coche("lec-reves") ? dossierReves() : "",
+      ciel: dossierCiel(),
+    }, LANG);
+    setLectureStatut("");
+    peindreLecture(lectureRes);
+    const ok = document.getElementById("lec-ok");
+    if(go) go.disabled = !(ok && ok.checked);
+    const out = document.getElementById("lec-out");
+    if(out) out.scrollIntoView({ behavior:"smooth", block:"nearest" });
+  } catch(e){
+    const msg = e.code === "cle"    ? a.errCle
+              : e.code === "quota"  ? a.errQuota
+              : e.code === "reseau" ? a.errReseau
+              : e.code === "refus"  ? a.errRefus
+              : a.errAutre;
+    if(e.code === "cle" && PrismeAI.hasKey()){ PrismeAI.setKey(""); }
+    setLectureStatut(msg, "err");
+    if(go) go.disabled = false;
+    if(e.code === "cle") renderLectureAI();
+  }
+}
+
+function peindreLecture(d){
+  const a = U().lecture, box = document.getElementById("lec-out");
+  if(!box || !d) return;
+  const croisements = (list, cls) => `
+    <ul class="lec-croix ${cls}">${list.map(x =>
+      `<li><span class="lec-quoi">${escapeHtml(x.quoi)}</span>
+        <span class="lec-prismes">${x.prismes.map(escapeHtml).join(" · ")}</span></li>`).join("")}</ul>`;
+  box.innerHTML = `
+    ${d.alerte === "vigilance" && d.alerteTexte ? `<p class="ai-alerte">${escapeHtml(d.alerteTexte)}</p>` : ""}
+    <p class="ai-sub">${a.lPortrait}</p>
+    <p class="lec-portrait">${escapeHtml(d.portrait)}</p>
+    <p class="ai-sub">${a.lFil}</p>
+    <p class="ai-knot">${escapeHtml(d.fil)}</p>
+    <p class="ai-sub">${a.lAccords}</p>
+    ${croisements(d.accords, "is-accord")}
+    <p class="ai-sub">${a.lTensions}</p>
+    ${croisements(d.tensions, "is-tension")}
+    <div class="mini"><strong>${a.lAngle}</strong><p>${escapeHtml(d.angleMort)}</p></div>
+    <div class="mini"><strong>${a.lChantier}</strong><p>${escapeHtml(d.chantier)}</p></div>
+    <div class="mini"><strong>${a.lQuestion}</strong><p class="lec-question">${escapeHtml(d.question)}</p></div>
+    <p class="hist-care"><strong>${a.lGarde}</strong> ${escapeHtml(d.garde)}</p>`;
+}
