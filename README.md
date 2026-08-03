@@ -161,10 +161,12 @@ donner raison à personne. C'est **la seule fonction qui sort du navigateur**, e
 elle demande l'accord des deux personnes avant l'envoi.
 
 Une clé d'API ne peut pas vivre dans une page publique. `worker/` contient un
-relais Cloudflare Worker qui la détient côté serveur — voir `worker/README.md`
-pour le déployer (~5 min) puis renseigner `config.js`. Tant que `config.js` est
-vide, l'interface propose un mode « clé personnelle » pour tester : la clé reste
-dans le navigateur de la machine.
+relais Cloudflare Worker qui la détient côté serveur. `worker/deploy.sh` fait
+tout d'une commande — déploiement, écriture de `config.js`, vérification que le
+relais répond — sauf les deux étapes qui exigent une main humaine : autoriser
+l'accès au compte Cloudflare et coller la clé. Tant que `config.js` est vide,
+l'interface propose un mode « clé personnelle » pour tester : la clé reste dans
+le navigateur de la machine.
 
 Le relais impose le modèle et `max_tokens`, filtre les origines et borne la
 taille des requêtes — sans quoi une clé derrière un relais ouvert reste

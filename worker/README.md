@@ -4,8 +4,9 @@ Petite fonction serveur dont le seul rôle est de **détenir la clé d'API** pou
 que la page publique n'ait pas à la contenir. Une clé placée dans `app.js`
 serait lisible par n'importe qui et consommée à vos frais en quelques heures.
 
-Elle sert les deux lectures du site : la médiation du Miroir et la lecture d'un
-rêve. Un seul déploiement suffit pour les deux.
+Elle sert les trois lectures du site : la médiation du Miroir, la lecture d'un
+rêve et la lecture d'ensemble du profil. Un seul déploiement suffit pour les
+trois.
 
 ## Déployer (une seule fois, ~5 minutes)
 
@@ -15,21 +16,47 @@ gratuit suffit largement) et une clé d'API Anthropic
 
 ```sh
 cd worker
+./deploy.sh
+```
+
+Le script fait tout ce qui peut l'être sans intervention : il déploie le relais,
+lit son adresse, l'écrit dans `config.js`, vérifie que le relais répond, puis
+affiche les lignes de git à lancer.
+
+Deux moments demandent votre main, et **aucun des deux ne peut être automatisé** :
+la connexion à votre compte Cloudflare (une fenêtre s'ouvre, vous autorisez) et
+la clé d'API (vous la collez ; elle part chiffrée chez Cloudflare, elle n'est
+écrite ni dans le dépôt ni sur votre disque).
+
+Options : `--garder-cle` pour redéployer sans retoucher à la clé, `--essai` pour
+vérifier la mécanique sans rien déployer.
+
+### À la main, si vous préférez
+
+```sh
+cd worker
 npx wrangler login                        # ouvre le navigateur
 npx wrangler secret put ANTHROPIC_API_KEY # colle la clé, elle est chiffrée
 npx wrangler deploy
 ```
 
 `deploy` affiche une adresse de la forme
-`https://prisme-mediation.VOTRE-SOUS-DOMAINE.workers.dev`.
-
-Reportez-la dans `config.js` à la racine du site :
+`https://prisme-mediation.VOTRE-SOUS-DOMAINE.workers.dev`. Reportez-la dans
+`config.js` à la racine du site :
 
 ```js
 window.PRISME_AI_ENDPOINT = "https://prisme-mediation.VOTRE-SOUS-DOMAINE.workers.dev";
 ```
 
-Committez, poussez : la médiation est active pour tous les visiteurs.
+Committez, poussez : les trois lectures sont actives pour tous les visiteurs.
+
+### Vérifier que c'est branché
+
+Un `POST` vide sur l'adresse du relais doit répondre **400**
+`{"error":"messages_required"}` : le Worker tourne et la clé est en place. Un
+**500** `server_not_configured` veut dire que la clé manque, un **403**
+`origin_not_allowed` que le domaine n'est pas dans `ALLOWED_ORIGINS`. Le script
+fait ce test tout seul en fin de course.
 
 ## Ce que le relais vérifie
 
